@@ -43,7 +43,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>git ${postgres.version}</version>
+			<version>${postgres.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
