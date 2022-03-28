@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: motiondb
+    image: postgres:12.10
+    restart: always
+    environment:
+      POSTGRES_DB: motion
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: pass123
+    ports:
+      - 7435:5432
