@@ -31,3 +31,14 @@ build/
 
 ### VS Code ###
 .vscode/
+
+bower_components
+node_modules
+node
+*.log
+asciidoctor.css
+README.html
+built
+dump.rdb
+package-lock.json
+settings.json
