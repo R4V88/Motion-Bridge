@@ -26,7 +26,7 @@ import java.util.UUID;
 @Entity
 @EqualsAndHashCode(of = "uuid")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name ="user")
+@Table(name ="users")
 public class UserEntity {
 
     @Id
