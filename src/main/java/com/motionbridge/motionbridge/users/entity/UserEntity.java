@@ -1,5 +1,6 @@
 package com.motionbridge.motionbridge.users.entity;
 
+import com.motionbridge.motionbridge.jpa.BaseEntity;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,14 +17,11 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -33,13 +31,7 @@ import java.util.UUID;
 @Table(name ="users")
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
-public class UserEntity {
-
-    @Id
-    @GeneratedValue
-    Long id;
-
-    String uuid = UUID.randomUUID().toString();
+public class UserEntity extends BaseEntity {
 
     @CreatedDate
     LocalDateTime createdAt;
