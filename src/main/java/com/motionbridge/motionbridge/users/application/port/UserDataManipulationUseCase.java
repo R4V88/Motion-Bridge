@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 
@@ -15,6 +16,8 @@ public interface UserDataManipulationUseCase {
     UpdatePasswordResponse updatePassword(UpdatePasswordCommand command);
 
     RegisterResponse register(String username, String password);
+
+    Optional<UserEntity> findById(Long id);
 
     class RegisterResponse extends Either<String, UserEntity> {
 

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.Optional;
 
 @Slf4j
 @AllArgsConstructor
@@ -31,11 +32,10 @@ public class UserService implements UserDataManipulationUseCase {
                 .orElseGet(() -> new UpdatePasswordResponse(false, Collections.singletonList("New password is same as old")));
     }
 
-    private UserEntity updateActualPassword(UpdatePasswordCommand command, UserEntity user) {
+    private void updateActualPassword(UpdatePasswordCommand command, UserEntity user) {
         if(!command.getPassword().equals(user.getPassword())) {
             user.setPassword(encoder.encode(command.getPassword()));
         }
-        return null;
     }
 
     @Transactional
@@ -46,5 +46,10 @@ public class UserService implements UserDataManipulationUseCase {
         }
         UserEntity entity = new UserEntity(username, encoder.encode(password));
         return RegisterResponse.success(repository.save(entity));
+    }
+
+    @Override
+    public Optional<UserEntity> findById(Long id){
+        return repository.findUserById(id);
     }
 }

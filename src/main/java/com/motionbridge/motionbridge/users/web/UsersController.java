@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,6 +22,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @RestController
@@ -28,6 +31,7 @@ import javax.validation.constraints.Size;
 public class UsersController {
 
     private final UserDataManipulationUseCase user;
+    private final PasswordEncoder encoder;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterCommand command) {
@@ -61,6 +65,7 @@ public class UsersController {
     }
 
     @Data
+    @AllArgsConstructor
     private static class RestUserCommand {
         @NotBlank
         private String password;
@@ -68,6 +73,15 @@ public class UsersController {
         UpdatePasswordCommand toUpdatePasswordCommand(Long id) {
             return new UpdatePasswordCommand(id, password);
         }
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public RestUser getById(@PathVariable Long id) {
+        if(user.findById(id).isPresent()) {
+            String login = user.findById(id).get().getUsername();
+            return new RestUser(login);
+        } else throw  new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
 }
