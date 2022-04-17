@@ -33,7 +33,7 @@ public class UserService implements UserDataManipulationUseCase {
     }
 
     private void updateActualPassword(UpdatePasswordCommand command, UserEntity user) {
-        if(!command.getPassword().equals(user.getPassword())) {
+        if (!command.getPassword().equals(user.getPassword())) {
             user.setPassword(encoder.encode(command.getPassword()));
         }
     }
@@ -49,7 +49,7 @@ public class UserService implements UserDataManipulationUseCase {
     }
 
     @Override
-    public Optional<UserEntity> findById(Long id){
+    public Optional<UserEntity> findById(Long id) {
         return repository.findUserById(id);
     }
 }

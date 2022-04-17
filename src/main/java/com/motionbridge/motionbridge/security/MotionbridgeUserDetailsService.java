@@ -14,7 +14,7 @@ public class MotionbridgeUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if(config.getUsername().equalsIgnoreCase(username)) {
+        if (config.getUsername().equalsIgnoreCase(username)) {
             return config.adminUser();
         }
         return repository

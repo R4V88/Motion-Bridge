@@ -28,7 +28,7 @@ import java.util.Set;
 @Entity
 @EqualsAndHashCode(of = "uuid")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name ="users")
+@Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 public class UserEntity extends BaseEntity {
