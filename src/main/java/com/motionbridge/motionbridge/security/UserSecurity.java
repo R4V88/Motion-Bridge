@@ -1,7 +1,6 @@
 package com.motionbridge.motionbridge.security;
 
 
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class UserSecurity {
