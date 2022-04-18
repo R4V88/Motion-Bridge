@@ -9,11 +9,8 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.net.URIBuilder;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -61,9 +58,15 @@ public class InstagramService implements InstagramUseCase {
         driver.manage().timeouts().pageLoadTimeout(Duration.ofMillis(3600));
         Album profilePhoto;
         Photo photo;
-        WebElement profilePhotoDiv = driver.findElement(By.xpath("//div/span/img[@class='_6q-tv']"));
-        String profilePhotoUrl = profilePhotoDiv.getAttribute("src");
-        photo = new Photo(profilePhotoUrl, 0);
+        WebElement profilePhotoDiv;
+        if (driver.findElements(By.xpath("//div/span/img[@class='_6q-tv']")).size() != 0) {
+            profilePhotoDiv = driver.findElement(By.xpath("//div/span/img[@class='_6q-tv']"));
+            String profilePhotoUrl = profilePhotoDiv.getAttribute("src");
+            photo = new Photo(profilePhotoUrl, 0);
+        } else {
+            photo = new Photo("no profile photo", 0);
+        }
+
         profilePhoto = new Album(Collections.singletonList(photo));
         return profilePhoto;
     }
