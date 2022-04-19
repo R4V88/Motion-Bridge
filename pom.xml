@@ -23,6 +23,7 @@
 		<postgres.version>42.3.3</postgres.version>
 		<selenium.version>4.1.3</selenium.version>
 		<webdriver.manager.version>5.1.1</webdriver.manager.version>
+		<instagramscraper.version>2.2</instagramscraper.version>
 	</properties>
 
 	<dependencies>
@@ -96,6 +97,11 @@
 			<groupId>io.github.bonigarcia</groupId>
 			<artifactId>webdrivermanager</artifactId>
 			<version>${webdriver.manager.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.igor-suhorukov</groupId>
+			<artifactId>instagramscraper</artifactId>
+			<version>${instagramscraper.version}</version>
 		</dependency>
 	</dependencies>
 

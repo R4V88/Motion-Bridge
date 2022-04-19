@@ -4,8 +4,10 @@ import com.motionbridge.motionbridge.Finder.Instagram.application.port.Instagram
 import com.motionbridge.motionbridge.Finder.Instagram.model.Album;
 import com.motionbridge.motionbridge.Finder.Instagram.model.Album.Photo;
 import com.motionbridge.motionbridge.Finder.commons.port.ChromeDriverUseCase;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.net.URIBuilder;
 import org.openqa.selenium.By;
@@ -21,27 +23,33 @@ import java.util.List;
 @Slf4j
 @Service
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class InstagramService implements InstagramUseCase {
 
-    ChromeDriverUseCase chromeDriver;
+    final ChromeDriverUseCase chromeDriver;
 
     @SneakyThrows
     @Override
-    public List<Album> getUserPhotos(String userId) {
+    public List<Album> getUserAlbum(String profileName) {
+        List<Album> albums = new ArrayList<>(Collections.emptyList());
+
         WebDriver driver = chromeDriver.initializeChromeDriver();
+
         String uri = new URIBuilder()
                 .setScheme("http")
                 .setHost("instagram.com")
-                .setPath("/".concat(userId))
+                .setPath("/".concat(profileName))
                 .build()
                 .toString();
 
         driver.get(uri);
-        log.warn("Adres uzytkownika: " + driver.getCurrentUrl());
+
         acceptCookies(driver);
-        List<Album> albums = new ArrayList<>(Collections.emptyList());
+
         albums.add(getProfilePhoto(driver));
 
+        List<Album> generatedAlbum = getUserPhotos(driver);
+        albums.addAll(generatedAlbum);
 
         chromeDriver.shutDownDriver(driver);
 
@@ -62,18 +70,38 @@ public class InstagramService implements InstagramUseCase {
         if (driver.findElements(By.xpath("//div/span/img[@class='_6q-tv']")).size() != 0) {
             profilePhotoDiv = driver.findElement(By.xpath("//div/span/img[@class='_6q-tv']"));
             String profilePhotoUrl = profilePhotoDiv.getAttribute("src");
-            photo = new Photo(profilePhotoUrl, 0);
+            photo = new Photo(profilePhotoUrl, "0");
         } else {
-            photo = new Photo("no profile photo", 0);
+            photo = new Photo("no profile photo", "0");
         }
 
         profilePhoto = new Album(Collections.singletonList(photo));
         return profilePhoto;
     }
 
-    private Album getUserPhotos(WebDriver driver) {
-        Album photos;
+    private List<Album> getUserPhotos(WebDriver driver) {
+        List<Album> photos = new ArrayList<>(Collections.emptyList());
 
-        return null;
+        List<WebElement> containers = driver.findElements(By.xpath("//div[@class = 'Nnq7C weEfm']"));
+        containers.forEach(container -> {
+            WebElement image = driver.findElement(By.xpath(".//div/a"));
+            String url = image.getAttribute("href");
+            driver.get(url);
+
+            driver.manage().timeouts().pageLoadTimeout(Duration.ofMillis(2000));
+            WebElement currentImage = driver.findElement(By.xpath("//div/div/img[@Class='FFVAD']"));
+            String getUrl = currentImage.getAttribute("src");
+            log.warn("Found image url " + getUrl);
+            WebElement getLikes = driver.findElement(By.xpath("//a/div/span"));
+            String likes = getLikes.getText();
+            log.warn("Found image likes " + likes);
+            Photo photo = new Photo(getUrl, likes);
+            log.warn("Created photo: url -> " + photo.getPhotoUrl() + " photo likes -> " + photo.getLikes());
+
+            photos.add(new Album(List.of(photo)));
+            log.warn("New album created");
+        });
+
+        return photos;
     }
 }

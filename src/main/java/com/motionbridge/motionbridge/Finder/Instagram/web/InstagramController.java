@@ -3,6 +3,7 @@ package com.motionbridge.motionbridge.Finder.Instagram.web;
 import com.motionbridge.motionbridge.Finder.Instagram.application.port.InstagramUseCase;
 import com.motionbridge.motionbridge.Finder.Instagram.model.Album;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,9 +20,11 @@ public class InstagramController {
 
     private InstagramUseCase instagram;
 
-    @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.FOUND)
-    public List<Album> getContent(@PathVariable String id) {
-        return instagram.getUserPhotos(id);
+    @SneakyThrows
+    @GetMapping("/{profile}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Album> getContent(@PathVariable String profile) {
+        return instagram.getUserAlbum(profile);
+        //TODO added https://github.com/postaddictme/instagram-java-scraper to dependency
     }
 }
