@@ -11,10 +11,10 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.validation.constraints.Size;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Product extends BaseEntity {
+    @Enumerated(EnumType.STRING)
     ProductName name;
     BigDecimal price;
     @CreatedDate
@@ -32,6 +33,8 @@ public class Product extends BaseEntity {
     @LastModifiedDate
     LocalDateTime updatedAt;
     Boolean isActive;
+    Integer animationQuantity;
+    Integer timePeriod;
 
     @Getter
     @AllArgsConstructor
