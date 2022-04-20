@@ -8,8 +8,8 @@ import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    @Query(" SELECT p.name, p.price FROM Product p WHERE p.isActive = true ")
-    List<Product> getAllProducts();
+    @Query(" SELECT p FROM Product p WHERE p.isActive = true ")
+    List<Product> getAllActiveProducts();
 
     List<Product> getProductsByIsActiveIsTrue();
 }

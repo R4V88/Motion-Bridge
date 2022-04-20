@@ -1,7 +1,7 @@
 package com.motionbridge.motionbridge.product.web;
 
+import com.motionbridge.motionbridge.product.application.ActiveProduct;
 import com.motionbridge.motionbridge.product.application.port.ProductUseCase;
-import com.motionbridge.motionbridge.product.entity.Product;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,7 +23,7 @@ public class ProductController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Product> getActiveProducts() {
+    public List<ActiveProduct> getActiveProducts() {
         return product.getActiveProducts();
     }
 }

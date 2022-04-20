@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Product extends BaseEntity {
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     ProductName name;
     BigDecimal price;
     @CreatedDate
@@ -33,11 +33,12 @@ public class Product extends BaseEntity {
     @LastModifiedDate
     LocalDateTime updatedAt;
     Boolean isActive;
-    Integer animationQuantity;
-    Integer timePeriod;
+//    Integer animationQuantity;
+//    Integer timePeriod;
 
     @Getter
     @AllArgsConstructor
+    public
     enum ProductName {
         INSTAGRAM
     }
