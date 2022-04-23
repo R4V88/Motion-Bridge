@@ -10,7 +10,9 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +33,7 @@ public class ProductService implements ManipulateProductUseCase {
     }
 
     @Override
+    @Transactional
     public AddProductResponse addProduct(AddProductCommand command) {
         Product product = Product.builder()
                 .name(ProductName.valueOf(command.getName().toUpperCase()))
@@ -50,6 +53,21 @@ public class ProductService implements ManipulateProductUseCase {
                 .stream()
                 .map(this::toCompleteRestProduct)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public SwitchStatusResponse switchStatus(Long id) {
+        return repository.findById(id)
+                .map(product -> {
+                    switchActualStatus(id);
+                    return SwitchStatusResponse.SUCCESS;
+                })
+                .orElseGet(() -> new SwitchStatusResponse(false, Collections.singletonList("Could not change status")));
+    }
+
+    private void switchActualStatus(Long id) {
+        repository.getById(id).setIsActive(repository.getById(id).getIsActive() != null && !repository.getById(id).getIsActive());
     }
 
     private RestProduct toCompleteRestProduct(Product product) {
@@ -72,6 +90,6 @@ public class ProductService implements ManipulateProductUseCase {
                 product.getCurrency().toString().toLowerCase(),
                 product.getAnimationQuantity(),
                 product.getTimePeriod()
-                );
+        );
     }
 }

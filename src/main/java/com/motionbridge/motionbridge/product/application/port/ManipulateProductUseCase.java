@@ -10,10 +10,13 @@ import lombok.Value;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
+
 public interface ManipulateProductUseCase {
     List<RestActiveProduct> getActiveProducts();
     AddProductResponse addProduct(AddProductCommand command);
     List<RestProduct> getAllProducts();
+    SwitchStatusResponse switchStatus(Long id);
 
     @Builder
     @Value
@@ -38,5 +41,13 @@ public interface ManipulateProductUseCase {
         public static AddProductResponse failure(String error) {
             return new AddProductResponse(false, error, null);
         }
+    }
+
+    @Value
+    class SwitchStatusResponse {
+        public static SwitchStatusResponse SUCCESS = new SwitchStatusResponse(true, emptyList());
+
+        boolean success;
+        List<String> errors;
     }
 }
