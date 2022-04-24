@@ -2,6 +2,7 @@ package com.motionbridge.motionbridge.order.entity;
 
 import com.motionbridge.motionbridge.jpa.BaseEntity;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
+import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,7 @@ import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.math.BigDecimal;
@@ -37,15 +39,18 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Order extends BaseEntity {
 
-//    @OneToMany(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "subscription_id")
-//    @Singular
-//    Set<Subscription> subscriptions;
-//
-//    @OneToMany(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "discount_id")
-//    @Singular
-//    Set<Discount> discounts;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_id")
+    @Singular
+    Set<Subscription> subscriptions;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_id")
+    @Singular
+    Set<OrderDiscount> discounts;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    UserEntity user;
 
     BigDecimal currentPrice;
 
