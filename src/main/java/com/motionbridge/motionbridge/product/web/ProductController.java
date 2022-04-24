@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.List;
+
 @Tag(name = "/api/product", description = "Manipulate Products")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
