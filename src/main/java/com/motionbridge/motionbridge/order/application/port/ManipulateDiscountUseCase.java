@@ -10,8 +10,11 @@ import static java.util.Collections.emptyList;
 
 public interface ManipulateDiscountUseCase {
     List<ResponseDiscount> getAllDiscounts();
+
     void addNewDiscount(CreateDiscountCommand discount);
+
     SwitchStatusResponse switchStatus(Long id);
+
     void deleteDiscountById(Long id);
 
     @Value
