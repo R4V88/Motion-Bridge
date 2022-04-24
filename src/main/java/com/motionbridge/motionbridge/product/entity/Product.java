@@ -37,7 +37,8 @@ public class Product extends BaseEntity {
     LocalDateTime createdAt;
     @LastModifiedDate
     LocalDateTime updatedAt;
-    Boolean isActive;
+    @Builder.Default
+    Boolean isActive = false;
     Integer animationQuantity;
     Integer timePeriod;
 

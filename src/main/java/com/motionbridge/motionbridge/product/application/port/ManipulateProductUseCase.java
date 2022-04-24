@@ -14,14 +14,14 @@ import static java.util.Collections.emptyList;
 
 public interface ManipulateProductUseCase {
     List<RestActiveProduct> getActiveProducts();
-    AddProductResponse addProduct(AddProductCommand command);
+    AddProductResponse addProduct(CreateProductCommand command);
     List<RestProduct> getAllProducts();
     SwitchStatusResponse switchStatus(Long id);
 
     @Builder
     @Value
     @AllArgsConstructor
-    class AddProductCommand {
+    class CreateProductCommand {
         Integer animationQuantity;
         String name;
         String currency;

@@ -34,7 +34,7 @@ public class ProductService implements ManipulateProductUseCase {
 
     @Override
     @Transactional
-    public AddProductResponse addProduct(AddProductCommand command) {
+    public AddProductResponse addProduct(CreateProductCommand command) {
         Product product = Product.builder()
                 .name(ProductName.valueOf(command.getName().toUpperCase()))
                 .animationQuantity(command.getAnimationQuantity())

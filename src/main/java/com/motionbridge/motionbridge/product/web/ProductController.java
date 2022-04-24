@@ -3,11 +3,12 @@ package com.motionbridge.motionbridge.product.web;
 import com.motionbridge.motionbridge.product.application.RestActiveProduct;
 import com.motionbridge.motionbridge.product.application.RestProduct;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase;
-import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.AddProductCommand;
+import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.CreateProductCommand;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 @Tag(name = "/api/product", description = "Manipulate Products")
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -39,8 +41,8 @@ public class ProductController {
 
     @Operation(summary = "ADMIN")
     @PostMapping("/add")
-    public ResponseEntity<Object> addNewProduct(@RequestBody AddProductCommand command) {
-        return manipulateProduct.addProduct(command)
+    public ResponseEntity<Object> addNewProduct(@RequestBody RestProductCommand command) {
+        return manipulateProduct.addProduct(command.toCreateProductCommand())
                 .handle(
                         newProduct -> ResponseEntity.ok().build(),
                         error -> ResponseEntity.badRequest().body(error)
@@ -58,6 +60,19 @@ public class ProductController {
     @PutMapping("{id}")
     public void switchStatus(@PathVariable Long id) {
         manipulateProduct.switchStatus(id);
+    }
+
+    @Data
+    public static class RestProductCommand {
+        Integer animationQuantity;
+        String name;
+        String currency;
+        Integer timePeriod;
+        BigDecimal price;
+
+        CreateProductCommand toCreateProductCommand() {
+            return new CreateProductCommand(animationQuantity, name, currency, timePeriod, price);
+        }
     }
 
 }
