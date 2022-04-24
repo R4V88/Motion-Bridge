@@ -4,6 +4,8 @@ import com.motionbridge.motionbridge.product.application.RestActiveProduct;
 import com.motionbridge.motionbridge.product.application.RestProduct;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.AddProductCommand;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -19,7 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-
+@Tag(name = "/api/product", description = "Manipulate Products")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @RestController
@@ -28,14 +30,14 @@ public class ProductController {
 
     final ManipulateProductUseCase manipulateProduct;
 
-    //Todo Security ALL
+    @Operation(summary = "ALL")
     @GetMapping("/active")
     @ResponseStatus(HttpStatus.OK)
     public List<RestActiveProduct> getActiveProducts() {
         return manipulateProduct.getActiveProducts();
     }
 
-    //Todo Security Admin
+    @Operation(summary = "ADMIN")
     @PostMapping("/add")
     public ResponseEntity<Object> addNewProduct(@RequestBody AddProductCommand command) {
         return manipulateProduct.addProduct(command)
@@ -45,14 +47,14 @@ public class ProductController {
                 );
     }
 
-    //Todo Security Admin
+    @Operation(summary = "ADMIN")
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public List<RestProduct> getAllProducts() {
         return manipulateProduct.getAllProducts();
     }
 
-    //Todo Security Admin
+    @Operation(summary = "ADMIN")
     @PutMapping("{id}")
     public void switchStatus(@PathVariable Long id) {
         manipulateProduct.switchStatus(id);
