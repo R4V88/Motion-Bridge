@@ -15,6 +15,23 @@ public class SubscriptionService implements SubscriptionUseCase {
 
     @Override
     public List<Subscription> findAllSubscriptionsByUserId(Long id) {
-        return repository.findAllByUserId(id);
+        return repository.findSubscriptionsByUserId(id);
+    }
+
+    @Override
+    public Subscription addSubscription(CreateSubscriptionCommand command) {
+        Subscription subscription = toAddSubscription(command);
+        repository.save(subscription);
+        return subscription;
+    }
+
+    Subscription toAddSubscription(CreateSubscriptionCommand command) {
+        return Subscription.builder()
+                .price(command.getPrice())
+                .currentPrice(command.getCurrentPrice())
+                .animationsLimit(command.getAnimationLimit())
+                .type(command.getType())
+                .userEntity(command.getUser())
+                .build();
     }
 }

@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DiscountService implements ManipulateDiscountUseCase {
     static LocalDateTime calculatedEndDate;
-    ;
+
     DiscountRepository repository;
 
     @Override

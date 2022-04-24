@@ -26,7 +26,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Set;
+
+import static java.util.Collections.emptySet;
 
 @Getter
 @Setter
@@ -44,10 +47,8 @@ public class Order extends BaseEntity {
     @Singular
     Set<Subscription> subscriptions;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "order_id")
-    @Singular
-    Set<OrderDiscount> discounts;
+    @Builder.Default
+    Long discountId = 0L;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     UserEntity user;

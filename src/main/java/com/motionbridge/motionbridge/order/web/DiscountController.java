@@ -59,7 +59,7 @@ public class DiscountController {
 
     @Data
     @FieldDefaults(level = AccessLevel.PRIVATE)
-    public static class RestDiscountCommand {
+    static class RestDiscountCommand {
         @NotBlank
         String subscriptionType;
         @NotBlank
