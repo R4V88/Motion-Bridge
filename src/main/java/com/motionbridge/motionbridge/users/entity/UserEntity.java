@@ -26,7 +26,6 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@EqualsAndHashCode(of = "uuid")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
