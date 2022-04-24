@@ -3,6 +3,8 @@ package com.motionbridge.motionbridge.users.web;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordCommand;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
@@ -25,11 +27,12 @@ import javax.validation.constraints.Size;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/users")
+@Tag(name = "/api/user", description = "Manipulate Users")
+@RequestMapping("/api/user")
 public class UsersController {
 
     private final UserDataManipulationUseCase user;
-
+    @Operation (summary = "ALL")
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterCommand command) {
         return user
@@ -41,6 +44,7 @@ public class UsersController {
     }
 
     //Todo    @Secured()
+    @Operation(summary = "USER zalogowany")
     @PutMapping("/{id}/password")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void changePassword(@PathVariable Long id, @RequestBody RestUserCommand command) {
@@ -51,6 +55,7 @@ public class UsersController {
         }
     }
 
+    @Operation(summary = "USER zalogowany")
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public RestUser getById(@PathVariable Long id) {

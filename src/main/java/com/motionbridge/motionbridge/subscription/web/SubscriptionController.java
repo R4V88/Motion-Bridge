@@ -1,6 +1,8 @@
 package com.motionbridge.motionbridge.subscription.web;
 
 import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,14 +15,16 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Tag(name = "/api/user", description = "Manipulate Subscriptions")
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/users/{id}")
+@RequestMapping("/api/user")
 public class SubscriptionController {
 
     private final SubscriptionUseCase userSubscriptions;
 
-    @GetMapping("/subscriptions")
+    @Operation(summary = "USER zalogowany")
+    @GetMapping("/{id}/subscription")
     @ResponseStatus(HttpStatus.OK)
     public List<RestSubscription> getSubscriptions(@PathVariable Long id) {
         List<RestSubscription> subscriptions = userSubscriptions
