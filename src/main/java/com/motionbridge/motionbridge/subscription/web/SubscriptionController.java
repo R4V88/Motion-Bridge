@@ -21,7 +21,7 @@ public class SubscriptionController {
     private final SubscriptionUseCase userSubscriptions;
 
     @GetMapping("/subscriptions")
-    @ResponseStatus(HttpStatus.FOUND)
+    @ResponseStatus(HttpStatus.OK)
     public List<RestSubscription> getSubscriptions(@PathVariable Long id) {
         List<RestSubscription> subscriptions = userSubscriptions
                 .findAllSubscriptionsByUserId(id)

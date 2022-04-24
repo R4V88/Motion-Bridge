@@ -26,6 +26,7 @@ public class Subscription extends BaseEntity {
     LocalDateTime startDate;
     LocalDateTime endDate;
     BigDecimal price;
+    BigDecimal currentPrice;
     Integer animationsLimit;
     Integer animationsLimitCounter;
     String type;

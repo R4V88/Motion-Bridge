@@ -71,7 +71,6 @@ public class UsersController {
     }
 
     @Data
-    @AllArgsConstructor
     private static class RestUserCommand {
         @NotBlank
         private String password;
