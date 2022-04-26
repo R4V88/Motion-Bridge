@@ -1,11 +1,11 @@
 package com.motionbridge.motionbridge.subscription.entity;
 
 import com.motionbridge.motionbridge.jpa.BaseEntity;
+import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,6 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -53,8 +54,14 @@ public class Subscription extends BaseEntity {
 
     String type;
 
+    String timePeriod;
+
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     UserEntity userEntity;
+
+    @JoinColumn(name = "order_id")
+    @ManyToOne(cascade = CascadeType.ALL)
+    Order order;
 
     @CreatedDate
     LocalDateTime createdAt;

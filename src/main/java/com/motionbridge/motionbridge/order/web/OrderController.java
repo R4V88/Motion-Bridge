@@ -1,7 +1,7 @@
 package com.motionbridge.motionbridge.order.web;
 
-import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
-import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase.PlaceOrderCommand;
+import com.motionbridge.motionbridge.order.application.port.CreateOrderUseCase;
+import com.motionbridge.motionbridge.order.application.port.CreateOrderUseCase.PlaceOrderCommand;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
@@ -19,12 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/order")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderController {
-    final ManipulateOrderUseCase manipulateOrderUseCase;
 
-    @Operation(summary = "ALL")
+    final CreateOrderUseCase createOrderUseCase;
+
+    @Operation(summary = "USER zalogowany")
     @PostMapping("/create")
     void createOrder(@RequestBody RestOrder restOrder){
-        manipulateOrderUseCase.placeOrder(restOrder.toPlaceOrderCommand());
+        createOrderUseCase.placeOrder(restOrder.toPlaceOrderCommand());
     }
 
     @Data

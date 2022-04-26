@@ -41,12 +41,6 @@ import static java.util.Collections.emptySet;
 @EntityListeners(AuditingEntityListener.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Order extends BaseEntity {
-
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "order_id")
-    @Singular
-    Set<Subscription> subscriptions;
-
     @Builder.Default
     Long discountId = 0L;
 

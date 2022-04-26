@@ -8,6 +8,7 @@ import com.motionbridge.motionbridge.order.entity.Discount.SubscriptionPeriod;
 import com.motionbridge.motionbridge.order.entity.Discount.SubscriptionType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,8 +20,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Service
 @AllArgsConstructor
+@NoArgsConstructor
+@Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DiscountService implements ManipulateDiscountUseCase {
     static LocalDateTime calculatedEndDate;
@@ -100,6 +102,4 @@ public class DiscountService implements ManipulateDiscountUseCase {
     public void deleteDiscountById(Long id) {
         repository.deleteById(id);
     }
-
-
 }

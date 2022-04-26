@@ -28,19 +28,28 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Product extends BaseEntity {
+
     @Enumerated(EnumType.STRING)
     ProductName name;
+
     BigDecimal price;
+
     @Enumerated(EnumType.STRING)
     Currency currency;
+
     @CreatedDate
     LocalDateTime createdAt;
+
     @LastModifiedDate
     LocalDateTime updatedAt;
+
     @Builder.Default
     Boolean isActive = false;
+
     Integer animationQuantity;
-    Integer timePeriod;
+
+    @Enumerated(EnumType.STRING)
+    TimePeriod timePeriod;
 
     @Getter
     @AllArgsConstructor
@@ -52,5 +61,14 @@ public class Product extends BaseEntity {
     @AllArgsConstructor
     public enum Currency {
         USD
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public enum TimePeriod {
+        MONTH(30),
+        YEAR(360);
+
+        private Integer period;
     }
 }

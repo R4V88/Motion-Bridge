@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/user")
 public class SubscriptionController {
 
-    private final SubscriptionUseCase userSubscriptions;
+    final SubscriptionUseCase userSubscriptions;
 
     @Operation(summary = "USER zalogowany")
     @GetMapping("/{id}/subscription")

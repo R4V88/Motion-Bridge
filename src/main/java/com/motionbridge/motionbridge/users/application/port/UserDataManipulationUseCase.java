@@ -51,5 +51,4 @@ public interface UserDataManipulationUseCase {
         boolean success;
         List<String> errors;
     }
-
 }

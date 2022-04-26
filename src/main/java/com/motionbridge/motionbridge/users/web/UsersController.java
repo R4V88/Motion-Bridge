@@ -5,8 +5,10 @@ import com.motionbridge.motionbridge.users.application.port.UserDataManipulation
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,9 +31,10 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @Tag(name = "/api/user", description = "Manipulate Users")
 @RequestMapping("/api/user")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UsersController {
 
-    private final UserDataManipulationUseCase user;
+    final UserDataManipulationUseCase user;
     @Operation (summary = "ALL")
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterCommand command) {

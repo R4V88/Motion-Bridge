@@ -3,12 +3,14 @@ package com.motionbridge.motionbridge.product.application.port;
 import com.motionbridge.motionbridge.commons.Either;
 import com.motionbridge.motionbridge.product.application.RestActiveProduct;
 import com.motionbridge.motionbridge.product.application.RestProduct;
+import com.motionbridge.motionbridge.product.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 
@@ -17,6 +19,7 @@ public interface ManipulateProductUseCase {
     AddProductResponse addProduct(CreateProductCommand command);
     List<RestProduct> getAllProducts();
     SwitchStatusResponse switchStatus(Long id);
+    Optional<Product> getProductById(Long id);
 
     @Builder
     @Value
@@ -25,7 +28,7 @@ public interface ManipulateProductUseCase {
         Integer animationQuantity;
         String name;
         String currency;
-        Integer timePeriod;
+        String timePeriod;
         BigDecimal price;
     }
 
