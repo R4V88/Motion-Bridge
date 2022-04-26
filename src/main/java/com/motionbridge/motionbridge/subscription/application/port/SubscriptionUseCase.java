@@ -9,11 +9,15 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface SubscriptionUseCase {
-    List<Subscription> findAllSubscriptionsByUserId(Long id);
+    List<Subscription> findAllByUserIdAndOrderId(Long userId, Long orderId);
 
-    void saveSubscription(CreateSubscriptionCommand command);
+    List<Subscription> findAllByUserId(Long id);
 
-    List<Subscription> findAllSubscriptionsByUserIdAndOrderId(Long userId, Long orderId);
+    List<Subscription> findAllByOrderId(Long orderId);
+
+    void save(CreateSubscriptionCommand command);
+
+    void deleteByIdAndOrderId(Long orderId, Long subscriptionId);
 
     @Value
     class CreateSubscriptionCommand {

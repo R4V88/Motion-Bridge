@@ -1,5 +1,7 @@
 package com.motionbridge.motionbridge.users.web;
 
+import com.motionbridge.motionbridge.order.application.RestRichOrder;
+import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordCommand;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordResponse;
@@ -35,6 +37,8 @@ import javax.validation.constraints.Size;
 public class UsersController {
 
     final UserDataManipulationUseCase user;
+    final ManipulateOrderUseCase manipulateOrderUseCase;
+
     @Operation (summary = "ALL")
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterCommand command) {
@@ -66,6 +70,13 @@ public class UsersController {
             String login = user.findById(id).get().getUsername();
             return new RestUser(login);
         } else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
+
+    @Operation(summary = "USER zalogowany")
+    @GetMapping("/{id}/orders")
+    @ResponseStatus(HttpStatus.OK)
+    RestRichOrder getAllOrders(@PathVariable Long id) {
+        return manipulateOrderUseCase.findAllOrdersWithSubscriptions(id);
     }
 
     @Data

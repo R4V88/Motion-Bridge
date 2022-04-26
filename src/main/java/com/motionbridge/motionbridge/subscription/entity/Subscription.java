@@ -57,10 +57,10 @@ public class Subscription extends BaseEntity {
     String timePeriod;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    UserEntity userEntity;
+    UserEntity user;
 
     @JoinColumn(name = "order_id")
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     Order order;
 
     @CreatedDate

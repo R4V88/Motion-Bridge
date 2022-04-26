@@ -28,7 +28,7 @@ public class SubscriptionController {
     @ResponseStatus(HttpStatus.OK)
     public List<RestSubscription> getSubscriptions(@PathVariable Long id) {
         List<RestSubscription> subscriptions = userSubscriptions
-                .findAllSubscriptionsByUserId(id)
+                .findAllByUserId(id)
                 .stream()
                 .map(subscription ->
                         new RestSubscription(
