@@ -38,7 +38,9 @@ public class SubscriptionService implements SubscriptionUseCase {
                 .currentPrice(command.getCurrentPrice())
                 .animationsLimit(command.getAnimationsLimit())
                 .type(command.getType())
+                .timePeriod(command.getTimePeriod())
                 .user(command.getUser())
+                .order(command.getOrder())
                 .build();
     }
 

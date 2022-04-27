@@ -42,12 +42,12 @@ public class OrderController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     void getOrderById(@PathVariable Long id) {
-        manipulateOrderUseCase.findOrderById(id);
+
     }
 
     @Operation(summary = "USER zalogowany, wyszukuje wszystkie subskrypcje pod wybranym order id")
     @GetMapping("/{id}/subscription")
-    void getAllOrderSubscriptionByOrderId(@PathVariable Long id) {
+    void getAllOrderSubscriptionsInOrderByOrderId(@PathVariable Long id) {
 
     }
 

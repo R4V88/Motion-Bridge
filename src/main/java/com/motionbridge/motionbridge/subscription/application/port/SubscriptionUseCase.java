@@ -3,6 +3,7 @@ package com.motionbridge.motionbridge.subscription.application.port;
 import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
+import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ public interface SubscriptionUseCase {
     void deleteByIdAndOrderId(Long orderId, Long subscriptionId);
 
     @Value
+    @AllArgsConstructor
     class CreateSubscriptionCommand {
         BigDecimal price;
         BigDecimal currentPrice;
