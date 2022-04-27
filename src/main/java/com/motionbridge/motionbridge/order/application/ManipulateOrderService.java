@@ -5,6 +5,7 @@ import com.motionbridge.motionbridge.order.application.RestRichOrder.RestSubscri
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.order.db.OrderRepository;
 import com.motionbridge.motionbridge.order.entity.Order;
+import com.motionbridge.motionbridge.order.entity.OrderStatus;
 import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
 import lombok.AllArgsConstructor;
@@ -35,7 +36,7 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
     }
 
     @Override
-    public Optional<Order> findByUserIdAndStatus(Long userId, Order.Status status) {
+    public Optional<Order> findByUserIdAndStatus(Long userId, OrderStatus status) {
         return orderRepository.findOrderByUserIdAndOrderStatus(userId, status);
     }
 

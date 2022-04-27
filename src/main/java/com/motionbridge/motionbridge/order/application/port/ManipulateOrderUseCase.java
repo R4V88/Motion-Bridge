@@ -2,8 +2,8 @@ package com.motionbridge.motionbridge.order.application.port;
 
 import com.motionbridge.motionbridge.order.application.RestRichOrder;
 import com.motionbridge.motionbridge.order.entity.Order;
+import com.motionbridge.motionbridge.order.entity.OrderStatus;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface ManipulateOrderUseCase {
@@ -12,7 +12,7 @@ public interface ManipulateOrderUseCase {
 
     Optional<Order> findOrderById(Long orderId);
 
-    Optional<Order> findByUserIdAndStatus(Long userId, Order.Status status);
+    Optional<Order> findByUserIdAndStatus(Long userId, OrderStatus status);
 
     RestRichOrder findAllOrdersWithSubscriptions(Long userId);
 }

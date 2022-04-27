@@ -1,6 +1,6 @@
 package com.motionbridge.motionbridge.order.application;
 
-import com.motionbridge.motionbridge.order.entity.Order;
+import com.motionbridge.motionbridge.order.entity.OrderStatus;
 import lombok.Builder;
 import lombok.Value;
 
@@ -15,7 +15,7 @@ public class RestRichOrder {
     @Value
     @Builder
     static class RestOrder {
-        Order.Status status;
+        OrderStatus status;
         BigDecimal currentPrice;
         List<RestSubscription> subscriptions;
     }

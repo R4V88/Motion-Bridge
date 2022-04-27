@@ -4,7 +4,7 @@ import com.motionbridge.motionbridge.order.application.port.CreateOrderUseCase;
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.order.db.OrderRepository;
 import com.motionbridge.motionbridge.order.entity.Order;
-import com.motionbridge.motionbridge.order.entity.Order.Status;
+import com.motionbridge.motionbridge.order.entity.OrderStatus;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase;
 import com.motionbridge.motionbridge.product.entity.Product;
 import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase;
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.motionbridge.motionbridge.order.entity.Order.Status.NEW;
+import static com.motionbridge.motionbridge.order.entity.OrderStatus.NEW;
 
 @Service
 @Slf4j
@@ -42,7 +42,7 @@ public class CreateOrderService implements CreateOrderUseCase {
     public void placeOrder(PlaceOrderCommand command) {
         Long productId = command.getProductId();
         Long userId = command.getUserId();
-        Status status = NEW;
+        OrderStatus status = NEW;
 
         ProductOrder productOrder = checkIfProductExistThenGet(productId);
 
@@ -59,7 +59,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         }
     }
 
-    Boolean checkIfProductIsOnCurrentOrderList(Long userId, Long currentOrderId, ProductOrder productOrder, Status status) {
+    Boolean checkIfProductIsOnCurrentOrderList(Long userId, Long currentOrderId, ProductOrder productOrder, OrderStatus status) {
         boolean value = false;
         List<Subscription> currentSubscriptionsList;
         List<Boolean> loopValue = new ArrayList<>(Collections.emptyList());
@@ -90,7 +90,7 @@ public class CreateOrderService implements CreateOrderUseCase {
      * - czy istnieje order o statusie new
      * - czy jest dodana subskrypcja to czy jest inna od właśnie Tworzonej (SubService.)
      */
-    void checkIfSubscriptionExistThenCreate(ProductOrder productOrder, Long orderId, Long userId, Status status) {
+    void checkIfSubscriptionExistThenCreate(ProductOrder productOrder, Long orderId, Long userId, OrderStatus status) {
         if (order.findByUserIdAndStatus(userId, status).isPresent()
                 && user.findById(userId).isPresent()) {
 
@@ -112,7 +112,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         }
     }
 
-    OrderId getCurrentOrderId(Long userId, Status status) {
+    OrderId getCurrentOrderId(Long userId, OrderStatus status) {
         OrderId orderId = new OrderId();
 
         if (orderRepository.findOrderByUserIdAndOrderStatus(userId, status).isPresent()) {
@@ -125,7 +125,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         return orderId;
     }
 
-    void checkIfOrderExistThenCreate(ProductOrder productOrder, Long userId, Status status) {
+    void checkIfOrderExistThenCreate(ProductOrder productOrder, Long userId, OrderStatus status) {
         if (orderRepository.findOrderByUserIdAndOrderStatus(userId, status).isEmpty()
                 && user.findById(userId).isPresent()) {
 

@@ -58,23 +58,4 @@ public class Discount extends BaseEntity {
 
     //procentowa zniżka wyrazona liczba calkowita np 20% to 20.
     Integer value;
-
-    @AllArgsConstructor
-    public enum DurationPeriod {
-        HOUR,
-        DAY,
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public enum SubscriptionPeriod {
-        MONTH,
-        YEAR
-    }
-
-    @AllArgsConstructor
-    public enum SubscriptionType {
-        ALL,
-        INSTAGRAM
-    }
 }

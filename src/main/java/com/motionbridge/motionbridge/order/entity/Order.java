@@ -1,7 +1,6 @@
 package com.motionbridge.motionbridge.order.entity;
 
 import com.motionbridge.motionbridge.jpa.BaseEntity;
-import com.motionbridge.motionbridge.subscription.entity.Subscription;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -9,7 +8,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.Singular;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -20,16 +18,10 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Set;
-
-import static java.util.Collections.emptySet;
 
 @Getter
 @Setter
@@ -59,11 +51,5 @@ public class Order extends BaseEntity {
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    private Status status = Status.NEW;
-
-    public enum Status {
-        NEW,
-        IN_PROGRESS,
-        PAID
-    }
+    private OrderStatus status = OrderStatus.NEW;
 }
