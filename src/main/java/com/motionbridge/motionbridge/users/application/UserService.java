@@ -3,7 +3,9 @@ package com.motionbridge.motionbridge.users.application;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
 import com.motionbridge.motionbridge.users.db.UserEntityRepository;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,10 +17,11 @@ import java.util.Optional;
 @Slf4j
 @AllArgsConstructor
 @Service
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserService implements UserDataManipulationUseCase {
 
-    private final UserEntityRepository repository;
-    private final PasswordEncoder encoder;
+    final UserEntityRepository repository;
+    final PasswordEncoder encoder;
 
     @Transactional
     @Override

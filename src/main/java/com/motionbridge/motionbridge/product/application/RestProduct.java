@@ -12,6 +12,6 @@ public class RestProduct {
     BigDecimal price;
     String currency;
     Integer animationQuantity;
-    Integer timePeriod;
+    String timePeriod;
     Boolean isActive;
 }

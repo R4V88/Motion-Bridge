@@ -33,25 +33,25 @@ public class DiscountController {
 
     final ManipulateDiscountUseCase manipulateDiscountUseCase;
 
-    @Operation(summary = "ADMIN")
+    @Operation(summary = "ADMIN, wyszukuje wszystkie dostepne znizki")
     @GetMapping
     public List<ResponseDiscount> getAllDiscounts() {
         return manipulateDiscountUseCase.getAllDiscounts();
     }
 
-    @Operation(summary = "ADMIN")
+    @Operation(summary = "ADMIN, dodawanie nowego discounta")
     @PostMapping("/add")
     public void addNewDiscount(@RequestBody RestDiscountCommand command) {
         manipulateDiscountUseCase.addNewDiscount(command.toCreateCommand());
     }
 
-    @Operation(summary = "ADMIN")
+    @Operation(summary = "ADMIN, zmiana statusu nowego discounta po id z inActive / Active i na odwrót")
     @PutMapping("/{id}")
     public SwitchStatusResponse switchStatus(@PathVariable Long id) {
         return manipulateDiscountUseCase.switchStatus(id);
     }
 
-    @Operation(summary = "ADMIN")
+    @Operation(summary = "ADMIN, usunięcie discounta z bazy po id")
     @DeleteMapping("{id}")
     public void deleteDiscount(@PathVariable Long id) {
         manipulateDiscountUseCase.deleteDiscountById(id);
@@ -59,7 +59,7 @@ public class DiscountController {
 
     @Data
     @FieldDefaults(level = AccessLevel.PRIVATE)
-    public static class RestDiscountCommand {
+    static class RestDiscountCommand {
         @NotBlank
         String subscriptionType;
         @NotBlank

@@ -21,7 +21,6 @@ public interface UserDataManipulationUseCase {
 
     class RegisterResponse extends Either<String, UserEntity> {
 
-
         public RegisterResponse(boolean success, String left, UserEntity right) {
             super(success, left, right);
         }
@@ -51,5 +50,4 @@ public interface UserDataManipulationUseCase {
         boolean success;
         List<String> errors;
     }
-
 }

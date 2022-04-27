@@ -1,12 +1,16 @@
 package com.motionbridge.motionbridge.users.web;
 
+import com.motionbridge.motionbridge.order.application.RestRichOrder;
+import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordCommand;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,9 +33,12 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @Tag(name = "/api/user", description = "Manipulate Users")
 @RequestMapping("/api/user")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UsersController {
 
-    private final UserDataManipulationUseCase user;
+    final UserDataManipulationUseCase user;
+    final ManipulateOrderUseCase manipulateOrderUseCase;
+
     @Operation (summary = "ALL")
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterCommand command) {
@@ -63,6 +70,13 @@ public class UsersController {
             String login = user.findById(id).get().getUsername();
             return new RestUser(login);
         } else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
+
+    @Operation(summary = "USER zalogowany")
+    @GetMapping("/{id}/orders")
+    @ResponseStatus(HttpStatus.OK)
+    RestRichOrder getAllOrders(@PathVariable Long id) {
+        return manipulateOrderUseCase.findAllOrdersWithSubscriptions(id);
     }
 
     @Data

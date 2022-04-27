@@ -21,14 +21,14 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/user")
 public class SubscriptionController {
 
-    private final SubscriptionUseCase userSubscriptions;
+    final SubscriptionUseCase userSubscriptions;
 
     @Operation(summary = "USER zalogowany")
     @GetMapping("/{id}/subscription")
     @ResponseStatus(HttpStatus.OK)
     public List<RestSubscription> getSubscriptions(@PathVariable Long id) {
         List<RestSubscription> subscriptions = userSubscriptions
-                .findAllSubscriptionsByUserId(id)
+                .findAllByUserId(id)
                 .stream()
                 .map(subscription ->
                         new RestSubscription(

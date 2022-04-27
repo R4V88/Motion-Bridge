@@ -5,6 +5,7 @@ import com.motionbridge.motionbridge.product.db.ProductRepository;
 import com.motionbridge.motionbridge.product.entity.Product;
 import com.motionbridge.motionbridge.product.entity.Product.Currency;
 import com.motionbridge.motionbridge.product.entity.Product.ProductName;
+import com.motionbridge.motionbridge.product.entity.Product.TimePeriod;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,7 +42,7 @@ public class ProductService implements ManipulateProductUseCase {
                 .animationQuantity(command.getAnimationQuantity())
                 .price(command.getPrice())
                 .currency(Currency.valueOf(command.getCurrency().toUpperCase()))
-                .timePeriod(command.getTimePeriod())
+                .timePeriod(TimePeriod.valueOf(command.getTimePeriod().toUpperCase()))
                 .build();
         Product saveProduct = repository.save(product);
         return AddProductResponse.success(saveProduct.getId());
@@ -66,6 +68,11 @@ public class ProductService implements ManipulateProductUseCase {
                 .orElseGet(() -> new SwitchStatusResponse(false, Collections.singletonList("Could not change status")));
     }
 
+    @Override
+    public Optional<Product> getProductById(Long id) {
+        return repository.findById(id);
+    }
+
     private void switchActualStatus(Long id) {
         repository.getById(id).setIsActive(repository.getById(id).getIsActive() != null && !repository.getById(id).getIsActive());
     }
@@ -76,8 +83,8 @@ public class ProductService implements ManipulateProductUseCase {
                 product.getName(),
                 product.getPrice(),
                 product.getCurrency().toString().toLowerCase(),
-                product.getTimePeriod(),
                 product.getAnimationQuantity(),
+                product.getTimePeriod().toString(),
                 product.getIsActive()
         );
 
@@ -85,11 +92,11 @@ public class ProductService implements ManipulateProductUseCase {
 
     private RestActiveProduct toActiveProduct(Product product) {
         return new RestActiveProduct(
-                product.getName(),
+                product.getName().toString(),
                 product.getPrice(),
                 product.getCurrency().toString().toLowerCase(),
                 product.getAnimationQuantity(),
-                product.getTimePeriod()
-        );
+                product.getTimePeriod().toString()
+                );
     }
 }

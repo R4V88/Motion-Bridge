@@ -68,7 +68,7 @@ public class ProductController {
         Integer animationQuantity;
         String name;
         String currency;
-        Integer timePeriod;
+        String timePeriod;
         BigDecimal price;
 
         CreateProductCommand toCreateProductCommand() {
