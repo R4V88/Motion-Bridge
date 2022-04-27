@@ -31,27 +31,27 @@ public class OrderController {
     final SubscriptionUseCase subscription;
     final ManipulateOrderUseCase manipulateOrderUseCase;
 
-    @Operation(summary = "USER zalogowany")
+    @Operation(summary = "USER zalogowany, tworzy nowe zamówienie po id usera i id produktu")
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/create")
     void createOrder(@RequestBody RestOrder restOrder) {
         createOrderUseCase.placeOrder(restOrder.toPlaceOrderCommand());
     }
 
-    @Operation(summary = "USER zalogowany")
+    @Operation(summary = "USER zalogowany , wyszukuje wybrany order po jego id")
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     void getOrderById(@PathVariable Long id) {
         manipulateOrderUseCase.findOrderById(id);
     }
 
-    @Operation(summary = "USER zalogowany")
+    @Operation(summary = "USER zalogowany, wyszukuje wszystkie subskrypcje pod wybranym order id")
     @GetMapping("/{id}/subscription")
     void getAllOrderSubscriptionByOrderId(@PathVariable Long id) {
 
     }
 
-    @Operation(summary = "USER zalogowany")
+    @Operation(summary = "USER zalogowany, wyszukuje wszystkie subskrypcje pod wybranym order id")
     @DeleteMapping("/{id}/subscription/{subscriptionId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteSubscription(@PathVariable Long id, @PathVariable Long subscriptionId) {
