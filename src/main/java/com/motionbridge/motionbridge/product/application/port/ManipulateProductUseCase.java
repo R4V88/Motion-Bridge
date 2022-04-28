@@ -1,9 +1,9 @@
 package com.motionbridge.motionbridge.product.application.port;
 
 import com.motionbridge.motionbridge.commons.Either;
-import com.motionbridge.motionbridge.product.application.RestActiveProduct;
-import com.motionbridge.motionbridge.product.application.RestProduct;
 import com.motionbridge.motionbridge.product.entity.Product;
+import com.motionbridge.motionbridge.product.web.mapper.RestActiveProduct;
+import com.motionbridge.motionbridge.product.web.mapper.RestProduct;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -16,21 +16,14 @@ import static java.util.Collections.emptyList;
 
 public interface ManipulateProductUseCase {
     List<RestActiveProduct> getActiveProducts();
-    AddProductResponse addProduct(CreateProductCommand command);
-    List<RestProduct> getAllProducts();
-    SwitchStatusResponse switchStatus(Long id);
-    Optional<Product> getProductById(Long id);
 
-    @Builder
-    @Value
-    @AllArgsConstructor
-    class CreateProductCommand {
-        Integer animationQuantity;
-        String name;
-        String currency;
-        String timePeriod;
-        BigDecimal price;
-    }
+    List<RestProduct> getAllProducts();
+
+    AddProductResponse addProduct(CreateProductCommand command);
+
+    SwitchStatusResponse switchStatus(Long id);
+
+    Optional<Product> getProductById(Long id);
 
     class AddProductResponse extends Either<String, Long> {
         public AddProductResponse(boolean success, String left, Long right) {
@@ -52,5 +45,16 @@ public interface ManipulateProductUseCase {
 
         boolean success;
         List<String> errors;
+    }
+
+    @Builder
+    @Value
+    @AllArgsConstructor
+    class CreateProductCommand {
+        Integer animationQuantity;
+        String name;
+        String currency;
+        String timePeriod;
+        BigDecimal price;
     }
 }

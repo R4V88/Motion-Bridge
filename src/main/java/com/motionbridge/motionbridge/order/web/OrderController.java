@@ -34,27 +34,27 @@ public class OrderController {
     @Operation(summary = "USER zalogowany, tworzy nowe zamówienie po id usera i id produktu")
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/create")
-    void createOrder(@RequestBody RestOrder restOrder) {
-        createOrderUseCase.placeOrder(restOrder.toPlaceOrderCommand());
+    public void createOrder(@RequestBody RestOrderCommand restOrderCommand) {
+        createOrderUseCase.placeOrder(restOrderCommand.toPlaceOrderCommand());
     }
 
     @Operation(summary = "USER zalogowany , wyszukuje wybrany order po jego id")
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    void getOrderById(@PathVariable Long id) {
+    public void getOrderById(@PathVariable Long id) {
 
     }
 
     @Operation(summary = "USER zalogowany, wyszukuje wszystkie subskrypcje pod wybranym order id")
     @GetMapping("/{id}/subscription")
-    void getAllOrderSubscriptionsInOrderByOrderId(@PathVariable Long id) {
+    public void getAllOrderSubscriptionsInOrderByOrderId(@PathVariable Long id) {
 
     }
 
     @Operation(summary = "USER zalogowany, wyszukuje wszystkie subskrypcje pod wybranym order id")
     @DeleteMapping("/{id}/subscription/{subscriptionId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteSubscription(@PathVariable Long id, @PathVariable Long subscriptionId) {
+    public void deleteSubscription(@PathVariable Long id, @PathVariable Long subscriptionId) {
         if (subscription.findAllByOrderId(id).size() == 1) {
             subscription.deleteByIdAndOrderId(id, subscriptionId);
             manipulateOrderUseCase.deleteOrder(id);
@@ -65,7 +65,7 @@ public class OrderController {
 
     @Data
     @FieldDefaults(level = AccessLevel.PRIVATE)
-    static class RestOrder {
+    static class RestOrderCommand {
         Long userId;
         Long productId;
 

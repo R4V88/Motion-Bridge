@@ -1,9 +1,9 @@
 package com.motionbridge.motionbridge.order.web;
 
-import com.motionbridge.motionbridge.order.application.ResponseDiscount;
 import com.motionbridge.motionbridge.order.application.port.ManipulateDiscountUseCase;
 import com.motionbridge.motionbridge.order.application.port.ManipulateDiscountUseCase.CreateDiscountCommand;
 import com.motionbridge.motionbridge.order.application.port.ManipulateDiscountUseCase.SwitchStatusResponse;
+import com.motionbridge.motionbridge.order.web.mapper.RestDiscount;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
@@ -35,7 +35,7 @@ public class DiscountController {
 
     @Operation(summary = "ADMIN, wyszukuje wszystkie dostepne znizki")
     @GetMapping
-    public List<ResponseDiscount> getAllDiscounts() {
+    public List<RestDiscount> getAllDiscounts() {
         return manipulateDiscountUseCase.getAllDiscounts();
     }
 

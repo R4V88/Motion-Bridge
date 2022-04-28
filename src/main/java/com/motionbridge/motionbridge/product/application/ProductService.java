@@ -3,9 +3,11 @@ package com.motionbridge.motionbridge.product.application;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase;
 import com.motionbridge.motionbridge.product.db.ProductRepository;
 import com.motionbridge.motionbridge.product.entity.Product;
-import com.motionbridge.motionbridge.product.entity.Product.Currency;
-import com.motionbridge.motionbridge.product.entity.Product.ProductName;
-import com.motionbridge.motionbridge.product.entity.Product.TimePeriod;
+import com.motionbridge.motionbridge.product.web.mapper.RestActiveProduct;
+import com.motionbridge.motionbridge.product.web.mapper.RestProduct;
+import com.motionbridge.motionbridge.subscription.entity.Currency;
+import com.motionbridge.motionbridge.subscription.entity.ProductName;
+import com.motionbridge.motionbridge.subscription.entity.TimePeriod;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,7 +32,7 @@ public class ProductService implements ManipulateProductUseCase {
     public List<RestActiveProduct> getActiveProducts() {
         return repository.getAllActiveProducts()
                 .stream()
-                .map(this::toActiveProduct)
+                .map(RestActiveProduct::toRestActiveProduct)
                 .collect(Collectors.toList());
     }
 
@@ -53,7 +55,7 @@ public class ProductService implements ManipulateProductUseCase {
         return repository
                 .findAll()
                 .stream()
-                .map(this::toCompleteRestProduct)
+                .map(RestProduct::toRestProduct)
                 .collect(Collectors.toList());
     }
 
@@ -75,28 +77,5 @@ public class ProductService implements ManipulateProductUseCase {
 
     private void switchActualStatus(Long id) {
         repository.getById(id).setIsActive(repository.getById(id).getIsActive() != null && !repository.getById(id).getIsActive());
-    }
-
-    private RestProduct toCompleteRestProduct(Product product) {
-        return new RestProduct(
-                product.getId(),
-                product.getName(),
-                product.getPrice(),
-                product.getCurrency().toString().toLowerCase(),
-                product.getAnimationQuantity(),
-                product.getTimePeriod().toString(),
-                product.getIsActive()
-        );
-
-    }
-
-    private RestActiveProduct toActiveProduct(Product product) {
-        return new RestActiveProduct(
-                product.getName().toString(),
-                product.getPrice(),
-                product.getCurrency().toString().toLowerCase(),
-                product.getAnimationQuantity(),
-                product.getTimePeriod().toString()
-                );
     }
 }

@@ -6,6 +6,7 @@ import com.motionbridge.motionbridge.order.entity.Discount;
 import com.motionbridge.motionbridge.order.entity.DurationPeriod;
 import com.motionbridge.motionbridge.order.entity.SubscriptionPeriod;
 import com.motionbridge.motionbridge.order.entity.SubscriptionType;
+import com.motionbridge.motionbridge.order.web.mapper.RestDiscount;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -29,37 +30,19 @@ public class DiscountService implements ManipulateDiscountUseCase {
 
     DiscountRepository repository;
 
-    @Override
-    public List<ResponseDiscount> getAllDiscounts() {
-        return repository
-                .findAll()
-                .stream()
-                .map(DiscountService::toResponseDiscount)
-                .collect(Collectors.toList());
-    }
-
-    private static ResponseDiscount toResponseDiscount(Discount discount) {
-        return ResponseDiscount
-                .builder()
-                .subscriptionType(discount.getSubscriptionType().toString())
-                .subscriptionPeriod(discount.getSubscriptionPeriod().toString())
-                .duration(discount.getDuration())
-                .durationPeriod(discount.getDurationPeriod().toString())
-                .value(discount.getValue())
-                .startDate(discount.getStartDate())
-                .endDate(discount.getEndDate())
-                .isActive(discount.getIsActive())
-                .build();
-    }
-
-    @Transactional
-    @Override
-    public void addNewDiscount(CreateDiscountCommand command) {
-        repository.save(toDiscount(command));
+    private static LocalDateTime toSetEndDate(CreateDiscountCommand command) {
+        if (command.getDurationPeriod().toUpperCase().equals(DurationPeriod.DAY.toString())) {
+            calculatedEndDate = command.getStartDate().plusDays(command.getDuration());
+        } else if (command.getDurationPeriod().toUpperCase().equals(DurationPeriod.HOUR.toString())) {
+            calculatedEndDate = command.getStartDate().plusHours(command.getDuration());
+        } else {
+            log.debug("Wrong duration period for discount " + command);
+        }
+        return calculatedEndDate;
     }
 
     private static Discount toDiscount(CreateDiscountCommand command) {
-        calculatedEndDate = toEndDate(command);
+        calculatedEndDate = toSetEndDate(command);
         return Discount
                 .builder()
                 .subscriptionType(SubscriptionType.valueOf(command.getSubscriptionType().toUpperCase()))
@@ -72,15 +55,33 @@ public class DiscountService implements ManipulateDiscountUseCase {
                 .build();
     }
 
-    private static LocalDateTime toEndDate(CreateDiscountCommand command) {
-        if (command.getDurationPeriod().toUpperCase().equals(DurationPeriod.DAY.toString())) {
-            calculatedEndDate = command.getStartDate().plusDays(command.getDuration());
-        } else if (command.getDurationPeriod().toUpperCase().equals(DurationPeriod.HOUR.toString())) {
-            calculatedEndDate = command.getStartDate().plusHours(command.getDuration());
-        } else {
-            log.debug("Wrong duration period for discount " + command);
-        }
-        return calculatedEndDate;
+    private static RestDiscount toResponseDiscount(Discount discount) {
+        return RestDiscount
+                .builder()
+                .subscriptionType(discount.getSubscriptionType().toString())
+                .subscriptionPeriod(discount.getSubscriptionPeriod().toString())
+                .duration(discount.getDuration())
+                .durationPeriod(discount.getDurationPeriod().toString())
+                .value(discount.getValue())
+                .startDate(discount.getStartDate())
+                .endDate(discount.getEndDate())
+                .isActive(discount.getIsActive())
+                .build();
+    }
+
+    @Override
+    public List<RestDiscount> getAllDiscounts() {
+        return repository
+                .findAll()
+                .stream()
+                .map(DiscountService::toResponseDiscount)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public void addNewDiscount(CreateDiscountCommand command) {
+        repository.save(toDiscount(command));
     }
 
     @Transactional
