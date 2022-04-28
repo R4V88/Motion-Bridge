@@ -38,22 +38,17 @@ public class CreateOrderService implements CreateOrderUseCase {
     @Override
     @Transactional
     public void placeOrder(PlaceOrderCommand command) {
-
         final OrderStatus orderStatus = OrderStatus.NEW;
         final Long productId = command.getProductId();
         final Long userId = command.getUserId();
 
         UserEntity user = getCurrentUser(userId);
-
         ProductOrder productOrder = checkIfProductExistThenGet(productId);
-
         Order order = getOrderElseCreate(user, orderStatus, productOrder);
-
         checkIfEqualSubscriptionAlreadyExistElseCreate(user, order, productOrder);
     }
 
     void checkIfEqualSubscriptionAlreadyExistElseCreate(UserEntity user, Order order, ProductOrder productOrder) {
-
         List<SubscriptionOrder> tempSubscriptionsList = new ArrayList<>(Collections.emptyList());
 
         for (Subscription sub : subscription.findAllByUserIdAndOrderId(user.getId(), order.getId())) {
@@ -95,7 +90,6 @@ public class CreateOrderService implements CreateOrderUseCase {
     }
 
     Order getOrderElseCreate(UserEntity user, OrderStatus status, ProductOrder productOrder) {
-
         List<Order> actualOrders = orderRepository.findAllByUserId(user.getId());
         Order currentOrder;
 
