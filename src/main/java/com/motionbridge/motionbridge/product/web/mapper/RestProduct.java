@@ -1,6 +1,6 @@
-package com.motionbridge.motionbridge.product.application;
+package com.motionbridge.motionbridge.product.web;
 
-import com.motionbridge.motionbridge.product.entity.Product.ProductName;
+import com.motionbridge.motionbridge.subscription.entity.ProductName;
 import lombok.Value;
 
 import java.math.BigDecimal;

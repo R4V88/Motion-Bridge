@@ -1,4 +1,4 @@
-package com.motionbridge.motionbridge.order.application;
+package com.motionbridge.motionbridge.order.web;
 
 import lombok.Builder;
 import lombok.Value;
@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Value
 @Builder
-public class ResponseDiscount {
+public class RestDiscount {
     String subscriptionPeriod;
     String subscriptionType;
     String durationPeriod;

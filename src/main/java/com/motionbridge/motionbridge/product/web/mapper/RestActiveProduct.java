@@ -1,4 +1,4 @@
-package com.motionbridge.motionbridge.product.application;
+package com.motionbridge.motionbridge.product.web;
 
 import lombok.Value;
 
