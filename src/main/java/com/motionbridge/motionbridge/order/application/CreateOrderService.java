@@ -1,7 +1,6 @@
 package com.motionbridge.motionbridge.order.application;
 
 import com.motionbridge.motionbridge.order.application.port.CreateOrderUseCase;
-import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.order.db.OrderRepository;
 import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.order.entity.OrderStatus;
@@ -26,8 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.motionbridge.motionbridge.order.entity.OrderStatus.NEW;
-
 @Service
 @Slf4j
 @AllArgsConstructor
@@ -37,62 +34,52 @@ public class CreateOrderService implements CreateOrderUseCase {
     private final UserDataManipulationUseCase user;
     private final SubscriptionUseCase subscription;
     private final ManipulateProductUseCase product;
-    private final ManipulateOrderUseCase order;
 
     @Override
     @Transactional
     public void placeOrder(PlaceOrderCommand command) {
-        Long productId = command.getProductId();
-        Long userId = command.getUserId();
-        OrderStatus status = NEW;
 
-        //TODO Najpierw sprwdzac czy istnieje ORDER, jak nie to utworzyc i dopiero reszta logiki zamowienia
+        final OrderStatus orderStatus = OrderStatus.NEW;
+        final Long productId = command.getProductId();
+        final Long userId = command.getUserId();
+
+        UserEntity user = getCurrentUser(userId);
+
         ProductOrder productOrder = checkIfProductExistThenGet(productId);
 
-        checkIfOrderExistThenCreate(productOrder, userId, status);
+        Order order = getOrderElseCreate(user, orderStatus, productOrder);
 
-        CurrentOrder currentOrder = getCurrentOrderIfExist(userId, status);
-        Long createdOrderId = currentOrder.getId();
-
-        checkIfEqualSubscriptionAlreadyExistElseCreate(userId, createdOrderId, productOrder, status);
+        checkIfEqualSubscriptionAlreadyExistElseCreate(user, order, productOrder);
     }
 
-    void checkIfEqualSubscriptionAlreadyExistElseCreate(Long userId, Long currentOrderId, ProductOrder productOrder, OrderStatus status) {
-        if (order.findByUserIdAndStatus(userId, status).isPresent()) {
-            Order currentOrder = order.findByUserIdAndStatus(userId, status).get();
+    void checkIfEqualSubscriptionAlreadyExistElseCreate(UserEntity user, Order order, ProductOrder productOrder) {
 
-            if (!subscription.findAllByUserIdAndOrderId(userId, currentOrderId).isEmpty()) {
+        List<SubscriptionOrder> tempSubscriptionsList = new ArrayList<>(Collections.emptyList());
 
-                List<SubscriptionOrder> tempSubscriptionsList = new ArrayList<>(Collections.emptyList());
+        for (Subscription sub : subscription.findAllByUserIdAndOrderId(user.getId(), order.getId())) {
+            tempSubscriptionsList.add(toCreateSubscriptionOrder(sub));
+        }
 
-                for (Subscription sub : subscription.findAllByUserIdAndOrderId(userId, currentOrderId)) {
-                    tempSubscriptionsList.add(toCreateSubscriptionOrder(sub));
-                }
-                AtomicInteger counter = new AtomicInteger();
-                for (SubscriptionOrder subscriptionOrder : tempSubscriptionsList) {
-                    if (subscriptionOrder.getType().equals(productOrder.getName().toUpperCase())
-                            &&
-                            subscriptionOrder.getTimePeriod().equals(productOrder.getTimePeriod().toUpperCase())) {
-                        counter.getAndIncrement();
-                    }
-                }
-                if(counter.get() == 0) {
-                    toCreateSubscription(productOrder, userId, currentOrder);
+        AtomicInteger counter = new AtomicInteger();
 
-                }else {
-                    log.info("Subscription already exists");
-                }
-            } else {
-                toCreateSubscription(productOrder, userId, currentOrder);
+        for (SubscriptionOrder subscriptionOrder : tempSubscriptionsList) {
+            if (subscriptionOrder.getType().equals(productOrder.getName().toUpperCase())
+                    &&
+                    subscriptionOrder.getTimePeriod().equals(productOrder.getTimePeriod().toUpperCase())) {
+
+                counter.getAndIncrement();
             }
+        }
+
+        if (counter.get() == 0) {
+            toCreateSubscription(productOrder, order, user);
+
         } else {
-            log.info("No active order");
+            log.info("Subscription already exists");
         }
     }
 
-    void toCreateSubscription(ProductOrder productOrder, Long userId, Order order) {
-        UserEntity currentUser = user.findById(userId).get();
-
+    void toCreateSubscription(ProductOrder productOrder, Order order, UserEntity user) {
         CreateSubscriptionCommand command = NewSubscriptionCommand
                 .builder()
                 .price(productOrder.getPrice())
@@ -100,45 +87,50 @@ public class CreateOrderService implements CreateOrderUseCase {
                 .animationsLimit(productOrder.getAnimationQuantity())
                 .type(productOrder.getName())
                 .timePeriod(productOrder.getTimePeriod())
-                .user(currentUser)
+                .user(user)
                 .order(order)
                 .build()
                 .toCreateSubscriptionCommand();
         subscription.save(command);
     }
 
-    CurrentOrder getCurrentOrderIfExist(Long userId, OrderStatus status) {
-        CurrentOrder currentOrder = new CurrentOrder();
-        if (orderRepository.findOrderByUserIdAndOrderStatus(userId, status).isPresent()) {
-            return CurrentOrder.builder()
-                    .orderStatus(orderRepository.findOrderByUserIdAndOrderStatus(userId, status).get().getStatus())
-                    .id(orderRepository.findOrderByUserIdAndOrderStatus(userId, status).get().getId())
-                    .build();
+    Order getOrderElseCreate(UserEntity user, OrderStatus status, ProductOrder productOrder) {
+
+        List<Order> actualOrders = orderRepository.findAllByUserId(user.getId());
+        Order currentOrder;
+
+        if (!actualOrders.isEmpty()) {
+            currentOrder = actualOrders
+                    .stream()
+                    .filter(o -> o.getStatus() == status)
+                    .filter(o -> o.getUser().getId().equals(user.getId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (currentOrder == null) {
+                CreateOrderCommand command = toCreateOrderCommand(productOrder, user);
+
+                currentOrder = saveOrder(command);
+            }
         } else {
-            log.warn("Order id does not exist");
+            CreateOrderCommand command = toCreateOrderCommand(productOrder, user);
+            currentOrder = saveOrder(command);
         }
         return currentOrder;
     }
 
-    void checkIfOrderExistThenCreate(ProductOrder productOrder, Long userId, OrderStatus status) {
-        CurrentOrder currentOrder = getCurrentOrderIfExist(userId, status);
-        if (user.findById(userId).isPresent() && !currentOrder.isValid() || !currentOrder.getOrderStatus().equals(NEW)) {
-            CreateOrderCommand command = NewOrderCommand
-                    .builder()
-                    .currentPrice(productOrder.getPrice())
-                    .totalPrice(productOrder.getPrice())
-                    .user(user.findById(userId).get())
-                    .build()
-                    .toCreateProductCommand();
-
-            saveOrder(command);
-        } else {
-            log.warn("Order with status NEW for user: " + userId + " already exist");
-        }
+    CreateOrderCommand toCreateOrderCommand(ProductOrder productOrder, UserEntity user) {
+        return NewOrderCommand
+                .builder()
+                .currentPrice(productOrder.getPrice())
+                .totalPrice(productOrder.getPrice())
+                .user(user)
+                .build()
+                .toCreateProductCommand();
     }
 
     @Override
-    public void saveOrder(CreateOrderCommand command) {
+    public Order saveOrder(CreateOrderCommand command) {
         Order order = Order
                 .builder()
                 .currentPrice(command.getCurrentPrice())
@@ -146,7 +138,11 @@ public class CreateOrderService implements CreateOrderUseCase {
                 .user(command.getUser())
                 .build();
 
-        orderRepository.save(order);
+        return orderRepository.save(order);
+    }
+
+    UserEntity getCurrentUser(Long userId) {
+        return user.findById(userId).orElse(null);
     }
 
     ProductOrder checkIfProductExistThenGet(Long productId) {
@@ -170,6 +166,10 @@ public class CreateOrderService implements CreateOrderUseCase {
             log.warn("Product with id: " + productId + " does not exist!");
         }
         return productOrder;
+    }
+
+    private SubscriptionOrder toCreateSubscriptionOrder(Subscription subscription) {
+        return new SubscriptionOrder(subscription.getType(), subscription.getTimePeriod());
     }
 
     @Data
@@ -200,10 +200,6 @@ public class CreateOrderService implements CreateOrderUseCase {
         }
     }
 
-    private SubscriptionOrder toCreateSubscriptionOrder(Subscription subscription) {
-        return new SubscriptionOrder(subscription.getType(), subscription.getTimePeriod());
-    }
-
     @Data
     @AllArgsConstructor
     public static class SubscriptionOrder {
@@ -222,18 +218,5 @@ public class CreateOrderService implements CreateOrderUseCase {
         String currency;
         String timePeriod;
         BigDecimal price;
-    }
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class CurrentOrder {
-        Long id;
-        OrderStatus orderStatus;
-
-        public boolean isValid() {
-            return id != null && orderStatus != null;
-        }
     }
 }

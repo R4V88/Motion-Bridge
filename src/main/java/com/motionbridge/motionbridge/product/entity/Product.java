@@ -1,6 +1,9 @@
 package com.motionbridge.motionbridge.product.entity;
 
 import com.motionbridge.motionbridge.jpa.BaseEntity;
+import com.motionbridge.motionbridge.subscription.entity.Currency;
+import com.motionbridge.motionbridge.subscription.entity.ProductName;
+import com.motionbridge.motionbridge.subscription.entity.TimePeriod;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,25 +53,4 @@ public class Product extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     TimePeriod timePeriod;
-
-    @Getter
-    @AllArgsConstructor
-    public enum ProductName {
-        INSTAGRAM
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public enum Currency {
-        USD
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public enum TimePeriod {
-        MONTH(30),
-        YEAR(360);
-
-        private Integer period;
-    }
 }

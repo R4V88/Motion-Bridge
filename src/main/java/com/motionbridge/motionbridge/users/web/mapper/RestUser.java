@@ -1,4 +1,4 @@
-package com.motionbridge.motionbridge.users.web;
+package com.motionbridge.motionbridge.users.web.mapper;
 
 import lombok.Value;
 

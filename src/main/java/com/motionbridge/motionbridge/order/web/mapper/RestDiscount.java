@@ -1,4 +1,4 @@
-package com.motionbridge.motionbridge.order.web;
+package com.motionbridge.motionbridge.order.web.mapper;
 
 import lombok.Builder;
 import lombok.Value;

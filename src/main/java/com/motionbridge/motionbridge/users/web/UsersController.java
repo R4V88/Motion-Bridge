@@ -1,10 +1,13 @@
 package com.motionbridge.motionbridge.users.web;
 
-import com.motionbridge.motionbridge.order.application.RestRichOrder;
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
+import com.motionbridge.motionbridge.order.web.mapper.RestRichOrder;
+import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase;
+import com.motionbridge.motionbridge.users.web.mapper.RestSubscription;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordCommand;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordResponse;
+import com.motionbridge.motionbridge.users.web.mapper.RestUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
@@ -28,6 +31,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
@@ -38,8 +43,9 @@ public class UsersController {
 
     final UserDataManipulationUseCase user;
     final ManipulateOrderUseCase manipulateOrderUseCase;
+    final SubscriptionUseCase userSubscriptions;
 
-    @Operation (summary = "ALL")
+    @Operation(summary = "ALL, Rejestracja użytkownika")
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterCommand command) {
         return user
@@ -51,7 +57,7 @@ public class UsersController {
     }
 
     //Todo    @Secured()
-    @Operation(summary = "USER zalogowany")
+    @Operation(summary = "USER zalogowany, zmiana hasła")
     @PutMapping("/{id}/password")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void changePassword(@PathVariable Long id, @RequestBody RestUserCommand command) {
@@ -62,7 +68,7 @@ public class UsersController {
         }
     }
 
-    @Operation(summary = "USER zalogowany")
+    @Operation(summary = "USER zalogowany, pobranie danych użytkownika - LOGINU/E-MAILA")
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public RestUser getById(@PathVariable Long id) {
@@ -72,11 +78,25 @@ public class UsersController {
         } else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
-    @Operation(summary = "USER zalogowany")
+    @Operation(summary = "USER zalogowany, pobranie wszystkich orderów użytkowników")
     @GetMapping("/{id}/orders")
     @ResponseStatus(HttpStatus.OK)
-    RestRichOrder getAllOrders(@PathVariable Long id) {
+    public RestRichOrder getAllOrders(@PathVariable Long id) {
         return manipulateOrderUseCase.findAllOrdersWithSubscriptions(id);
+    }
+
+    @Operation(summary = "USER zalogowany, wszystkie subskrypcje po id usera")
+    @GetMapping("/{id}/subscription")
+    @ResponseStatus(HttpStatus.OK)
+    public List<RestSubscription> getSubscriptions(@PathVariable Long id) {
+        List<RestSubscription> subscriptions = userSubscriptions
+                .findAllByUserId(id)
+                .stream()
+                .map(RestSubscription::toRestSubscription)
+                .collect(Collectors.toList());
+        if (subscriptions.size() != 0) {
+            return subscriptions;
+        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
     @Data

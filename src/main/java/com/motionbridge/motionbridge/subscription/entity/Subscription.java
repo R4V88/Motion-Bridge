@@ -28,10 +28,10 @@ import static java.time.LocalDateTime.now;
 @Setter
 @Entity
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@EntityListeners(AuditingEntityListener.class)
 public class Subscription extends BaseEntity {
 
     @Builder.Default
@@ -69,3 +69,4 @@ public class Subscription extends BaseEntity {
     @LastModifiedDate
     LocalDateTime updatedAt;
 }
+

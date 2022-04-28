@@ -1,5 +1,6 @@
 package com.motionbridge.motionbridge.order.application.port;
 
+import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.Value;
 
@@ -9,13 +10,12 @@ public interface CreateOrderUseCase {
 
     void placeOrder(PlaceOrderCommand command);
 
-    void saveOrder(CreateOrderCommand command);
+    Order saveOrder(CreateOrderCommand command);
 
     @Value
     class PlaceOrderCommand {
         Long userId;
         Long productId;
-
     }
 
     @Value
@@ -23,6 +23,5 @@ public interface CreateOrderUseCase {
         BigDecimal totalPrice;
         BigDecimal currentPrice;
         UserEntity user;
-
     }
 }

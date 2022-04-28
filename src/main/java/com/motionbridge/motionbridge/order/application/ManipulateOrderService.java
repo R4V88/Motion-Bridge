@@ -1,13 +1,12 @@
 package com.motionbridge.motionbridge.order.application;
 
-import com.motionbridge.motionbridge.order.application.RestRichOrder.RestOrder;
-import com.motionbridge.motionbridge.order.application.RestRichOrder.RestSubscription;
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.order.db.OrderRepository;
 import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.order.entity.OrderStatus;
+import com.motionbridge.motionbridge.order.web.mapper.RestOrder;
+import com.motionbridge.motionbridge.order.web.mapper.RestRichOrder;
 import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase;
-import com.motionbridge.motionbridge.subscription.entity.Subscription;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static com.motionbridge.motionbridge.order.web.mapper.RestOrder.toRestOrder;
 
 @Service
 @Slf4j
@@ -54,40 +55,10 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
     private List<RestOrder> toRestOrdersList(Long userId) {
         List<RestOrder> restOrders = new ArrayList<>(Collections.emptyList());
         for (Order order : getAllOrdersByUserId(userId)) {
-            restOrders.add(toRestOrder(order));
+            restOrders.add(toRestOrder(order, subscription));
         }
         return restOrders;
     }
-
-    private RestOrder toRestOrder(Order order) {
-        return RestOrder.builder()
-                .currentPrice(order.getCurrentPrice())
-                .status(order.getStatus())
-                .subscriptions(toRestSubsciptionsList(order.getId()))
-                .build();
-    }
-
-    private List<RestSubscription> toRestSubsciptionsList(Long orderId) {
-        List<RestSubscription> restSubscriptions = new ArrayList<>(Collections.emptyList());
-
-        for (Subscription subscription : subscription.findAllByOrderId(orderId)) {
-            restSubscriptions
-                    .add(toRestSubscription(subscription));
-        }
-
-        return restSubscriptions;
-    }
-
-    private RestSubscription toRestSubscription(Subscription subscription) {
-        return RestSubscription.builder()
-                .currentPrice(subscription.getCurrentPrice())
-                .animationsLimit(subscription.getAnimationsLimit())
-                .type(subscription.getType())
-                .timePeriod(subscription.getTimePeriod())
-                .build();
-    }
-
-
 }
 
 

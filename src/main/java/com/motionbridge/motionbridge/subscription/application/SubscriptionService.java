@@ -27,13 +27,18 @@ public class SubscriptionService implements SubscriptionUseCase {
     }
 
     @Override
-    public void save(CreateSubscriptionCommand command) {
-        Subscription subscription = toAddSubscription(command);
-        repository.save(subscription);
+    public List<Subscription> findAllByUserIdAndOrderId(Long userId, Long orderId) {
+        return repository.findSubscriptionsByUserIdAndOrderId(userId, orderId);
     }
 
-    Subscription toAddSubscription(CreateSubscriptionCommand command) {
-        return Subscription.builder()
+    @Override
+    public void deleteByIdAndOrderId(Long orderId, Long subscriptionId) {
+        repository.deleteSubscriptionByIdAndOrderId(orderId, subscriptionId);
+    }
+
+    @Override
+    public void save(CreateSubscriptionCommand command) {
+        Subscription subscription = Subscription.builder()
                 .price(command.getPrice())
                 .currentPrice(command.getCurrentPrice())
                 .animationsLimit(command.getAnimationsLimit())
@@ -42,15 +47,6 @@ public class SubscriptionService implements SubscriptionUseCase {
                 .user(command.getUser())
                 .order(command.getOrder())
                 .build();
-    }
-
-    @Override
-    public List<Subscription> findAllByUserIdAndOrderId(Long userId, Long orderId) {
-        return repository.findSubscriptionsByUserIdAndOrderId(userId, orderId);
-    }
-
-    @Override
-    public void deleteByIdAndOrderId(Long orderId, Long subscriptionId) {
-        repository.deleteSubscriptionByIdAndOrderId(orderId, subscriptionId);
+        repository.save(subscription);
     }
 }

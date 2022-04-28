@@ -1,2 +1,10 @@
-package com.motionbridge.motionbridge.subscription.entity;public enum Currency {
+package com.motionbridge.motionbridge.subscription.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public enum Currency {
+    USD
 }

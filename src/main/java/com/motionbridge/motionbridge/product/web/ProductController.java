@@ -1,9 +1,9 @@
 package com.motionbridge.motionbridge.product.web;
 
-import com.motionbridge.motionbridge.product.application.RestActiveProduct;
-import com.motionbridge.motionbridge.product.application.RestProduct;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.CreateProductCommand;
+import com.motionbridge.motionbridge.product.web.mapper.RestActiveProduct;
+import com.motionbridge.motionbridge.product.web.mapper.RestProduct;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
@@ -33,14 +33,14 @@ public class ProductController {
 
     final ManipulateProductUseCase manipulateProduct;
 
-    @Operation(summary = "ALL")
+    @Operation(summary = "ALL, wszystkie AKTYWNE produkty")
     @GetMapping("/active")
     @ResponseStatus(HttpStatus.OK)
     public List<RestActiveProduct> getActiveProducts() {
         return manipulateProduct.getActiveProducts();
     }
 
-    @Operation(summary = "ADMIN")
+    @Operation(summary = "ADMIN, dodanie nowego produktu")
     @PostMapping("/add")
     public ResponseEntity<Object> addNewProduct(@RequestBody RestProductCommand command) {
         return manipulateProduct.addProduct(command.toCreateProductCommand())
@@ -50,14 +50,14 @@ public class ProductController {
                 );
     }
 
-    @Operation(summary = "ADMIN")
+    @Operation(summary = "ADMIN, pobranie wszystkich produktow AKTYWNYCH i NIEAKTYWNYCH")
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public List<RestProduct> getAllProducts() {
         return manipulateProduct.getAllProducts();
     }
 
-    @Operation(summary = "ADMIN")
+    @Operation(summary = "ADMIN, zmiana statusu produktu z inActive na Active i na odwrót")
     @PutMapping("{id}")
     public void switchStatus(@PathVariable Long id) {
         manipulateProduct.switchStatus(id);

@@ -1,6 +1,6 @@
 package com.motionbridge.motionbridge.order.application.port;
 
-import com.motionbridge.motionbridge.order.application.ResponseDiscount;
+import com.motionbridge.motionbridge.order.web.mapper.RestDiscount;
 import lombok.Value;
 
 import java.time.LocalDateTime;
@@ -9,7 +9,7 @@ import java.util.List;
 import static java.util.Collections.emptyList;
 
 public interface ManipulateDiscountUseCase {
-    List<ResponseDiscount> getAllDiscounts();
+    List<RestDiscount> getAllDiscounts();
 
     void addNewDiscount(CreateDiscountCommand discount);
 
