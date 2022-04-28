@@ -102,7 +102,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         if (!actualOrders.isEmpty()) {
             currentOrder = actualOrders
                     .stream()
-                    .filter(o -> o.getStatus() == status)
+                    .filter(o -> o.getStatus().equals(status))
                     .filter(o -> o.getUser().getId().equals(user.getId()))
                     .findFirst()
                     .orElse(null);
