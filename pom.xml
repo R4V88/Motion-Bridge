@@ -16,7 +16,7 @@
     <description>MotionBridge Project</description>
 
     <properties>
-        <java.version>18</java.version>
+        <java.version>17</java.version>
         <lombok.version>1.18.22</lombok.version>
         <hibernate.validator.version>7.0.4.Final</hibernate.validator.version>
         <commons.lang.version>3.12.0</commons.lang.version>
