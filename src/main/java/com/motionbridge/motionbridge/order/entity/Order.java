@@ -43,6 +43,12 @@ public class Order extends BaseEntity {
 
     BigDecimal totalPrice;
 
+    @Builder.Default
+    Boolean isLocked = false;
+
+    @Builder.Default
+    Boolean activeDiscount = false;
+
     @CreatedDate
     LocalDateTime createdAt;
 

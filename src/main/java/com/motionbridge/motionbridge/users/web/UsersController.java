@@ -42,8 +42,8 @@ import java.util.stream.Collectors;
 public class UsersController {
 
     final UserDataManipulationUseCase user;
-    final ManipulateOrderUseCase manipulateOrderUseCase;
-    final SubscriptionUseCase userSubscriptions;
+    final ManipulateOrderUseCase orderService;
+    final SubscriptionUseCase subscriptionService;
 
     @Operation(summary = "ALL, Rejestracja użytkownika")
     @PostMapping("/register")
@@ -82,14 +82,14 @@ public class UsersController {
     @GetMapping("/{id}/orders")
     @ResponseStatus(HttpStatus.OK)
     public RestRichOrder getAllOrders(@PathVariable Long id) {
-        return manipulateOrderUseCase.findAllOrdersWithSubscriptions(id);
+        return orderService.findAllOrdersWithSubscriptions(id);
     }
 
     @Operation(summary = "USER zalogowany, wszystkie subskrypcje po id usera")
     @GetMapping("/{id}/subscription")
     @ResponseStatus(HttpStatus.OK)
     public List<RestSubscription> getSubscriptions(@PathVariable Long id) {
-        List<RestSubscription> subscriptions = userSubscriptions
+        List<RestSubscription> subscriptions = subscriptionService
                 .findAllByUserId(id)
                 .stream()
                 .map(RestSubscription::toRestSubscription)

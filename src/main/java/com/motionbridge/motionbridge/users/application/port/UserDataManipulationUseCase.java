@@ -19,6 +19,8 @@ public interface UserDataManipulationUseCase {
 
     Optional<UserEntity> findById(Long id);
 
+    UserEntity getCurrentUserById(Long userId);
+
     class RegisterResponse extends Either<String, UserEntity> {
 
         public RegisterResponse(boolean success, String left, UserEntity right) {

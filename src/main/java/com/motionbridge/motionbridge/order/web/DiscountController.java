@@ -31,35 +31,38 @@ import java.util.List;
 @RequestMapping("/api/discount")
 public class DiscountController {
 
-    final ManipulateDiscountUseCase manipulateDiscountUseCase;
+    final ManipulateDiscountUseCase discountService;
 
     @Operation(summary = "ADMIN, wyszukuje wszystkie dostepne znizki")
     @GetMapping
     public List<RestDiscount> getAllDiscounts() {
-        return manipulateDiscountUseCase.getAllDiscounts();
+        return discountService.getAllDiscounts();
     }
 
     @Operation(summary = "ADMIN, dodawanie nowego discounta")
     @PostMapping("/add")
     public void addNewDiscount(@RequestBody RestDiscountCommand command) {
-        manipulateDiscountUseCase.addNewDiscount(command.toCreateCommand());
+        CreateDiscountCommand createDiscountCommand = command.toCreateCommand();
+        discountService.addNewDiscount(createDiscountCommand);
     }
 
     @Operation(summary = "ADMIN, zmiana statusu nowego discounta po id z inActive / Active i na odwrót")
     @PutMapping("/{id}")
     public SwitchStatusResponse switchStatus(@PathVariable Long id) {
-        return manipulateDiscountUseCase.switchStatus(id);
+        return discountService.switchStatus(id);
     }
 
     @Operation(summary = "ADMIN, usunięcie discounta z bazy po id")
     @DeleteMapping("{id}")
     public void deleteDiscount(@PathVariable Long id) {
-        manipulateDiscountUseCase.deleteDiscountById(id);
+        discountService.deleteDiscountById(id);
     }
 
     @Data
     @FieldDefaults(level = AccessLevel.PRIVATE)
     static class RestDiscountCommand {
+        @NotBlank
+        String code;
         @NotBlank
         String subscriptionType;
         @NotBlank
@@ -74,7 +77,7 @@ public class DiscountController {
         Integer value;
 
         CreateDiscountCommand toCreateCommand() {
-            return new CreateDiscountCommand(subscriptionType, subscriptionPeriod, startDate, duration, durationPeriod, value);
+            return new CreateDiscountCommand(code, subscriptionType, subscriptionPeriod, startDate, duration, durationPeriod, value);
         }
     }
 }

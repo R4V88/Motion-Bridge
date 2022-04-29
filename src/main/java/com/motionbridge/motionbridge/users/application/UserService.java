@@ -55,4 +55,17 @@ public class UserService implements UserDataManipulationUseCase {
     public Optional<UserEntity> findById(Long id) {
         return repository.findUserById(id);
     }
+
+    @Override
+    public UserEntity getCurrentUserById(Long userId) {
+        Optional<UserEntity> userTemp = findById(userId);
+        UserEntity userToGet;
+        if (userTemp.isPresent()) {
+            userToGet = userTemp.get();
+        } else {
+            userToGet = new UserEntity();
+            log.info("User with id: " + userId + " not found");
+        }
+        return userToGet;
+    }
 }

@@ -2,6 +2,8 @@ package com.motionbridge.motionbridge.order.web;
 
 import com.motionbridge.motionbridge.order.application.port.CreateOrderUseCase;
 import com.motionbridge.motionbridge.order.application.port.CreateOrderUseCase.PlaceOrderCommand;
+import com.motionbridge.motionbridge.order.application.port.ManipulateDiscountUseCase;
+import com.motionbridge.motionbridge.order.application.port.ManipulateDiscountUseCase.PlaceDiscountCommand;
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,15 +29,23 @@ import org.springframework.web.bind.annotation.RestController;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderController {
 
-    final CreateOrderUseCase createOrderUseCase;
-    final SubscriptionUseCase subscription;
-    final ManipulateOrderUseCase manipulateOrderUseCase;
+    final CreateOrderUseCase createOrderService;
+    final SubscriptionUseCase subscriptionService;
+    final ManipulateOrderUseCase manipulateService;
+    final ManipulateDiscountUseCase discountService;
 
     @Operation(summary = "USER zalogowany, tworzy nowe zamówienie po id usera i id produktu")
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/create")
     public void createOrder(@RequestBody RestOrderCommand restOrderCommand) {
-        createOrderUseCase.placeOrder(restOrderCommand.toPlaceOrderCommand());
+        createOrderService.placeOrder(restOrderCommand.toPlaceOrderCommand());
+    }
+
+    @Operation(summary = "USER zalogowany, dodaje discount")
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/discount")
+    public void applyDiscount(@RequestBody RestApplyDiscountCommand restApplyDiscountCommand) {
+        discountService.applyDiscount(restApplyDiscountCommand.toPlaceDiscountCommand());
     }
 
     @Operation(summary = "USER zalogowany , wyszukuje wybrany order po jego id")
@@ -47,6 +57,7 @@ public class OrderController {
 
     @Operation(summary = "USER zalogowany, wyszukuje wszystkie subskrypcje pod wybranym order id")
     @GetMapping("/{id}/subscription")
+    @ResponseStatus(HttpStatus.OK)
     public void getAllOrderSubscriptionsInOrderByOrderId(@PathVariable Long id) {
 
     }
@@ -55,11 +66,11 @@ public class OrderController {
     @DeleteMapping("/{id}/subscription/{subscriptionId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSubscription(@PathVariable Long id, @PathVariable Long subscriptionId) {
-        if (subscription.findAllByOrderId(id).size() == 1) {
-            subscription.deleteByIdAndOrderId(id, subscriptionId);
-            manipulateOrderUseCase.deleteOrder(id);
+        if (subscriptionService.findAllByOrderId(id).size() == 1) {
+            subscriptionService.deleteByIdAndOrderId(id, subscriptionId);
+            manipulateService.deleteOrder(id);
         } else {
-            subscription.deleteByIdAndOrderId(id, subscriptionId);
+            subscriptionService.deleteByIdAndOrderId(id, subscriptionId);
         }
     }
 
@@ -71,6 +82,18 @@ public class OrderController {
 
         PlaceOrderCommand toPlaceOrderCommand() {
             return new PlaceOrderCommand(userId, productId);
+        }
+    }
+
+    @Data
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    static class RestApplyDiscountCommand {
+        String code;
+        Long userId;
+        Long productId;
+
+        PlaceDiscountCommand toPlaceDiscountCommand() {
+            return new PlaceDiscountCommand(code, userId, productId);
         }
     }
 }

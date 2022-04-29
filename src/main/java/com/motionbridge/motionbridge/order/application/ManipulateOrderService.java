@@ -23,8 +23,12 @@ import static com.motionbridge.motionbridge.order.web.mapper.RestOrder.toRestOrd
 @AllArgsConstructor
 public class ManipulateOrderService implements ManipulateOrderUseCase {
     final OrderRepository orderRepository;
+    final SubscriptionUseCase subscriptionService;
 
-    final SubscriptionUseCase subscription;
+    @Override
+    public void save(Order order) {
+        orderRepository.save(order);
+    }
 
     @Override
     public void deleteOrder(Long orderId) {
@@ -55,7 +59,7 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
     private List<RestOrder> toRestOrdersList(Long userId) {
         List<RestOrder> restOrders = new ArrayList<>(Collections.emptyList());
         for (Order order : getAllOrdersByUserId(userId)) {
-            restOrders.add(toRestOrder(order, subscription));
+            restOrders.add(toRestOrder(order, subscriptionService));
         }
         return restOrders;
     }

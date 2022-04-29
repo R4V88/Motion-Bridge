@@ -49,4 +49,9 @@ public class SubscriptionService implements SubscriptionUseCase {
                 .build();
         repository.save(subscription);
     }
+
+    @Override
+    public void saveSubscription(Subscription subscription) {
+        repository.save(subscription);
+    }
 }

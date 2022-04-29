@@ -12,6 +12,8 @@ public interface CreateOrderUseCase {
 
     Order saveOrder(CreateOrderCommand command);
 
+    void save(Order order);
+
     @Value
     class PlaceOrderCommand {
         Long userId;
@@ -24,4 +26,5 @@ public interface CreateOrderUseCase {
         BigDecimal currentPrice;
         UserEntity user;
     }
+
 }

@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface ManipulateOrderUseCase {
 
+    void save(Order order);
+
     void deleteOrder(Long orderId);
 
     Optional<Order> findOrderById(Long orderId);
