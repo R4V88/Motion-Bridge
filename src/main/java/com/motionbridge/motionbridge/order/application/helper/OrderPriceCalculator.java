@@ -36,7 +36,7 @@ public class OrderPriceCalculator {
         return o;
     }
 
-    public static Order recalculateOrderPriceAndSave(Order order, SubscriptionUseCase.CreateSubscriptionCommand command){
+    public static Order recalculateOrderPriceAndSave(Order order, SubscriptionUseCase.CreateSubscriptionCommand command) {
         Order o;
         BigDecimal orderCurrentPrice = sum(order.getCurrentPrice(), command.getCurrentPrice());
         BigDecimal orderTotalPrice = sum(order.getTotalPrice(), command.getCurrentPrice());
