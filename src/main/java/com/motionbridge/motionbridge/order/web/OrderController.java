@@ -1,9 +1,9 @@
 package com.motionbridge.motionbridge.order.web;
 
+import com.motionbridge.motionbridge.order.application.port.ApplyDiscountUseCase;
+import com.motionbridge.motionbridge.order.application.port.ApplyDiscountUseCase.PlaceDiscountCommand;
 import com.motionbridge.motionbridge.order.application.port.CreateOrderUseCase;
 import com.motionbridge.motionbridge.order.application.port.CreateOrderUseCase.PlaceOrderCommand;
-import com.motionbridge.motionbridge.order.application.port.ManipulateDiscountUseCase;
-import com.motionbridge.motionbridge.order.application.port.ManipulateDiscountUseCase.PlaceDiscountCommand;
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,7 +32,7 @@ public class OrderController {
     final CreateOrderUseCase createOrderService;
     final SubscriptionUseCase subscriptionService;
     final ManipulateOrderUseCase manipulateService;
-    final ManipulateDiscountUseCase discountService;
+    final ApplyDiscountUseCase discountService;
 
     @Operation(summary = "USER zalogowany, tworzy nowe zamówienie po id usera i id produktu")
     @ResponseStatus(HttpStatus.OK)

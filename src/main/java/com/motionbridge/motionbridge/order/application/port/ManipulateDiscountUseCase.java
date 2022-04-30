@@ -1,19 +1,15 @@
 package com.motionbridge.motionbridge.order.application.port;
 
 import com.motionbridge.motionbridge.order.entity.Discount;
-import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.order.web.mapper.RestDiscount;
 import lombok.Value;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 
 public interface ManipulateDiscountUseCase {
-    void applyDiscount(PlaceDiscountCommand placeDiscountCommand);
 
     List<RestDiscount> getAllDiscounts();
 
@@ -27,7 +23,7 @@ public interface ManipulateDiscountUseCase {
 
     @Value
     class SwitchStatusResponse {
-        public static ManipulateDiscountUseCase.SwitchStatusResponse SUCCESS = new ManipulateDiscountUseCase.SwitchStatusResponse(true, emptyList());
+        public static SwitchStatusResponse SUCCESS = new SwitchStatusResponse(true, emptyList());
 
         boolean success;
         List<String> errors;
@@ -42,13 +38,5 @@ public interface ManipulateDiscountUseCase {
         Integer duration;
         String durationPeriod;
         Integer value;
-    }
-
-
-    @Value
-    class PlaceDiscountCommand {
-        String code;
-        Long userId;
-        Long productId;
     }
 }

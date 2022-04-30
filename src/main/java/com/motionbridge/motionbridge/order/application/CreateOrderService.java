@@ -6,7 +6,7 @@ import com.motionbridge.motionbridge.order.db.OrderRepository;
 import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.order.entity.OrderStatus;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase;
-import com.motionbridge.motionbridge.product.entity.Product;
+import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.ProductOrder;
 import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase;
 import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase.CreateSubscriptionCommand;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
@@ -15,7 +15,6 @@ import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,16 +26,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.motionbridge.motionbridge.commons.PriceCalculator.sum;
+
 @Service
 @Slf4j
 @AllArgsConstructor
 public class CreateOrderService implements CreateOrderUseCase {
     final OrderRepository orderRepository;
 
-    private final UserDataManipulationUseCase userService;
-    private final SubscriptionUseCase subscriptionService;
-    private final ManipulateProductUseCase productService;
-    private final ManipulateDiscountUseCase discountService;
+     final UserDataManipulationUseCase userService;
+     final SubscriptionUseCase subscriptionService;
+     final ManipulateProductUseCase productService;
+     final ManipulateDiscountUseCase discountService;
 
     @Override
     @Transactional
@@ -46,8 +47,8 @@ public class CreateOrderService implements CreateOrderUseCase {
         final Long userId = command.getUserId();
 
         UserEntity user = userService.getCurrentUserById(userId);
-        ProductOrder productOrder = checkIfProductExistThenGet(productId);
-        Order order = getOrderElseCreate(user, orderStatus, productOrder);
+        ProductOrder productOrder = productService.checkIfProductExistInOrderThenGet(productId);
+        Order order = getOrderElseCreate(user, orderStatus);
         checkIfEqualSubscriptionAlreadyExistElseCreate(user, order, productOrder);
     }
 
@@ -89,9 +90,18 @@ public class CreateOrderService implements CreateOrderUseCase {
                 .build()
                 .toCreateSubscriptionCommand();
         subscriptionService.save(command);
+        recalculateOrderPriceAndSave(order, command);
     }
 
-    Order getOrderElseCreate(UserEntity user, OrderStatus status, ProductOrder productOrder) {
+    void recalculateOrderPriceAndSave(Order order, CreateSubscriptionCommand command){
+        BigDecimal orderCurrentPrice = sum(order.getCurrentPrice(), command.getCurrentPrice());
+        BigDecimal orderTotalPrice = sum(order.getTotalPrice(), command.getCurrentPrice());
+        order.setCurrentPrice(orderCurrentPrice);
+        order.setTotalPrice(orderTotalPrice);
+        orderRepository.save(order);
+    }
+
+    Order getOrderElseCreate(UserEntity user, OrderStatus status) {
         List<Order> actualOrders = orderRepository.findAllByUserId(user.getId());
         Order currentOrder;
         Optional<Order> tempOrder;
@@ -104,23 +114,21 @@ public class CreateOrderService implements CreateOrderUseCase {
                     .findFirst();
 
             if (tempOrder.isEmpty()) {
-                CreateOrderCommand command = toCreateOrderCommand(productOrder, user);
+                CreateOrderCommand command = toCreateOrderCommand(user);
                 currentOrder = saveOrder(command);
             } else {
                 currentOrder = tempOrder.get();
             }
         } else {
-            CreateOrderCommand command = toCreateOrderCommand(productOrder, user);
+            CreateOrderCommand command = toCreateOrderCommand(user);
             currentOrder = saveOrder(command);
         }
         return currentOrder;
     }
 
-    CreateOrderCommand toCreateOrderCommand(ProductOrder productOrder, UserEntity user) {
+    CreateOrderCommand toCreateOrderCommand(UserEntity user) {
         return NewOrderCommand
                 .builder()
-                .currentPrice(productOrder.getPrice())
-                .totalPrice(productOrder.getPrice())
                 .user(user)
                 .build()
                 .toCreateProductCommand();
@@ -130,8 +138,6 @@ public class CreateOrderService implements CreateOrderUseCase {
     public Order saveOrder(CreateOrderCommand command) {
         Order order = Order
                 .builder()
-                .currentPrice(command.getCurrentPrice())
-                .totalPrice(command.getTotalPrice())
                 .user(command.getUser())
                 .build();
 
@@ -141,29 +147,6 @@ public class CreateOrderService implements CreateOrderUseCase {
     @Override
     public void save(Order order) {
         orderRepository.save(order);
-    }
-
-    ProductOrder checkIfProductExistThenGet(Long productId) {
-        ProductOrder productOrder = new ProductOrder();
-
-        if (productService.getProductById(productId).isPresent()) {
-
-            Product temp = productService.getProductById(productId).get();
-
-            productOrder = ProductOrder
-                    .builder()
-                    .id(temp.getId())
-                    .price(temp.getPrice())
-                    .currency(temp.getCurrency().toString())
-                    .animationQuantity(temp.getAnimationQuantity())
-                    .name(String.valueOf(temp.getName()).toUpperCase())
-                    .timePeriod(String.valueOf(temp.getTimePeriod()).toUpperCase())
-                    .build();
-            log.info("Product with Id: " + productId + " is accessible");
-        } else {
-            log.warn("Product with id: " + productId + " does not exist");
-        }
-        return productOrder;
     }
 
     private SubscriptionOrder toCreateSubscriptionOrder(Subscription subscription) {
@@ -203,18 +186,5 @@ public class CreateOrderService implements CreateOrderUseCase {
     public static class SubscriptionOrder {
         String type;
         String timePeriod;
-    }
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ProductOrder {
-        Long id;
-        Integer animationQuantity;
-        String name;
-        String currency;
-        String timePeriod;
-        BigDecimal price;
     }
 }

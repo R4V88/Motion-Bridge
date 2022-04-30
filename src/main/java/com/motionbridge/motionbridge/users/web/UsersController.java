@@ -82,7 +82,7 @@ public class UsersController {
     @GetMapping("/{id}/orders")
     @ResponseStatus(HttpStatus.OK)
     public RestRichOrder getAllOrders(@PathVariable Long id) {
-        return orderService.findAllOrdersWithSubscriptions(id);
+        return orderService.getAllOrdersWithSubscriptions(id);
     }
 
     @Operation(summary = "USER zalogowany, wszystkie subskrypcje po id usera")

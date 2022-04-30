@@ -39,9 +39,11 @@ public class Order extends BaseEntity {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     UserEntity user;
 
-    BigDecimal currentPrice;
+    @Builder.Default
+    BigDecimal currentPrice = new BigDecimal(0);
 
-    BigDecimal totalPrice;
+    @Builder.Default
+    BigDecimal totalPrice = new BigDecimal(0);
 
     @Builder.Default
     Boolean isLocked = false;

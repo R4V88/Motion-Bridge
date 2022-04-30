@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static com.motionbridge.motionbridge.order.web.mapper.RestOrder.toRestOrder;
@@ -36,20 +37,35 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
     }
 
     @Override
-    public Optional<Order> findOrderById(Long orderId) {
-        return orderRepository.findById(orderId);
-    }
-
-    @Override
-    public Optional<Order> findByUserIdAndStatus(Long userId, OrderStatus status) {
-        return orderRepository.findOrderByUserIdAndOrderStatus(userId, status);
-    }
-
-    @Override
-    public RestRichOrder findAllOrdersWithSubscriptions(Long userId) {
+    public RestRichOrder getAllOrdersWithSubscriptions(Long userId) {
         return RestRichOrder.builder()
                 .restOrders(toRestOrdersList(userId))
                 .build();
+    }
+
+    @Override
+    public Order getOrderWithStatusNewByUserId(Long userId) {
+        Optional<Order> retrievedOrder = getOptionalOrderWithStatusNewByUserId(userId);
+        Order order;
+        if (retrievedOrder.isPresent()) {
+            order = retrievedOrder.get();
+        } else
+            throw new NoSuchElementException("New order for user with id: " + userId + " does not exist");
+        return order;
+    }
+
+    public Optional<Order> getOptionalOrderWithStatusNewByUserId(Long userId) {
+        for (Order order : getOrdersByUserIdAndStatus(userId, OrderStatus.NEW)) {
+            if (order != null) {
+                return Optional.of(order);
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Order> getOrdersByUserIdAndStatus(Long userId, OrderStatus status) {
+        return orderRepository.findOrdersByUserIdAndOrderStatus(userId, status);
     }
 
     public List<Order> getAllOrdersByUserId(Long userId) {
