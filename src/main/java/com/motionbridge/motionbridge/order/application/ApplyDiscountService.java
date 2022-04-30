@@ -5,14 +5,11 @@ import com.motionbridge.motionbridge.order.application.port.ManipulateDiscountUs
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.order.entity.Discount;
 import com.motionbridge.motionbridge.order.entity.Order;
-import com.motionbridge.motionbridge.order.entity.OrderStatus;
 import com.motionbridge.motionbridge.order.entity.SubscriptionType;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase;
-import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.ProductOrder;
 import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
-import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,9 +17,11 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static com.motionbridge.motionbridge.commons.PriceCalculator.afterDiscountApplied;
+import static com.motionbridge.motionbridge.order.application.helper.OrderPriceCalculator.recalculateOrderPriceAfterDiscountAppliedToOrder;
+import static com.motionbridge.motionbridge.order.application.helper.OrderPriceCalculator.recalculateOrderPricesAfeterAddDiscountToSubscription;
 
 @Service
 @AllArgsConstructor
@@ -37,16 +36,10 @@ public class ApplyDiscountService implements ApplyDiscountUseCase {
 
     @Override
     public void applyDiscount(PlaceDiscountCommand placeDiscountCommand) {
-        final OrderStatus orderStatus = OrderStatus.NEW;
-
-        Long productId = placeDiscountCommand.getProductId();
         Long userId = placeDiscountCommand.getUserId();
         String code = placeDiscountCommand.getCode();
+
         Order order = orderService.getOrderWithStatusNewByUserId(userId);
-
-        UserEntity user = userService.getCurrentUserById(userId);
-        ProductOrder productOrder = productService.checkIfProductExistInOrderThenGet(productId);
-
         getValidDiscountToOrder(code, order);
     }
 
@@ -55,10 +48,10 @@ public class ApplyDiscountService implements ApplyDiscountUseCase {
         Optional<Subscription> foundSubscription;
         Subscription availableSubscription;
 
-        if (!order.getActiveDiscount() && !order.getIsLocked() && !availableDiscount.getCode().equals("")) {
+        if (!order.getActiveDiscount() && !order.getIsLocked() && availableDiscount.getCode().equals(code.toUpperCase())) {
             if (availableDiscount.getSubscriptionType().equals(SubscriptionType.ALL)) {
 
-                BigDecimal currentPrice = afterDiscountApplied(order.getCurrentPrice(), BigDecimal.valueOf(availableDiscount.getValue()));
+                BigDecimal currentPrice = recalculateOrderPriceAfterDiscountAppliedToOrder(order.getCurrentPrice(), BigDecimal.valueOf(availableDiscount.getValue()));
 
                 order.setCurrentPrice(currentPrice);
                 order.setDiscountId(availableDiscount.getId());
@@ -71,22 +64,27 @@ public class ApplyDiscountService implements ApplyDiscountUseCase {
                     foundSubscription = actualSubsricptions
                             .stream()
                             .filter(sub -> sub.getType().equals(availableDiscount.getSubscriptionType().toString()))
-                            .filter(sub -> sub.getTimePeriod().equals(availableDiscount.getDurationPeriod().toString()))
+                            .filter(sub -> sub.getTimePeriod().equals(availableDiscount.getSubscriptionPeriod().toString()))
                             .findFirst();
                     if (foundSubscription.isPresent()) {
                         availableSubscription = foundSubscription.get();
                         availableSubscription
-                                .setCurrentPrice(afterDiscountApplied(availableSubscription.getPrice(), BigDecimal.valueOf(availableDiscount.getValue())));
-                        subscriptionService.saveSubscription(availableSubscription);
-                    } else {
-                        log.info("No valid subscription in order " + order.getId() + " to add discount: " + code);
-                    }
+                                .setCurrentPrice(recalculateOrderPriceAfterDiscountAppliedToOrder(availableSubscription.getPrice(), BigDecimal.valueOf(availableDiscount.getValue())));
 
-                } else {
-                    log.info("No subscriptions in order: " + order.getId());
-                }
+                        subscriptionService.saveSubscription(availableSubscription);
+
+                        orderService.save(
+                                recalculateOrderPricesAfeterAddDiscountToSubscription(order, subscriptionService.findAllByOrderId(order.getId()), availableDiscount)
+                        );
+                    } else
+                        throw new IllegalArgumentException("Subscription is not compatible to given discount: " + code);
+
+                } else
+                    throw new NullPointerException("No valid subscriptions in order " + order.getId() + " to add discount: " + code);
             }
-        }
+
+        } else
+            throw new IllegalArgumentException("Your order is not comaptible with given discount: " + code);
     }
 
     public Discount getAvailableDiscount(String code, Order order) {
@@ -102,10 +100,8 @@ public class ApplyDiscountService implements ApplyDiscountUseCase {
 
         if (dsc.isPresent()) {
             discount = dsc.get();
-        } else {
-            log.info("No available discount for provided code " + code);
-            discount = new Discount();
-        }
+        } else
+            throw new NoSuchElementException("No available discount equal to privided code: " + code);
         return discount;
     }
 

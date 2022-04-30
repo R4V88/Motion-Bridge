@@ -68,16 +68,16 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
         return orderRepository.findOrdersByUserIdAndOrderStatus(userId, status);
     }
 
-    public List<Order> getAllOrdersByUserId(Long userId) {
-        return orderRepository.findAllByUserId(userId);
-    }
-
     private List<RestOrder> toRestOrdersList(Long userId) {
         List<RestOrder> restOrders = new ArrayList<>(Collections.emptyList());
         for (Order order : getAllOrdersByUserId(userId)) {
             restOrders.add(toRestOrder(order, subscriptionService));
         }
         return restOrders;
+    }
+
+    public List<Order> getAllOrdersByUserId(Long userId) {
+        return orderRepository.findAllByUserId(userId);
     }
 }
 

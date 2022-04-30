@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.motionbridge.motionbridge.commons.PriceCalculator.sum;
+import static com.motionbridge.motionbridge.order.application.helper.OrderPriceCalculator.recalculateOrderPriceAndSave;
 
 @Service
 @Slf4j
@@ -34,10 +34,10 @@ import static com.motionbridge.motionbridge.commons.PriceCalculator.sum;
 public class CreateOrderService implements CreateOrderUseCase {
     final OrderRepository orderRepository;
 
-     final UserDataManipulationUseCase userService;
-     final SubscriptionUseCase subscriptionService;
-     final ManipulateProductUseCase productService;
-     final ManipulateDiscountUseCase discountService;
+    final UserDataManipulationUseCase userService;
+    final SubscriptionUseCase subscriptionService;
+    final ManipulateProductUseCase productService;
+    final ManipulateDiscountUseCase discountService;
 
     @Override
     @Transactional
@@ -69,9 +69,8 @@ public class CreateOrderService implements CreateOrderUseCase {
                 counter.getAndIncrement();
             }
         }
-        if (counter.get() == 0) {
+        if (counter.get() == 0 && !order.getIsLocked()) {
             toCreateSubscription(productOrder, order, user);
-
         } else {
             log.info("Product(Subscription) " + productOrder.getId() + " already added to order: " + order.getId());
         }
@@ -90,15 +89,9 @@ public class CreateOrderService implements CreateOrderUseCase {
                 .build()
                 .toCreateSubscriptionCommand();
         subscriptionService.save(command);
-        recalculateOrderPriceAndSave(order, command);
-    }
-
-    void recalculateOrderPriceAndSave(Order order, CreateSubscriptionCommand command){
-        BigDecimal orderCurrentPrice = sum(order.getCurrentPrice(), command.getCurrentPrice());
-        BigDecimal orderTotalPrice = sum(order.getTotalPrice(), command.getCurrentPrice());
-        order.setCurrentPrice(orderCurrentPrice);
-        order.setTotalPrice(orderTotalPrice);
-        orderRepository.save(order);
+        orderRepository.save(
+                recalculateOrderPriceAndSave(order, command)
+        );
     }
 
     Order getOrderElseCreate(UserEntity user, OrderStatus status) {

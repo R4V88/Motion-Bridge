@@ -40,10 +40,10 @@ public class Order extends BaseEntity {
     UserEntity user;
 
     @Builder.Default
-    BigDecimal currentPrice = new BigDecimal(0);
+    BigDecimal currentPrice = new BigDecimal("00.00");
 
     @Builder.Default
-    BigDecimal totalPrice = new BigDecimal(0);
+    BigDecimal totalPrice = new BigDecimal("00.00");
 
     @Builder.Default
     Boolean isLocked = false;

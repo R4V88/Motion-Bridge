@@ -90,10 +90,9 @@ public class OrderController {
     static class RestApplyDiscountCommand {
         String code;
         Long userId;
-        Long productId;
 
         PlaceDiscountCommand toPlaceDiscountCommand() {
-            return new PlaceDiscountCommand(code, userId, productId);
+            return new PlaceDiscountCommand(code, userId);
         }
     }
 }

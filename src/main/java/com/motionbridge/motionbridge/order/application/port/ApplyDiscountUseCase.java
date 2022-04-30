@@ -9,6 +9,5 @@ public interface ApplyDiscountUseCase {
     class PlaceDiscountCommand {
         String code;
         Long userId;
-        Long productId;
     }
 }
