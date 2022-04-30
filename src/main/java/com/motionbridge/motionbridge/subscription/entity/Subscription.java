@@ -43,9 +43,11 @@ public class Subscription extends BaseEntity {
     @Builder.Default
     transient LocalDateTime endDate = now();
 
-    BigDecimal price;
+    @Builder.Default
+    BigDecimal price = new BigDecimal("00.00");
 
-    BigDecimal currentPrice;
+    @Builder.Default
+    BigDecimal currentPrice = new BigDecimal("00.00");
 
     Integer animationsLimit;
 

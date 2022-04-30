@@ -3,10 +3,10 @@ package com.motionbridge.motionbridge.users.web;
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.order.web.mapper.RestRichOrder;
 import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase;
-import com.motionbridge.motionbridge.users.web.mapper.RestSubscription;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordCommand;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordResponse;
+import com.motionbridge.motionbridge.users.web.mapper.RestSubscription;
 import com.motionbridge.motionbridge.users.web.mapper.RestUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,8 +42,8 @@ import java.util.stream.Collectors;
 public class UsersController {
 
     final UserDataManipulationUseCase user;
-    final ManipulateOrderUseCase manipulateOrderUseCase;
-    final SubscriptionUseCase userSubscriptions;
+    final ManipulateOrderUseCase orderService;
+    final SubscriptionUseCase subscriptionService;
 
     @Operation(summary = "ALL, Rejestracja użytkownika")
     @PostMapping("/register")
@@ -82,14 +82,14 @@ public class UsersController {
     @GetMapping("/{id}/orders")
     @ResponseStatus(HttpStatus.OK)
     public RestRichOrder getAllOrders(@PathVariable Long id) {
-        return manipulateOrderUseCase.findAllOrdersWithSubscriptions(id);
+        return orderService.getAllOrdersWithSubscriptions(id);
     }
 
     @Operation(summary = "USER zalogowany, wszystkie subskrypcje po id usera")
     @GetMapping("/{id}/subscription")
     @ResponseStatus(HttpStatus.OK)
     public List<RestSubscription> getSubscriptions(@PathVariable Long id) {
-        List<RestSubscription> subscriptions = userSubscriptions
+        List<RestSubscription> subscriptions = subscriptionService
                 .findAllByUserId(id)
                 .stream()
                 .map(RestSubscription::toRestSubscription)

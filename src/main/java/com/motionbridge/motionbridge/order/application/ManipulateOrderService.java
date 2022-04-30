@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static com.motionbridge.motionbridge.order.web.mapper.RestOrder.toRestOrder;
@@ -23,8 +24,12 @@ import static com.motionbridge.motionbridge.order.web.mapper.RestOrder.toRestOrd
 @AllArgsConstructor
 public class ManipulateOrderService implements ManipulateOrderUseCase {
     final OrderRepository orderRepository;
+    final SubscriptionUseCase subscriptionService;
 
-    final SubscriptionUseCase subscription;
+    @Override
+    public void save(Order order) {
+        orderRepository.save(order);
+    }
 
     @Override
     public void deleteOrder(Long orderId) {
@@ -32,32 +37,47 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
     }
 
     @Override
-    public Optional<Order> findOrderById(Long orderId) {
-        return orderRepository.findById(orderId);
-    }
-
-    @Override
-    public Optional<Order> findByUserIdAndStatus(Long userId, OrderStatus status) {
-        return orderRepository.findOrderByUserIdAndOrderStatus(userId, status);
-    }
-
-    @Override
-    public RestRichOrder findAllOrdersWithSubscriptions(Long userId) {
+    public RestRichOrder getAllOrdersWithSubscriptions(Long userId) {
         return RestRichOrder.builder()
                 .restOrders(toRestOrdersList(userId))
                 .build();
     }
 
-    public List<Order> getAllOrdersByUserId(Long userId) {
-        return orderRepository.findAllByUserId(userId);
+    @Override
+    public Order getOrderWithStatusNewByUserId(Long userId) {
+        Optional<Order> retrievedOrder = getOptionalOrderWithStatusNewByUserId(userId);
+        Order order;
+        if (retrievedOrder.isPresent()) {
+            order = retrievedOrder.get();
+        } else
+            throw new NoSuchElementException("New order for user with id: " + userId + " does not exist");
+        return order;
+    }
+
+    public Optional<Order> getOptionalOrderWithStatusNewByUserId(Long userId) {
+        for (Order order : getOrdersByUserIdAndStatus(userId, OrderStatus.NEW)) {
+            if (order != null) {
+                return Optional.of(order);
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Order> getOrdersByUserIdAndStatus(Long userId, OrderStatus status) {
+        return orderRepository.findOrdersByUserIdAndOrderStatus(userId, status);
     }
 
     private List<RestOrder> toRestOrdersList(Long userId) {
         List<RestOrder> restOrders = new ArrayList<>(Collections.emptyList());
         for (Order order : getAllOrdersByUserId(userId)) {
-            restOrders.add(toRestOrder(order, subscription));
+            restOrders.add(toRestOrder(order, subscriptionService));
         }
         return restOrders;
+    }
+
+    public List<Order> getAllOrdersByUserId(Long userId) {
+        return orderRepository.findAllByUserId(userId);
     }
 }
 

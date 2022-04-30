@@ -27,6 +27,8 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Discount extends BaseEntity {
+    //kod
+    String code;
 
     //Znizka na typ Subskrypcji pod względem name
     @Enumerated(EnumType.STRING)

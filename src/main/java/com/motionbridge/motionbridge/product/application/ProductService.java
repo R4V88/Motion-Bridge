@@ -75,6 +75,30 @@ public class ProductService implements ManipulateProductUseCase {
         return repository.findById(id);
     }
 
+    @Override
+    public ProductOrder checkIfProductExistInOrderThenGet(Long productId) {
+        ProductOrder productOrder = new ProductOrder();
+
+        if (getProductById(productId).isPresent()) {
+
+            Product temp = getProductById(productId).get();
+
+            productOrder = ProductOrder
+                    .builder()
+                    .id(temp.getId())
+                    .price(temp.getPrice())
+                    .currency(temp.getCurrency().toString())
+                    .animationQuantity(temp.getAnimationQuantity())
+                    .name(String.valueOf(temp.getName()).toUpperCase())
+                    .timePeriod(String.valueOf(temp.getTimePeriod()).toUpperCase())
+                    .build();
+            log.info("Product with Id: " + productId + " is accessible");
+        } else {
+            log.warn("Product with id: " + productId + " does not exist");
+        }
+        return productOrder;
+    }
+
     private void switchActualStatus(Long id) {
         repository.getById(id).setIsActive(repository.getById(id).getIsActive() != null && !repository.getById(id).getIsActive());
     }

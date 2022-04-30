@@ -31,19 +31,19 @@ import java.util.List;
 @RequestMapping("/api/product")
 public class ProductController {
 
-    final ManipulateProductUseCase manipulateProduct;
+    final ManipulateProductUseCase productService;
 
     @Operation(summary = "ALL, wszystkie AKTYWNE produkty")
     @GetMapping("/active")
     @ResponseStatus(HttpStatus.OK)
     public List<RestActiveProduct> getActiveProducts() {
-        return manipulateProduct.getActiveProducts();
+        return productService.getActiveProducts();
     }
 
     @Operation(summary = "ADMIN, dodanie nowego produktu")
     @PostMapping("/add")
     public ResponseEntity<Object> addNewProduct(@RequestBody RestProductCommand command) {
-        return manipulateProduct.addProduct(command.toCreateProductCommand())
+        return productService.addProduct(command.toCreateProductCommand())
                 .handle(
                         newProduct -> ResponseEntity.ok().build(),
                         error -> ResponseEntity.badRequest().body(error)
@@ -54,13 +54,13 @@ public class ProductController {
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public List<RestProduct> getAllProducts() {
-        return manipulateProduct.getAllProducts();
+        return productService.getAllProducts();
     }
 
     @Operation(summary = "ADMIN, zmiana statusu produktu z inActive na Active i na odwrót")
     @PutMapping("{id}")
     public void switchStatus(@PathVariable Long id) {
-        manipulateProduct.switchStatus(id);
+        productService.switchStatus(id);
     }
 
     @Data

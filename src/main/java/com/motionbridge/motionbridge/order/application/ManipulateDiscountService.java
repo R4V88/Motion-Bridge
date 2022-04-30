@@ -9,7 +9,6 @@ import com.motionbridge.motionbridge.order.entity.SubscriptionType;
 import com.motionbridge.motionbridge.order.web.mapper.RestDiscount;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,15 +19,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Slf4j
 @AllArgsConstructor
-@NoArgsConstructor
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DiscountService implements ManipulateDiscountUseCase {
+public class ManipulateDiscountService implements ManipulateDiscountUseCase {
     static LocalDateTime calculatedEndDate;
 
-    DiscountRepository repository;
+    final DiscountRepository repository;
 
     private static LocalDateTime toSetEndDate(CreateDiscountCommand command) {
         if (command.getDurationPeriod().toUpperCase().equals(DurationPeriod.DAY.toString())) {
@@ -45,6 +44,7 @@ public class DiscountService implements ManipulateDiscountUseCase {
         calculatedEndDate = toSetEndDate(command);
         return Discount
                 .builder()
+                .code(command.getCode().toUpperCase())
                 .subscriptionType(SubscriptionType.valueOf(command.getSubscriptionType().toUpperCase()))
                 .subscriptionPeriod(SubscriptionPeriod.valueOf(command.getSubscriptionPeriod().toUpperCase()))
                 .startDate(command.getStartDate())
@@ -74,7 +74,7 @@ public class DiscountService implements ManipulateDiscountUseCase {
         return repository
                 .findAll()
                 .stream()
-                .map(DiscountService::toResponseDiscount)
+                .map(ManipulateDiscountService::toResponseDiscount)
                 .collect(Collectors.toList());
     }
 
@@ -102,5 +102,10 @@ public class DiscountService implements ManipulateDiscountUseCase {
     @Override
     public void deleteDiscountById(Long id) {
         repository.deleteById(id);
+    }
+
+    @Override
+    public List<Discount> getDiscountByCode(String code) {
+        return repository.findAllByCode(code);
     }
 }

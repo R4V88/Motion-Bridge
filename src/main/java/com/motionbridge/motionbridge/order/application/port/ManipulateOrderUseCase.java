@@ -4,15 +4,17 @@ import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.order.entity.OrderStatus;
 import com.motionbridge.motionbridge.order.web.mapper.RestRichOrder;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface ManipulateOrderUseCase {
 
+    void save(Order order);
+
     void deleteOrder(Long orderId);
 
-    Optional<Order> findOrderById(Long orderId);
+    RestRichOrder getAllOrdersWithSubscriptions(Long userId);
 
-    Optional<Order> findByUserIdAndStatus(Long userId, OrderStatus status);
+    List<Order> getOrdersByUserIdAndStatus(Long userId, OrderStatus status);
 
-    RestRichOrder findAllOrdersWithSubscriptions(Long userId);
+    Order getOrderWithStatusNewByUserId(Long userId);
 }

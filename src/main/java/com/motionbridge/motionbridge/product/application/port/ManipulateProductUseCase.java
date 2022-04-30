@@ -6,6 +6,8 @@ import com.motionbridge.motionbridge.product.web.mapper.RestActiveProduct;
 import com.motionbridge.motionbridge.product.web.mapper.RestProduct;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Value;
 
 import java.math.BigDecimal;
@@ -24,6 +26,8 @@ public interface ManipulateProductUseCase {
     SwitchStatusResponse switchStatus(Long id);
 
     Optional<Product> getProductById(Long id);
+
+    ProductOrder checkIfProductExistInOrderThenGet(Long productId);
 
     class AddProductResponse extends Either<String, Long> {
         public AddProductResponse(boolean success, String left, Long right) {
@@ -51,6 +55,19 @@ public interface ManipulateProductUseCase {
     @Value
     @AllArgsConstructor
     class CreateProductCommand {
+        Integer animationQuantity;
+        String name;
+        String currency;
+        String timePeriod;
+        BigDecimal price;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    class ProductOrder {
+        Long id;
         Integer animationQuantity;
         String name;
         String currency;

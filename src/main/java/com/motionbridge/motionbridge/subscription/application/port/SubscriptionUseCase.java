@@ -18,6 +18,8 @@ public interface SubscriptionUseCase {
 
     void save(CreateSubscriptionCommand command);
 
+    void saveSubscription(Subscription subscription);
+
     void deleteByIdAndOrderId(Long orderId, Long subscriptionId);
 
     @Value
