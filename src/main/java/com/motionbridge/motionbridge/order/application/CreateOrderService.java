@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.motionbridge.motionbridge.order.application.helper.OrderPriceCalculator.recalculateOrderPriceAndSave;
+import static com.motionbridge.motionbridge.order.application.helper.OrderPriceCalculator.recalculateOrderPriceAfterAddSubscription;
 
 @Service
 @Slf4j
@@ -90,7 +90,7 @@ public class CreateOrderService implements CreateOrderUseCase {
                 .toCreateSubscriptionCommand();
         subscriptionService.save(command);
         orderRepository.save(
-                recalculateOrderPriceAndSave(order, command)
+                recalculateOrderPriceAfterAddSubscription(order, command)
         );
     }
 

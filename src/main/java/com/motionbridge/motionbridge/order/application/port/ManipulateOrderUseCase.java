@@ -10,6 +10,8 @@ public interface ManipulateOrderUseCase {
 
     void save(Order order);
 
+    void deleteSubscriptionInOrderByIdAndSubscriptionId(Long orderId, Long subscriptionId);
+
     void deleteOrder(Long orderId);
 
     RestRichOrder getAllOrdersWithSubscriptions(Long userId);
@@ -17,4 +19,6 @@ public interface ManipulateOrderUseCase {
     List<Order> getOrdersByUserIdAndStatus(Long userId, OrderStatus status);
 
     Order getOrderWithStatusNewByUserId(Long userId);
+
+    Order getOrderById(Long orderId);
 }

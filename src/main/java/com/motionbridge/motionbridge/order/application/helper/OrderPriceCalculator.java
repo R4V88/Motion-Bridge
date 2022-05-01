@@ -2,7 +2,7 @@ package com.motionbridge.motionbridge.order.application.helper;
 
 import com.motionbridge.motionbridge.order.entity.Discount;
 import com.motionbridge.motionbridge.order.entity.Order;
-import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase;
+import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase.CreateSubscriptionCommand;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
 
 import java.math.BigDecimal;
@@ -36,7 +36,7 @@ public class OrderPriceCalculator {
         return o;
     }
 
-    public static Order recalculateOrderPriceAndSave(Order order, SubscriptionUseCase.CreateSubscriptionCommand command) {
+    public static Order recalculateOrderPriceAfterAddSubscription(Order order, CreateSubscriptionCommand command) {
         Order o;
         BigDecimal orderCurrentPrice = sum(order.getCurrentPrice(), command.getCurrentPrice());
         BigDecimal orderTotalPrice = sum(order.getTotalPrice(), command.getCurrentPrice());
@@ -44,5 +44,15 @@ public class OrderPriceCalculator {
         order.setTotalPrice(orderTotalPrice);
         o = order;
         return o;
+    }
+
+    public static CalculatedOrderPrice recalculateOrderPriceAfterRemoveDiscount(Order order, List<Subscription> subscriptions) {
+        order.setCurrentPrice(order.getTotalPrice());
+        order.setDiscountId(null);
+        order.setActiveDiscount(false);
+        for(Subscription subscription: subscriptions) {
+            subscription.setCurrentPrice(subscription.getPrice());
+        }
+        return new CalculatedOrderPrice(order, subscriptions);
     }
 }

@@ -2,8 +2,10 @@ package com.motionbridge.motionbridge.order.application;
 
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.order.db.OrderRepository;
+import com.motionbridge.motionbridge.order.entity.Discount;
 import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.order.entity.OrderStatus;
+import com.motionbridge.motionbridge.order.entity.SubscriptionType;
 import com.motionbridge.motionbridge.order.web.mapper.RestOrder;
 import com.motionbridge.motionbridge.order.web.mapper.RestRichOrder;
 import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase;
@@ -41,6 +43,40 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
         return RestRichOrder.builder()
                 .restOrders(toRestOrdersList(userId))
                 .build();
+    }
+
+    @Override
+    public void deleteSubscriptionInOrderByIdAndSubscriptionId(Long orderId, Long subscriptionId){
+//        if (subscriptionService.findAllByOrderId(orderId).size() == 1) {
+//            subscriptionService.deleteByIdAndOrderId(orderId, subscriptionId);
+//            deleteOrder(orderId);
+//        } else {
+//            Order order = orderRepository.getById(orderId);
+//            if(order.getDiscountId() != null && order.getActiveDiscount()) {
+//                Long id = order.getDiscountId();
+//                Discount discount = manipulateDiscountService.getById();
+//
+//                if(discount.getSubscriptionType().equals(SubscriptionType.ALL)) {
+//                    subscriptionService.deleteByIdAndOrderId(orderId, subscriptionId);
+//                    // przeliczenie po usunieciu subskrypcji -> pobranie ceny z order.totalPrice - cene subskrypcji i ponowne naliczenie discount.
+//                } else {
+//
+//                }
+//
+//
+//            }
+//
+//            //sprawdzenie po discount id, jakiego rodzaju byl to discount -> subskrypcja czy order to else
+//
+//            //jak subskrypcja to If -> sprawdzenie czy discount jest na usuwana subskrypcje czy nie
+//            subscriptionService.deleteByIdAndOrderId(orderId, subscriptionId);
+//
+//        }
+    }
+
+    @Override
+    public Order getOrderById(Long orderId) {
+        return orderRepository.getById(orderId);
     }
 
     @Override

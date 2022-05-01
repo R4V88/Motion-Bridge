@@ -5,7 +5,7 @@ import com.motionbridge.motionbridge.order.application.port.ApplyDiscountUseCase
 import com.motionbridge.motionbridge.order.application.port.CreateOrderUseCase;
 import com.motionbridge.motionbridge.order.application.port.CreateOrderUseCase.PlaceOrderCommand;
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
-import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase;
+import com.motionbridge.motionbridge.order.application.port.RemoveDiscountUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
@@ -30,9 +30,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
 
     final CreateOrderUseCase createOrderService;
-    final SubscriptionUseCase subscriptionService;
-    final ManipulateOrderUseCase manipulateService;
-    final ApplyDiscountUseCase discountService;
+    final ManipulateOrderUseCase manipulateOrderService;
+    final ApplyDiscountUseCase applyDiscountService;
+    final RemoveDiscountUseCase removeDiscountUseCase;
 
     @Operation(summary = "USER zalogowany, tworzy nowe zamówienie po id usera i id produktu")
     @ResponseStatus(HttpStatus.OK)
@@ -45,7 +45,7 @@ public class OrderController {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/discount")
     public void applyDiscount(@RequestBody RestApplyDiscountCommand restApplyDiscountCommand) {
-        discountService.applyDiscount(restApplyDiscountCommand.toPlaceDiscountCommand());
+        applyDiscountService.applyDiscount(restApplyDiscountCommand.toPlaceDiscountCommand());
     }
 
     @Operation(summary = "USER zalogowany , wyszukuje wybrany order po jego id")
@@ -63,15 +63,17 @@ public class OrderController {
     }
 
     @Operation(summary = "USER zalogowany, wyszukuje wszystkie subskrypcje pod wybranym order id")
-    @DeleteMapping("/{id}/subscription/{subscriptionId}")
+    @DeleteMapping("/{orderId}/subscription/{subscriptionId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteSubscription(@PathVariable Long id, @PathVariable Long subscriptionId) {
-        if (subscriptionService.findAllByOrderId(id).size() == 1) {
-            subscriptionService.deleteByIdAndOrderId(id, subscriptionId);
-            manipulateService.deleteOrder(id);
-        } else {
-            subscriptionService.deleteByIdAndOrderId(id, subscriptionId);
-        }
+    public void deleteSubscription(@PathVariable Long orderId, @PathVariable Long subscriptionId) {
+        manipulateOrderService.deleteSubscriptionInOrderByIdAndSubscriptionId(orderId, subscriptionId);
+    }
+
+    @Operation(summary = "USER zalogowany, usuwa discount z ordera")
+    @DeleteMapping("/{orderId}/removeDiscount")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeDiscount(@PathVariable Long orderId) {
+        removeDiscountUseCase.removeDiscountFromOrderByIdAndUserId(orderId);
     }
 
     @Data
