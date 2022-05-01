@@ -50,15 +50,16 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
         if (retrievedOrder.isPresent()) {
             order = retrievedOrder.get();
         } else
-            throw new NoSuchElementException("New order for user with id: " + userId + " does not exist");
+            throw new NoSuchElementException("Order with status NEW for user with id: " + userId + " does not exist!");
         return order;
     }
 
-    public Optional<Order> getOptionalOrderWithStatusNewByUserId(Long userId) {
+    private Optional<Order> getOptionalOrderWithStatusNewByUserId(Long userId) {
         for (Order order : getOrdersByUserIdAndStatus(userId, OrderStatus.NEW)) {
             if (order != null) {
                 return Optional.of(order);
-            }
+            } else
+                throw new NoSuchElementException("Order with status NEW for user with id: " + userId + " does not exist!");
         }
         return Optional.empty();
     }
@@ -76,7 +77,7 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
         return restOrders;
     }
 
-    public List<Order> getAllOrdersByUserId(Long userId) {
+    private List<Order> getAllOrdersByUserId(Long userId) {
         return orderRepository.findAllByUserId(userId);
     }
 }

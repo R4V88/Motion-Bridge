@@ -21,7 +21,7 @@ public class RestProduct {
                 product.getId(),
                 product.getName(),
                 product.getPrice(),
-                product.getCurrency().toString().toLowerCase(),
+                product.getCurrency().toString(),
                 product.getAnimationQuantity(),
                 product.getTimePeriod().toString(),
                 product.getIsActive()

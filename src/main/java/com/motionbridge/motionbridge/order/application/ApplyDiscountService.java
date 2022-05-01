@@ -6,10 +6,8 @@ import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCa
 import com.motionbridge.motionbridge.order.entity.Discount;
 import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.order.entity.SubscriptionType;
-import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase;
 import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
-import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,8 +28,6 @@ public class ApplyDiscountService implements ApplyDiscountUseCase {
 
     final ManipulateOrderUseCase orderService;
     final SubscriptionUseCase subscriptionService;
-    final UserDataManipulationUseCase userService;
-    final ManipulateProductUseCase productService;
     final ManipulateDiscountUseCase discountService;
 
     @Override

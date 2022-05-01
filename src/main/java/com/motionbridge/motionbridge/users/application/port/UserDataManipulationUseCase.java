@@ -15,9 +15,11 @@ public interface UserDataManipulationUseCase {
 
     UpdatePasswordResponse updatePassword(UpdatePasswordCommand command);
 
-    RegisterResponse register(String username, String password);
+    RegisterResponse register(String login, String username, String password, Boolean acceptedTerms, Boolean acceptedNewsletter);
 
-    Optional<UserEntity> findById(Long id);
+    Optional<UserEntity> getUserById(Long id);
+
+    UserEntity retrieveOrderByUserId(Long id);
 
     UserEntity getCurrentUserById(Long userId);
 
