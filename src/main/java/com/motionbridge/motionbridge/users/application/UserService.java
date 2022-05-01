@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Slf4j
@@ -52,13 +53,32 @@ public class UserService implements UserDataManipulationUseCase {
     }
 
     @Override
-    public Optional<UserEntity> findById(Long id) {
-        return repository.findUserById(id);
+    public UserEntity retrieveOrderByUserId(Long id) {
+        Optional<UserEntity> user = getUserById(id);
+        UserEntity userEntity;
+        if (user.isPresent()) {
+            userEntity = user.get();
+            return userEntity;
+        } else {
+            throw new NoSuchElementException("User with id: " + id + "does not exist");
+        }
+    }
+
+    @Override
+    public Optional<UserEntity> getUserById(Long id) {
+        Optional<UserEntity> user = repository.findById(id);
+        UserEntity userEntity;
+        if (user.isPresent()) {
+            userEntity = user.get();
+            return Optional.of(userEntity);
+        } else {
+            throw new NoSuchElementException("User with id: " + id + "does not exist");
+        }
     }
 
     @Override
     public UserEntity getCurrentUserById(Long userId) {
-        Optional<UserEntity> userTemp = findById(userId);
+        Optional<UserEntity> userTemp = getUserById(userId);
         UserEntity userToGet;
         if (userTemp.isPresent()) {
             userToGet = userTemp.get();

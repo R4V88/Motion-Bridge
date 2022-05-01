@@ -6,6 +6,7 @@ import com.motionbridge.motionbridge.subscription.application.port.SubscriptionU
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordCommand;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordResponse;
+import com.motionbridge.motionbridge.users.entity.UserEntity;
 import com.motionbridge.motionbridge.users.web.mapper.RestSubscription;
 import com.motionbridge.motionbridge.users.web.mapper.RestUser;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,6 +34,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.motionbridge.motionbridge.users.web.mapper.RestUser.toCreateRestUser;
 
 @RestController
 @AllArgsConstructor
@@ -68,14 +71,16 @@ public class UsersController {
         }
     }
 
-    @Operation(summary = "USER zalogowany, pobranie danych użytkownika - LOGINU/E-MAILA")
+    @Operation(summary = "USER zalogowany, pobranie danych użytkownika - email, name, ActiveAccount, AcceptedNewsletter")
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public RestUser getById(@PathVariable Long id) {
-        if (user.findById(id).isPresent()) {
-            String login = user.findById(id).get().getUsername();
-            return new RestUser(login);
-        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        UserEntity userEntity = user.retrieveOrderByUserId(id);
+        if (userEntity.getId().equals(id)) {
+            return toCreateRestUser(userEntity);
+        } else
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
     }
 
     @Operation(summary = "USER zalogowany, pobranie wszystkich orderów użytkowników")

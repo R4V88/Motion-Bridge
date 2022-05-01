@@ -17,7 +17,9 @@ public interface UserDataManipulationUseCase {
 
     RegisterResponse register(String login, String username, String password, Boolean acceptedTerms, Boolean acceptedNewsletter);
 
-    Optional<UserEntity> findById(Long id);
+    Optional<UserEntity> getUserById(Long id);
+
+    UserEntity retrieveOrderByUserId(Long id);
 
     UserEntity getCurrentUserById(Long userId);
 
