@@ -43,11 +43,11 @@ public class UserService implements UserDataManipulationUseCase {
 
     @Transactional
     @Override
-    public RegisterResponse register(String username, String password) {
+    public RegisterResponse register(String login, String username, String password, Boolean acceptedTerms, Boolean acceptedNewsletter) {
         if (repository.findByUsernameIgnoreCase(username).isPresent()) {
             return RegisterResponse.failure("Account already exists");
         }
-        UserEntity entity = new UserEntity(username, encoder.encode(password));
+        UserEntity entity = new UserEntity(login, username, encoder.encode(password), acceptedTerms, acceptedNewsletter);
         return RegisterResponse.success(repository.save(entity));
     }
 

@@ -37,6 +37,16 @@ public class UserEntity extends BaseEntity {
     @LastModifiedDate
     LocalDateTime modifiedAt;
 
+    String login;
+
+    Boolean isBlocked = false;
+
+    Boolean isVerified = false;
+
+    Boolean acceptedTerms;
+
+    Boolean acceptedNewsletter;
+
     String username;
 
     String password;
@@ -49,9 +59,12 @@ public class UserEntity extends BaseEntity {
     @ElementCollection(fetch = FetchType.EAGER)
     Set<String> roles = new HashSet<>();
 
-    public UserEntity(String username, String password) {
+    public UserEntity(String login, String username, String password, Boolean acceptedTerms, Boolean acceptedNewsletter) {
+        this.login = login;
         this.username = username;
         this.password = password;
+        this.acceptedTerms = acceptedTerms;
+        this.acceptedNewsletter = acceptedNewsletter;
         this.roles = Set.of("ROLE_USER");
     }
 }

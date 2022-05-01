@@ -49,7 +49,7 @@ public class UsersController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterCommand command) {
         return user
-                .register(command.username, command.password)
+                .register(command.name, command.email, command.password, command.acceptedTerms, command.acceptedNewsletter)
                 .handle(
                         entity -> ResponseEntity.accepted().build(),
                         error -> ResponseEntity.badRequest().build()
@@ -101,12 +101,16 @@ public class UsersController {
 
     @Data
     static class RegisterCommand {
+        @NotBlank
+        String name;
         @Email
         @NotBlank
-        String username;
+        String email;
         @Size(min = 8, max = 100)
         @NotEmpty
         String password;
+        Boolean acceptedTerms;
+        Boolean acceptedNewsletter;
     }
 
     @Data

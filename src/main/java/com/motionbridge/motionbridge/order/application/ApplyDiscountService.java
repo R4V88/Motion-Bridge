@@ -30,8 +30,8 @@ public class ApplyDiscountService implements ApplyDiscountUseCase {
 
     final ManipulateOrderUseCase orderService;
     final SubscriptionUseCase subscriptionService;
-    final UserDataManipulationUseCase userService;
-    final ManipulateProductUseCase productService;
+//    final UserDataManipulationUseCase userService;
+//    final ManipulateProductUseCase productService;
     final ManipulateDiscountUseCase discountService;
 
     @Override
