@@ -77,21 +77,27 @@ public class CreateOrderService implements CreateOrderUseCase {
     }
 
     void toCreateSubscription(ProductOrder productOrder, Order order, UserEntity user) {
-        CreateSubscriptionCommand command = NewSubscriptionCommand
-                .builder()
-                .price(productOrder.getPrice())
-                .currentPrice(productOrder.getPrice())
-                .animationsLimit(productOrder.getAnimationQuantity())
-                .type(productOrder.getName())
-                .timePeriod(productOrder.getTimePeriod())
-                .user(user)
-                .order(order)
-                .build()
-                .toCreateSubscriptionCommand();
-        subscriptionService.save(command);
-        orderRepository.save(
-                recalculateOrderPriceAfterAddSubscription(order, command)
-        );
+        CreateSubscriptionCommand command;
+        if (!productOrder.getIsActive()) {
+            log.info("Product with id: " + productOrder.getId() + " can not be added to order because is not available yet");
+        } else {
+            command = NewSubscriptionCommand
+                    .builder()
+                    .price(productOrder.getPrice())
+                    .currentPrice(productOrder.getPrice())
+                    .animationsLimit(productOrder.getAnimationQuantity())
+                    .type(productOrder.getName())
+                    .timePeriod(productOrder.getTimePeriod())
+                    .user(user)
+                    .order(order)
+                    .build()
+                    .toCreateSubscriptionCommand();
+
+            subscriptionService.save(command);
+            orderRepository.save(
+                    recalculateOrderPriceAfterAddSubscription(order, command)
+            );
+        }
     }
 
     Order getOrderElseCreate(UserEntity user, OrderStatus status) {

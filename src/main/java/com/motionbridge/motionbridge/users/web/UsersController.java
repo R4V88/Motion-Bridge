@@ -109,7 +109,7 @@ public class UsersController {
     @PutMapping("/{id}/block")
     @ResponseStatus(HttpStatus.OK)
     public SwitchResponse blockUserById(@PathVariable Long id) {
-       return user.switchBlockStatus(id);
+        return user.switchBlockStatus(id);
     }
 
     @Operation(summary = "ADMIN, zmiana statusu uzytkownika po id z unBlocked / Blocked i na odwrót")

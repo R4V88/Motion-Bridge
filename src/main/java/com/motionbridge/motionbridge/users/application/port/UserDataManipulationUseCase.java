@@ -1,7 +1,6 @@
 package com.motionbridge.motionbridge.users.application.port;
 
 import com.motionbridge.motionbridge.commons.Either;
-import com.motionbridge.motionbridge.order.application.port.ManipulateDiscountUseCase;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

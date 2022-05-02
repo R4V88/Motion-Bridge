@@ -1,6 +1,5 @@
 package com.motionbridge.motionbridge.users.application;
 
-import com.motionbridge.motionbridge.order.application.port.ManipulateDiscountUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
 import com.motionbridge.motionbridge.users.db.UserEntityRepository;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
@@ -115,6 +114,7 @@ public class UserService implements UserDataManipulationUseCase {
                 })
                 .orElseGet(() -> new SwitchResponse(false, Collections.singletonList("Could not change status")));
     }
+
     private void switchBlockedStatus(Long id) {
         repository.getById(id).setIsBlocked(repository.getById(id).getIsBlocked() != null && !repository.getById(id).getIsBlocked());
     }
