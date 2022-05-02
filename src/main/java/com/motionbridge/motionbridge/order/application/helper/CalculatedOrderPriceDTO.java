@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CalculatedOrderPrice {
+public class CalculatedOrderPriceDTO {
     Order order;
     List<Subscription> subscriptions;
 }

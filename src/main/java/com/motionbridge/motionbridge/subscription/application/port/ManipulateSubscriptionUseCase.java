@@ -9,7 +9,7 @@ import lombok.Value;
 import java.math.BigDecimal;
 import java.util.List;
 
-public interface SubscriptionUseCase {
+public interface ManipulateSubscriptionUseCase {
     List<Subscription> findAllByUserIdAndOrderId(Long userId, Long orderId);
 
     List<Subscription> findAllByUserId(Long id);

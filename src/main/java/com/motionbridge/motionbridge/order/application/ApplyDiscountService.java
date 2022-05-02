@@ -6,7 +6,7 @@ import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCa
 import com.motionbridge.motionbridge.order.entity.Discount;
 import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.order.entity.SubscriptionType;
-import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase;
+import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ import static com.motionbridge.motionbridge.order.application.helper.OrderPriceC
 public class ApplyDiscountService implements ApplyDiscountUseCase {
 
     final ManipulateOrderUseCase orderService;
-    final SubscriptionUseCase subscriptionService;
+    final ManipulateSubscriptionUseCase subscriptionService;
     final ManipulateDiscountUseCase discountService;
 
     @Override
@@ -41,6 +41,7 @@ public class ApplyDiscountService implements ApplyDiscountUseCase {
 
     public void getValidDiscountToOrder(String code, Order order) {
         Discount availableDiscount = getAvailableDiscount(code, order);
+        Long availableDiscountId = availableDiscount.getId();
         Optional<Subscription> foundSubscription;
         Subscription availableSubscription;
 
@@ -50,7 +51,7 @@ public class ApplyDiscountService implements ApplyDiscountUseCase {
                 BigDecimal currentPrice = recalculateOrderPriceAfterDiscountAppliedToOrder(order.getCurrentPrice(), BigDecimal.valueOf(availableDiscount.getValue()));
 
                 order.setCurrentPrice(currentPrice);
-                order.setDiscountId(availableDiscount.getId());
+                order.setDiscountId(availableDiscountId);
                 order.setActiveDiscount(true);
                 orderService.save(order);
             } else {
@@ -70,7 +71,7 @@ public class ApplyDiscountService implements ApplyDiscountUseCase {
                         subscriptionService.saveSubscription(availableSubscription);
 
                         orderService.save(
-                                recalculateOrderPricesAfeterAddDiscountToSubscription(order, subscriptionService.findAllByOrderId(order.getId()), availableDiscount)
+                                recalculateOrderPricesAfeterAddDiscountToSubscription(order, subscriptionService.findAllByOrderId(order.getId()), availableDiscountId)
                         );
                     } else
                         throw new IllegalArgumentException("Subscription is not compatible to given discount: " + code);

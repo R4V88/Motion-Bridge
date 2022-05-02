@@ -2,7 +2,7 @@ package com.motionbridge.motionbridge.users.web;
 
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.order.web.mapper.RestRichOrder;
-import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase;
+import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordCommand;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordResponse;
@@ -46,7 +46,7 @@ public class UsersController {
 
     final UserDataManipulationUseCase user;
     final ManipulateOrderUseCase orderService;
-    final SubscriptionUseCase subscriptionService;
+    final ManipulateSubscriptionUseCase subscriptionService;
 
     @Operation(summary = "ALL, Rejestracja użytkownika")
     @PostMapping("/register")

@@ -2,16 +2,15 @@ package com.motionbridge.motionbridge.order.application;
 
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.order.db.OrderRepository;
-import com.motionbridge.motionbridge.order.entity.Discount;
 import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.order.entity.OrderStatus;
-import com.motionbridge.motionbridge.order.entity.SubscriptionType;
 import com.motionbridge.motionbridge.order.web.mapper.RestOrder;
 import com.motionbridge.motionbridge.order.web.mapper.RestRichOrder;
-import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase;
+import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,13 +25,16 @@ import static com.motionbridge.motionbridge.order.web.mapper.RestOrder.toRestOrd
 @AllArgsConstructor
 public class ManipulateOrderService implements ManipulateOrderUseCase {
     final OrderRepository orderRepository;
-    final SubscriptionUseCase subscriptionService;
+    final ManipulateSubscriptionUseCase subscriptionService;
 
+
+    @Transactional
     @Override
     public void save(Order order) {
         orderRepository.save(order);
     }
 
+    @Transactional
     @Override
     public void deleteOrder(Long orderId) {
         orderRepository.deleteById(orderId);
@@ -43,35 +45,6 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
         return RestRichOrder.builder()
                 .restOrders(toRestOrdersList(userId))
                 .build();
-    }
-
-    @Override
-    public void deleteSubscriptionInOrderByIdAndSubscriptionId(Long orderId, Long subscriptionId){
-//        if (subscriptionService.findAllByOrderId(orderId).size() == 1) {
-//            subscriptionService.deleteByIdAndOrderId(orderId, subscriptionId);
-//            deleteOrder(orderId);
-//        } else {
-//            Order order = orderRepository.getById(orderId);
-//            if(order.getDiscountId() != null && order.getActiveDiscount()) {
-//                Long id = order.getDiscountId();
-//                Discount discount = manipulateDiscountService.getById();
-//
-//                if(discount.getSubscriptionType().equals(SubscriptionType.ALL)) {
-//                    subscriptionService.deleteByIdAndOrderId(orderId, subscriptionId);
-//                    // przeliczenie po usunieciu subskrypcji -> pobranie ceny z order.totalPrice - cene subskrypcji i ponowne naliczenie discount.
-//                } else {
-//
-//                }
-//
-//
-//            }
-//
-//            //sprawdzenie po discount id, jakiego rodzaju byl to discount -> subskrypcja czy order to else
-//
-//            //jak subskrypcja to If -> sprawdzenie czy discount jest na usuwana subskrypcje czy nie
-//            subscriptionService.deleteByIdAndOrderId(orderId, subscriptionId);
-//
-//        }
     }
 
     @Override

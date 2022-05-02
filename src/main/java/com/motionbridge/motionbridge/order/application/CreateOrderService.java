@@ -7,8 +7,8 @@ import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.order.entity.OrderStatus;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.ProductOrder;
-import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase;
-import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase.CreateSubscriptionCommand;
+import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
+import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase.CreateSubscriptionCommand;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
@@ -35,7 +35,7 @@ public class CreateOrderService implements CreateOrderUseCase {
     final OrderRepository orderRepository;
 
     final UserDataManipulationUseCase userService;
-    final SubscriptionUseCase subscriptionService;
+    final ManipulateSubscriptionUseCase subscriptionService;
     final ManipulateProductUseCase productService;
     final ManipulateDiscountUseCase discountService;
 
@@ -127,6 +127,7 @@ public class CreateOrderService implements CreateOrderUseCase {
                 .toCreateProductCommand();
     }
 
+    @Transactional
     @Override
     public Order saveOrder(CreateOrderCommand command) {
         Order order = Order
@@ -137,6 +138,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         return orderRepository.save(order);
     }
 
+    @Transactional
     @Override
     public void save(Order order) {
         orderRepository.save(order);

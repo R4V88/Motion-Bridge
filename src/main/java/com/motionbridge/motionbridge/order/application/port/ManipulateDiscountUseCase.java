@@ -19,6 +19,8 @@ public interface ManipulateDiscountUseCase {
 
     void deleteDiscountById(Long id);
 
+    Discount getDiscountById(Long id);
+
     List<Discount> getDiscountByCode(String code);
 
     @Value

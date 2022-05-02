@@ -1,8 +1,7 @@
 package com.motionbridge.motionbridge.order.application.helper;
 
-import com.motionbridge.motionbridge.order.entity.Discount;
 import com.motionbridge.motionbridge.order.entity.Order;
-import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase.CreateSubscriptionCommand;
+import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase.CreateSubscriptionCommand;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
 
 import java.math.BigDecimal;
@@ -17,7 +16,7 @@ public class OrderPriceCalculator {
         return base.subtract(percentage(base, pct));
     }
 
-    public static Order recalculateOrderPricesAfeterAddDiscountToSubscription(Order order, List<Subscription> subscriptions, Discount discount) {
+    public static Order recalculateOrderPricesAfeterAddDiscountToSubscription(Order order, List<Subscription> subscriptions, Long discount) {
         Order o;
         BigDecimal currentOrderPrice = new BigDecimal("00.00");
         BigDecimal totalOrderPrice = new BigDecimal("00.00");
@@ -29,7 +28,7 @@ public class OrderPriceCalculator {
             order.setCurrentPrice(currentOrderPrice);
             order.setTotalPrice(totalOrderPrice);
             order.setActiveDiscount(true);
-            order.setDiscountId(discount.getId());
+            order.setDiscountId(discount);
             o = order;
         } else
             throw new NullPointerException("No subscriptions in order: " + order.getId());
@@ -46,13 +45,31 @@ public class OrderPriceCalculator {
         return o;
     }
 
-    public static CalculatedOrderPrice recalculateOrderPriceAfterRemoveDiscount(Order order, List<Subscription> subscriptions) {
+    public static CalculatedOrderPriceDTO recalculateOrderPriceAfterRemoveDiscount(Order order, List<Subscription> subscriptions) {
         order.setCurrentPrice(order.getTotalPrice());
         order.setDiscountId(null);
         order.setActiveDiscount(false);
-        for(Subscription subscription: subscriptions) {
+        for (Subscription subscription : subscriptions) {
             subscription.setCurrentPrice(subscription.getPrice());
         }
-        return new CalculatedOrderPrice(order, subscriptions);
+        return new CalculatedOrderPriceDTO(order, subscriptions);
+    }
+
+    public static CalculatedOrderPriceDTO recalculateOrderPrice(Order order, List<Subscription> subscriptions) {
+        Order o;
+        BigDecimal currentOrderPrice = new BigDecimal("00.00");
+        BigDecimal totalOrderPrice = new BigDecimal("00.00");
+        if (!subscriptions.isEmpty()) {
+            for (Subscription subscription : subscriptions) {
+                currentOrderPrice = sum(currentOrderPrice, subscription.getCurrentPrice());
+                totalOrderPrice = sum(totalOrderPrice, subscription.getPrice());
+            }
+            order.setCurrentPrice(currentOrderPrice);
+            order.setTotalPrice(totalOrderPrice);
+            o = order;
+        } else {
+            throw new NullPointerException("No subscriptions in order: " + order.getId());
+        }
+        return new CalculatedOrderPriceDTO(o, subscriptions);
     }
 }

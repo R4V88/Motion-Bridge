@@ -99,9 +99,15 @@ public class ManipulateDiscountService implements ManipulateDiscountUseCase {
         repository.getById(id).setIsActive(repository.getById(id).getIsActive() != null && !repository.getById(id).getIsActive());
     }
 
+    @Transactional
     @Override
     public void deleteDiscountById(Long id) {
         repository.deleteById(id);
+    }
+
+    @Override
+    public Discount getDiscountById(Long id) {
+        return repository.getById(id);
     }
 
     @Override
