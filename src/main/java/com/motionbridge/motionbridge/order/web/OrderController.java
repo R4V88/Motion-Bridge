@@ -7,6 +7,7 @@ import com.motionbridge.motionbridge.order.application.port.CreateOrderUseCase.P
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.order.application.port.RemoveDiscountUseCase;
 import com.motionbridge.motionbridge.order.application.port.RemoveSubscriptionFromOrderUseCase;
+import com.motionbridge.motionbridge.order.web.mapper.RestOrder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
@@ -33,8 +34,8 @@ import javax.validation.constraints.NotNull;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderController {
 
-    final CreateOrderUseCase createOrderService;
     final ManipulateOrderUseCase manipulateOrderService;
+    final CreateOrderUseCase createOrderService;
     final ApplyDiscountUseCase applyDiscountService;
     final RemoveDiscountUseCase removeDiscountUseCase;
     final RemoveSubscriptionFromOrderUseCase removeSubscriptionFromOrderUseCase;
@@ -53,21 +54,14 @@ public class OrderController {
         applyDiscountService.applyDiscount(restApplyDiscountCommand.toPlaceDiscountCommand());
     }
 
-    @Operation(summary = "USER zalogowany , wyszukuje wybrany order po jego id")
-    @GetMapping("/{id}")
+    @Operation(summary = "USER zalogowany , wyszukuje wybrany order po jego id z subskrypcjami")
+    @GetMapping("/{orderId}")
     @ResponseStatus(HttpStatus.OK)
-    public void getOrderById(@NotNull @PathVariable Long id) {
-
+    public RestOrder getOrderById(@NotNull @PathVariable Long orderId) {
+        return manipulateOrderService.getRestOrderByOrderId(orderId);
     }
 
-    @Operation(summary = "USER zalogowany, wyszukuje wszystkie subskrypcje pod wybranym order id")
-    @GetMapping("/{id}/subscription")
-    @ResponseStatus(HttpStatus.OK)
-    public void getAllOrderSubscriptionsInOrderByOrderId(@NotNull @PathVariable Long id) {
-
-    }
-
-    @Operation(summary = "USER zalogowany, wyszukuje wszystkie subskrypcje pod wybranym order id")
+    @Operation(summary = "USER zalogowany, usuwa wybrana subskrypcje po Id pod wybranym order id")
     @DeleteMapping("/{orderId}/subscription/{subscriptionId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSubscription(@NotNull @PathVariable Long orderId, @NotNull @PathVariable Long subscriptionId) {

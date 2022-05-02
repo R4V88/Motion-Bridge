@@ -62,7 +62,7 @@ public class UsersController {
 
     //Todo    @Secured()
     @Operation(summary = "USER zalogowany, zmiana hasła")
-    @PutMapping("/{id}/password")
+    @PutMapping("/{id}/changePassword")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void changePassword(@PathVariable Long id, @RequestBody RestUserCommand command) {
         UpdatePasswordResponse response = user.updatePassword(command.toUpdatePasswordCommand(id));
@@ -112,7 +112,7 @@ public class UsersController {
         return user.switchBlockStatus(id);
     }
 
-    @Operation(summary = "ADMIN, zmiana statusu uzytkownika po id z unBlocked / Blocked i na odwrót")
+    @Operation(summary = "ADMIN, zmiana statusu uzytkownika po id z unVerified / Verified i na odwrót")
     @PutMapping("/{id}/verify")
     @ResponseStatus(HttpStatus.OK)
     public SwitchResponse VerifyUserById(@PathVariable Long id) {

@@ -7,6 +7,7 @@ import com.motionbridge.motionbridge.order.entity.OrderStatus;
 import com.motionbridge.motionbridge.order.web.mapper.RestOrder;
 import com.motionbridge.motionbridge.order.web.mapper.RestRichOrder;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
+import com.motionbridge.motionbridge.subscription.entity.Subscription;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -81,9 +82,16 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
     private List<RestOrder> toRestOrdersList(Long userId) {
         List<RestOrder> restOrders = new ArrayList<>(Collections.emptyList());
         for (Order order : getAllOrdersByUserId(userId)) {
-            restOrders.add(toRestOrder(order, subscriptionService));
+            restOrders.add(getRestOrderByOrderId(order.getId()));
         }
         return restOrders;
+    }
+
+    @Override
+    public RestOrder getRestOrderByOrderId(Long orderId) {
+        List<Subscription> subscriptions = subscriptionService.findAllByOrderId(orderId);
+        Order order = orderRepository.getById(orderId);
+        return toRestOrder(order, subscriptions);
     }
 
     private List<Order> getAllOrdersByUserId(Long userId) {
