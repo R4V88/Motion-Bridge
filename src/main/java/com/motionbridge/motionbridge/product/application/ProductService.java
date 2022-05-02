@@ -91,6 +91,7 @@ public class ProductService implements ManipulateProductUseCase {
                     .animationQuantity(temp.getAnimationQuantity())
                     .name(String.valueOf(temp.getName()).toUpperCase())
                     .timePeriod(String.valueOf(temp.getTimePeriod()).toUpperCase())
+                    .isActive(temp.getIsActive())
                     .build();
             log.info("Product with Id: " + productId + " is accessible");
         } else {

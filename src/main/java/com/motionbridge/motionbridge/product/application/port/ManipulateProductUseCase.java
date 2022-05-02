@@ -73,5 +73,6 @@ public interface ManipulateProductUseCase {
         String currency;
         String timePeriod;
         BigDecimal price;
+        Boolean isActive;
     }
 }

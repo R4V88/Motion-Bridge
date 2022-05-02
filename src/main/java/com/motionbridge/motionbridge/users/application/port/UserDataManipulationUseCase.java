@@ -23,6 +23,10 @@ public interface UserDataManipulationUseCase {
 
     UserEntity getCurrentUserById(Long userId);
 
+    SwitchResponse switchVeryfiedStatus(Long id);
+
+    SwitchResponse switchBlockStatus(Long id);
+
     class RegisterResponse extends Either<String, UserEntity> {
 
         public RegisterResponse(boolean success, String left, UserEntity right) {
@@ -50,6 +54,14 @@ public interface UserDataManipulationUseCase {
     @Value
     class UpdatePasswordResponse {
         public static UpdatePasswordResponse SUCCESS = new UpdatePasswordResponse(true, emptyList());
+
+        boolean success;
+        List<String> errors;
+    }
+
+    @Value
+    class SwitchResponse {
+        public static SwitchResponse SUCCESS = new SwitchResponse(true, emptyList());
 
         boolean success;
         List<String> errors;

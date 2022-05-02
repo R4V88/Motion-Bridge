@@ -88,4 +88,34 @@ public class UserService implements UserDataManipulationUseCase {
         }
         return userToGet;
     }
+
+    @Transactional
+    @Override
+    public SwitchResponse switchVeryfiedStatus(Long id) {
+        return repository.findById(id)
+                .map(product -> {
+                    switchVerifiedStatus(id);
+                    return SwitchResponse.SUCCESS;
+                })
+                .orElseGet(() -> new SwitchResponse(false, Collections.singletonList("Could not change status")));
+    }
+
+    private void switchVerifiedStatus(Long id) {
+        repository.getById(id).setIsVerified(repository.getById(id).getIsVerified() != null && !repository.getById(id).getIsVerified());
+    }
+
+    @Transactional
+    @Override
+    public SwitchResponse switchBlockStatus(Long id) {
+        return repository.findById(id)
+                .map(product -> {
+                    switchBlockedStatus(id);
+                    return SwitchResponse.SUCCESS;
+                })
+                .orElseGet(() -> new SwitchResponse(false, Collections.singletonList("Could not change status")));
+    }
+
+    private void switchBlockedStatus(Long id) {
+        repository.getById(id).setIsBlocked(repository.getById(id).getIsBlocked() != null && !repository.getById(id).getIsBlocked());
+    }
 }

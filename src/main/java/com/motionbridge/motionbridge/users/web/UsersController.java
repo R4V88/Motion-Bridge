@@ -4,6 +4,7 @@ import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCa
 import com.motionbridge.motionbridge.order.web.mapper.RestRichOrder;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
+import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.SwitchResponse;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordCommand;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordResponse;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
@@ -102,6 +103,20 @@ public class UsersController {
         if (subscriptions.size() != 0) {
             return subscriptions;
         } else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
+
+    @Operation(summary = "ADMIN, zmiana statusu uzytkownika po id z unBlocked / Blocked i na odwrót")
+    @PutMapping("/{id}/block")
+    @ResponseStatus(HttpStatus.OK)
+    public SwitchResponse blockUserById(@PathVariable Long id) {
+        return user.switchBlockStatus(id);
+    }
+
+    @Operation(summary = "ADMIN, zmiana statusu uzytkownika po id z unBlocked / Blocked i na odwrót")
+    @PutMapping("/{id}/verify")
+    @ResponseStatus(HttpStatus.OK)
+    public SwitchResponse VerifyUserById(@PathVariable Long id) {
+        return user.switchVeryfiedStatus(id);
     }
 
     @Data
