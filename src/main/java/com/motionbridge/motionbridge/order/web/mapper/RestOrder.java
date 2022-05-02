@@ -2,7 +2,7 @@ package com.motionbridge.motionbridge.order.web.mapper;
 
 import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.order.entity.OrderStatus;
-import com.motionbridge.motionbridge.subscription.application.port.SubscriptionUseCase;
+import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.users.web.mapper.RestSubscription;
 import lombok.Builder;
 import lombok.Value;
@@ -19,7 +19,7 @@ public class RestOrder {
     BigDecimal currentPrice;
     List<RestSubscription> subscriptions;
 
-    public static RestOrder toRestOrder(Order order, SubscriptionUseCase subscription) {
+    public static RestOrder toRestOrder(Order order, ManipulateSubscriptionUseCase subscription) {
         return RestOrder.builder()
                 .currentPrice(order.getCurrentPrice())
                 .status(order.getStatus())
