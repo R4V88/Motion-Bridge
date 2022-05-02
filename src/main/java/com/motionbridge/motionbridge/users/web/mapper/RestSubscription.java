@@ -1,6 +1,5 @@
 package com.motionbridge.motionbridge.users.web.mapper;
 
-import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
 import lombok.Builder;
 import lombok.Value;
@@ -32,12 +31,11 @@ public class RestSubscription {
                 .build();
     }
 
-    public static List<RestSubscription> toRestSubsciptionsList(Long orderId, ManipulateSubscriptionUseCase subscription) {
+    public static List<RestSubscription> toRestSubsciptionsList(List<Subscription> subscriptions) {
         List<RestSubscription> restSubscriptions = new ArrayList<>(Collections.emptyList());
 
-        for (Subscription sub : subscription.findAllByOrderId(orderId)) {
-            restSubscriptions
-                    .add(toRestSubscription(sub));
+        for (Subscription sub : subscriptions) {
+            restSubscriptions.add(toRestSubscription(sub));
         }
 
         return restSubscriptions;
