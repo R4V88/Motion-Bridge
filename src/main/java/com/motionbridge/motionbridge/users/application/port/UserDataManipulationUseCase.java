@@ -1,6 +1,7 @@
 package com.motionbridge.motionbridge.users.application.port;
 
 import com.motionbridge.motionbridge.commons.Either;
+import com.motionbridge.motionbridge.order.application.port.ManipulateDiscountUseCase;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +23,10 @@ public interface UserDataManipulationUseCase {
     UserEntity retrieveOrderByUserId(Long id);
 
     UserEntity getCurrentUserById(Long userId);
+
+    SwitchResponse switchVeryfiedStatus(Long id);
+
+    SwitchResponse switchBlockStatus(Long id);
 
     class RegisterResponse extends Either<String, UserEntity> {
 
@@ -50,6 +55,14 @@ public interface UserDataManipulationUseCase {
     @Value
     class UpdatePasswordResponse {
         public static UpdatePasswordResponse SUCCESS = new UpdatePasswordResponse(true, emptyList());
+
+        boolean success;
+        List<String> errors;
+    }
+
+    @Value
+    class SwitchResponse {
+        public static SwitchResponse SUCCESS = new SwitchResponse(true, emptyList());
 
         boolean success;
         List<String> errors;
