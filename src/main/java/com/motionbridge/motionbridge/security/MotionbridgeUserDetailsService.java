@@ -1,6 +1,6 @@
 package com.motionbridge.motionbridge.security;
 
-import com.motionbridge.motionbridge.users.db.UserEntityRepository;
+import com.motionbridge.motionbridge.users.application.port.SecurityGetUserUseCase;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 @AllArgsConstructor
 public class MotionbridgeUserDetailsService implements UserDetailsService {
 
-    private final UserEntityRepository repository;
+    private final SecurityGetUserUseCase repository;
     private final AdminConfig config;
 
     @Override
@@ -22,4 +22,5 @@ public class MotionbridgeUserDetailsService implements UserDetailsService {
                 .map(x -> new UserEntityDetails(x))
                 .orElseThrow(() -> new UsernameNotFoundException(username));
     }
+
 }

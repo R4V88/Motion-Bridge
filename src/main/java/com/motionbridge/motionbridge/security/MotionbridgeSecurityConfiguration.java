@@ -1,6 +1,6 @@
 package com.motionbridge.motionbridge.security;
 
-import com.motionbridge.motionbridge.users.db.UserEntityRepository;
+import com.motionbridge.motionbridge.users.application.port.SecurityGetUserUseCase;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -17,19 +17,28 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @AllArgsConstructor
 @EnableGlobalMethodSecurity(securedEnabled = true)
 @EnableConfigurationProperties(AdminConfig.class)
-public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
-    private final UserEntityRepository userEntityRepository;
+    private final SecurityGetUserUseCase userEntityRepository;
     private final AdminConfig config;
 
     @Bean
     User systemUser() {
         return config.adminUser();
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedMethods("*")
+                .allowedOrigins("*");
     }
 
     @Override
