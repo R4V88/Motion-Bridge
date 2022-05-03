@@ -1,19 +1,12 @@
-server.error.include-message=always
-spring.datasource.url=jdbc:postgresql://localhost:7435/motion
-spring.datasource.username=admin
-spring.datasource.password=pass123
-spring.datasource.driver-class-name=org.postgresql.Driver
-# each time creates DB from scratch
-spring.jpa.hibernate.ddl-auto=create
-# show SQL from JPA do DB
-spring.jpa.show-sql=true
-# logs from spring security
-logging.level.org.springframework.security=DEBUG
-#Embedded administrator account
-app.security.admin.username=admin
-#password=bcrypt(xxx)
-app.security.admin.password=$2a$12$5.3rdtRaZ5.hxzN/fUGN2.TYSyiTQQMhbXsOP8EjRmEKQlOGAQ1LK
-app.security.admin.role=ROLE_ADMIN
-product.status.active=0
-#OpenApi
-springdoc.swagger-ui.path=/swagger-ui/
+spring:
+  profiles: generatesql
+    flyway.enabled: false
+    jpa.properties.javax.persistence.schema-generation.scripts:
+      action: create
+      create-target: create.sql
+      create-source: metadata
+spring.datasource.url: jdbc:postgresql://localhost:7432/motion
+spring.datasource.username: admin
+spring.datasource.password: pass123
+spring.datasource.driver-class-name: org.postgresql.Driver
+spring.jpa.database-platform: org.hibernate.dialect.PostgreSQLDialect
