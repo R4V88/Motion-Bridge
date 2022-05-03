@@ -9,6 +9,8 @@ import lombok.Value;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
+
 public interface ManipulateSubscriptionUseCase {
     List<Subscription> findAllByUserIdAndOrderId(Long userId, Long orderId);
 
@@ -22,6 +24,8 @@ public interface ManipulateSubscriptionUseCase {
 
     void deleteByIdAndOrderId(Long orderId, Long subscriptionId);
 
+    AutoRenewResponse autoRenew(Long id);
+
     @Value
     @AllArgsConstructor
     class CreateSubscriptionCommand {
@@ -33,5 +37,13 @@ public interface ManipulateSubscriptionUseCase {
         UserEntity user;
         Order order;
         Long productId;
+    }
+
+    @Value
+    class AutoRenewResponse {
+        public static AutoRenewResponse SUCCESS = new AutoRenewResponse(true, emptyList());
+
+        boolean success;
+        List<String> errors;
     }
 }
