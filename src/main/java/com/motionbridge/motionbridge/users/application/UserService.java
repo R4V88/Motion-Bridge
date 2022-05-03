@@ -89,6 +89,11 @@ public class UserService implements UserDataManipulationUseCase {
         return userToGet;
     }
 
+    @Override
+    public Optional<UserEntity> findByUsernameIgnoreCase(String username) {
+        return repository.findByUsernameIgnoreCase(username);
+    }
+
     @Transactional
     @Override
     public SwitchResponse switchVeryfiedStatus(Long id) {

@@ -50,7 +50,7 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
 
     @Override
     public Order getOrderById(Long orderId) {
-        return orderRepository.getById(orderId);
+        return orderRepository.findById(orderId).get();
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
     @Override
     public RestOrder getRestOrderByOrderId(Long orderId) {
         List<Subscription> subscriptions = subscriptionService.findAllByOrderId(orderId);
-        Order order = orderRepository.getById(orderId);
+        Order order = orderRepository.findById(orderId).get();
         return toRestOrder(order, subscriptions);
     }
 

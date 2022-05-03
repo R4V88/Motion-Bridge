@@ -23,6 +23,8 @@ public interface UserDataManipulationUseCase {
 
     UserEntity getCurrentUserById(Long userId);
 
+    Optional<UserEntity> findByUsernameIgnoreCase(String username);
+
     SwitchResponse switchVeryfiedStatus(Long id);
 
     SwitchResponse switchBlockStatus(Long id);

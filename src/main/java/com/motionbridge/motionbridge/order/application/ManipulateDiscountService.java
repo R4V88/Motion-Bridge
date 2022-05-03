@@ -96,7 +96,7 @@ public class ManipulateDiscountService implements ManipulateDiscountUseCase {
     }
 
     private void switchActualStatus(Long id) {
-        repository.getById(id).setIsActive(repository.getById(id).getIsActive() != null && !repository.getById(id).getIsActive());
+        repository.findById(id).get().setIsActive(repository.findById(id).get().getIsActive() != null && !repository.findById(id).get().getIsActive());
     }
 
     @Transactional
@@ -107,7 +107,7 @@ public class ManipulateDiscountService implements ManipulateDiscountUseCase {
 
     @Override
     public Discount getDiscountById(Long id) {
-        return repository.getById(id);
+        return repository.findById(id).get();
     }
 
     @Override
