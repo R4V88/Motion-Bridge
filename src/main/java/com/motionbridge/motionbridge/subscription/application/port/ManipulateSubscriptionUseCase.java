@@ -32,5 +32,6 @@ public interface ManipulateSubscriptionUseCase {
         String timePeriod;
         UserEntity user;
         Order order;
+        Long productId;
     }
 }

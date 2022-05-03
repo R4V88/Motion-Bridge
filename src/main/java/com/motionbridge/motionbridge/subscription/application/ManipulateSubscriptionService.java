@@ -49,6 +49,7 @@ public class ManipulateSubscriptionService implements ManipulateSubscriptionUseC
                 .timePeriod(command.getTimePeriod())
                 .user(command.getUser())
                 .order(command.getOrder())
+                .productId(command.getProductId())
                 .build();
         repository.save(subscription);
     }

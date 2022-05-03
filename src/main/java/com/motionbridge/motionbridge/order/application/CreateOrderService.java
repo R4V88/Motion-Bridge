@@ -90,6 +90,7 @@ public class CreateOrderService implements CreateOrderUseCase {
                     .timePeriod(productOrder.getTimePeriod())
                     .user(user)
                     .order(order)
+                    .productId(productOrder.getId())
                     .build()
                     .toCreateSubscriptionCommand();
 
@@ -176,9 +177,10 @@ public class CreateOrderService implements CreateOrderUseCase {
         String timePeriod;
         UserEntity user;
         Order order;
+        Long productId;
 
         CreateSubscriptionCommand toCreateSubscriptionCommand() {
-            return new CreateSubscriptionCommand(price, currentPrice, animationsLimit, type, timePeriod, user, order);
+            return new CreateSubscriptionCommand(price, currentPrice, animationsLimit, type, timePeriod, user, order, productId);
         }
     }
 
