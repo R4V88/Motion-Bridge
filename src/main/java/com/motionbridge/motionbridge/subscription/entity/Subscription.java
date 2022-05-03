@@ -60,6 +60,9 @@ public class Subscription extends BaseEntity {
 
     Long productId;
 
+    @Builder.Default
+    Boolean autoRenew = true;
+
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     UserEntity user;
 

@@ -6,12 +6,15 @@ import com.motionbridge.motionbridge.subscription.entity.Subscription;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ManipulateSubscriptionService implements ManipulateSubscriptionUseCase {
@@ -36,6 +39,26 @@ public class ManipulateSubscriptionService implements ManipulateSubscriptionUseC
     @Override
     public void deleteByIdAndOrderId(Long orderId, Long subscriptionId) {
         repository.deleteSubscriptionByIdAndOrderId(orderId, subscriptionId);
+    }
+
+    @Transactional
+    @Override
+    public AutoRenewResponse autoRenew(Long id) {
+        return repository.findById(id)
+                .map(product -> {
+                    switchActualStatus(id);
+                    return AutoRenewResponse.SUCCESS;
+                })
+                .orElseGet(() -> new AutoRenewResponse(false, Collections.singletonList("Could not change status")));
+    }
+
+    private void switchActualStatus(Long id) {
+        Subscription subscription = repository.getById(id);
+        if (subscription.getIsActive()) {
+            subscription.setAutoRenew(subscription.getAutoRenew() != null && !subscription.getAutoRenew());
+            log.info("Switched automatic renew of subscription " + subscription.getId() + " to: " + subscription.getAutoRenew().toString());
+        } else
+            throw new IllegalArgumentException("This subscription is not active yet, subscription id: " + subscription.getId());
     }
 
     @Transactional
