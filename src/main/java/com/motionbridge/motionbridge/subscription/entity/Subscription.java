@@ -58,6 +58,8 @@ public class Subscription extends BaseEntity {
 
     String timePeriod;
 
+    Long productId;
+
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     UserEntity user;
 
