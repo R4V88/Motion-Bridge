@@ -2,11 +2,13 @@ package com.motionbridge.motionbridge.users.web;
 
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.order.web.mapper.RestRichOrder;
+import com.motionbridge.motionbridge.security.token.application.port.ConfirmationTokenUseCase;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.SwitchResponse;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordCommand;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordResponse;
+import com.motionbridge.motionbridge.users.application.port.UserRegisterationUseCase;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import com.motionbridge.motionbridge.users.web.mapper.RestSubscription;
 import com.motionbridge.motionbridge.users.web.mapper.RestUser;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -41,23 +44,30 @@ import static com.motionbridge.motionbridge.users.web.mapper.RestUser.toCreateRe
 @RestController
 @AllArgsConstructor
 @Tag(name = "/api/user", description = "Manipulate Users")
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UsersController {
 
     final UserDataManipulationUseCase user;
     final ManipulateOrderUseCase orderService;
     final ManipulateSubscriptionUseCase subscriptionService;
+    final UserRegisterationUseCase userRegisterationUseCase;
 
     @Operation(summary = "ALL, Rejestracja użytkownika")
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterCommand command) {
-        return user
+        return userRegisterationUseCase
                 .register(command.name, command.email, command.password, command.acceptedTerms, command.acceptedNewsletter)
                 .handle(
                         entity -> ResponseEntity.accepted().build(),
                         error -> ResponseEntity.badRequest().build()
                 );
+    }
+
+    @Operation(summary = "ALL, Token confirmation")
+    @GetMapping("/confirm")
+    public String confirm(@RequestParam("token") String token) {
+        return userRegisterationUseCase.confirmToken(token);
     }
 
     //Todo    @Secured()

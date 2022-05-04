@@ -1,9 +1,6 @@
 package com.motionbridge.motionbridge.users.application;
 
-import com.motionbridge.motionbridge.security.token.ConfirmationToken;
-import com.motionbridge.motionbridge.security.token.application.port.ConfirmationTokenUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
-import com.motionbridge.motionbridge.users.application.validators.EmailValidator;
 import com.motionbridge.motionbridge.users.db.UserEntityRepository;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AccessLevel;
@@ -14,11 +11,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @AllArgsConstructor
@@ -26,10 +21,9 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserService implements UserDataManipulationUseCase {
 
-    final EmailValidator emailValidator;
     final UserEntityRepository repository;
     final PasswordEncoder encoder;
-    final ConfirmationTokenUseCase confirmationTokenUseCase;
+
 
     @Transactional
     @Override
@@ -47,33 +41,6 @@ public class UserService implements UserDataManipulationUseCase {
         if (!command.getPassword().equals(user.getPassword())) {
             user.setPassword(encoder.encode(command.getPassword()));
         }
-    }
-
-    @Transactional
-    @Override
-    public RegisterResponse register(String login, String email, String password, Boolean acceptedTerms, Boolean acceptedNewsletter) {
-        if (repository.findByEmailIgnoreCase(email).isPresent()) {
-            return RegisterResponse.failure("Account already exists");
-        }
-        if (!emailValidator.test(email)) {
-            return RegisterResponse.failure("Email is not valid");
-        }
-        UserEntity entity = new UserEntity(login, email, encoder.encode(password), acceptedTerms, acceptedNewsletter);
-        UserEntity saveUser = repository.save(entity);
-
-        String token = UUID.randomUUID().toString();
-
-        ConfirmationToken confirmationToken = new ConfirmationToken(
-                token,
-                LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(15),
-                saveUser
-        );
-        confirmationTokenUseCase.saveConfirmationToken(confirmationToken);
-
-        //TODO: SEND EMAIL
-        //return token
-        return RegisterResponse.success(saveUser);
     }
 
     @Override
