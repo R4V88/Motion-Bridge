@@ -2,6 +2,7 @@ package com.motionbridge.motionbridge.security.user;
 
 import com.motionbridge.motionbridge.security.config.AdminConfig;
 import com.motionbridge.motionbridge.users.application.port.SecurityGetUserUseCase;
+import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,7 +23,7 @@ public class MotionbridgeUserDetailsService implements UserDetailsService {
         }
         return repository
                 .findByUserEmailIgnoreCase(email)
-                .map(x -> new UserEntity(x))
+                .map(x -> new UserEntityDetails(x))
                 .orElseThrow(() -> new UsernameNotFoundException(email));
     }
 

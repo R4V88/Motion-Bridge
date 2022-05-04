@@ -1,5 +1,7 @@
 package com.motionbridge.motionbridge.users.application;
 
+import com.motionbridge.motionbridge.security.token.ConfirmationToken;
+import com.motionbridge.motionbridge.security.token.application.port.ConfirmationTokenUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
 import com.motionbridge.motionbridge.users.application.validators.EmailValidator;
 import com.motionbridge.motionbridge.users.db.UserEntityRepository;
@@ -12,18 +14,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @AllArgsConstructor
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserService implements UserDataManipulationUseCase {
-    private final EmailValidator emailValidator;
-    private final UserEntityRepository repository;
-    private final PasswordEncoder encoder;
+
+    final EmailValidator emailValidator;
+    final UserEntityRepository repository;
+    final PasswordEncoder encoder;
+    final ConfirmationTokenUseCase confirmationTokenUseCase;
 
     @Transactional
     @Override
@@ -49,12 +55,24 @@ public class UserService implements UserDataManipulationUseCase {
         if (repository.findByEmailIgnoreCase(email).isPresent()) {
             return RegisterResponse.failure("Account already exists");
         }
-        if(!emailValidator.test(email)) {
+        if (!emailValidator.test(email)) {
             return RegisterResponse.failure("Email is not valid");
         }
         UserEntity entity = new UserEntity(login, email, encoder.encode(password), acceptedTerms, acceptedNewsletter);
         UserEntity saveUser = repository.save(entity);
 
+        String token = UUID.randomUUID().toString();
+
+        ConfirmationToken confirmationToken = new ConfirmationToken(
+                token,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(15),
+                saveUser
+        );
+        confirmationTokenUseCase.saveConfirmationToken(confirmationToken);
+
+        //TODO: SEND EMAIL
+        //return token
         return RegisterResponse.success(saveUser);
     }
 

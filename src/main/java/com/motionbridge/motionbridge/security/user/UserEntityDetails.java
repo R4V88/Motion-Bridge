@@ -10,8 +10,8 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-public class UserEntity implements UserDetails {
-    private final com.motionbridge.motionbridge.users.entity.UserEntity entity;
+class UserEntityDetails implements UserDetails {
+    private final UserEntity entity;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
