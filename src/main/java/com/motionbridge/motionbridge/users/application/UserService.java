@@ -81,8 +81,8 @@ public class UserService implements UserDataManipulationUseCase {
     }
 
     @Override
-    public Optional<UserEntity> findByUserEmailIgnoreCase(String username) {
-        return repository.findByEmailIgnoreCase(username);
+    public Optional<UserEntity> findByUserEmailIgnoreCase(String email) {
+        return repository.findByEmailIgnoreCase(email);
     }
 
     @Transactional

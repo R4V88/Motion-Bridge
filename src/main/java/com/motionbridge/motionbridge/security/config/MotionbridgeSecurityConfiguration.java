@@ -2,7 +2,7 @@ package com.motionbridge.motionbridge.security.config;
 
 import com.motionbridge.motionbridge.security.JsonUsernameAuthenticationFilter;
 import com.motionbridge.motionbridge.security.user.MotionbridgeUserDetailsService;
-import com.motionbridge.motionbridge.users.application.port.SecurityGetUserUseCase;
+import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -26,7 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
-    private final SecurityGetUserUseCase securityGetUserUseCase;
+    private final UserDataManipulationUseCase userDataManipulationUseCase;
     private final AdminConfig config;
 
     @Bean
@@ -68,7 +68,7 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
     @Bean
     AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        MotionbridgeUserDetailsService detailsService = new MotionbridgeUserDetailsService(securityGetUserUseCase, config);
+        MotionbridgeUserDetailsService detailsService = new MotionbridgeUserDetailsService(userDataManipulationUseCase, config);
         provider.setUserDetailsService(detailsService);
         provider.setPasswordEncoder(passwordEncoder);
         return provider;

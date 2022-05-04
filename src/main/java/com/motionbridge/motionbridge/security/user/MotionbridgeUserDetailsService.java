@@ -1,8 +1,7 @@
 package com.motionbridge.motionbridge.security.user;
 
 import com.motionbridge.motionbridge.security.config.AdminConfig;
-import com.motionbridge.motionbridge.users.application.port.SecurityGetUserUseCase;
-import com.motionbridge.motionbridge.users.entity.UserEntity;
+import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class MotionbridgeUserDetailsService implements UserDetailsService {
 
-    private final SecurityGetUserUseCase repository;
+    private final UserDataManipulationUseCase userDataManipulationUseCase;
     private final AdminConfig config;
 
     @Override
@@ -21,13 +20,9 @@ public class MotionbridgeUserDetailsService implements UserDetailsService {
         if (config.getUsername().equalsIgnoreCase(email)) {
             return config.adminUser();
         }
-        return repository
+        return userDataManipulationUseCase
                 .findByUserEmailIgnoreCase(email)
                 .map(x -> new UserEntityDetails(x))
                 .orElseThrow(() -> new UsernameNotFoundException(email));
-    }
-
-    public String signUpUser(UserEntity userEntity) {
-        return "";
     }
 }

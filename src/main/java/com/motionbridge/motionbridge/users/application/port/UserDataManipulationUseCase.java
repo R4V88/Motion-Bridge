@@ -1,6 +1,5 @@
 package com.motionbridge.motionbridge.users.application.port;
 
-import com.motionbridge.motionbridge.commons.Either;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,12 +20,11 @@ public interface UserDataManipulationUseCase {
 
     UserEntity getCurrentUserById(Long userId);
 
-    Optional<UserEntity> findByUserEmailIgnoreCase(String username);
+    Optional<UserEntity> findByUserEmailIgnoreCase(String email);
 
     SwitchResponse switchVeryfiedStatus(Long id);
 
     SwitchResponse switchBlockStatus(Long id);
-
 
 
     @Value

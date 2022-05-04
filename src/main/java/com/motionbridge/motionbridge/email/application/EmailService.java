@@ -30,7 +30,7 @@ public class EmailService implements EmailSender {
             helper.setFrom("hello.motionbridge@gmail.com");
 
             mailSender.send(mimeMessage);
-        }catch (MessagingException e) {
+        } catch (MessagingException e) {
             log.error("Failed to send email", e);
             throw new IllegalStateException("Failed to send email");
         }
