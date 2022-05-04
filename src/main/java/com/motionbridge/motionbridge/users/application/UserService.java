@@ -21,9 +21,9 @@ import java.util.Optional;
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserService implements UserDataManipulationUseCase {
-    final EmailValidator emailValidator;
-    final UserEntityRepository repository;
-    final PasswordEncoder encoder;
+    private final EmailValidator emailValidator;
+    private final UserEntityRepository repository;
+    private final PasswordEncoder encoder;
 
     @Transactional
     @Override
@@ -53,7 +53,9 @@ public class UserService implements UserDataManipulationUseCase {
             return RegisterResponse.failure("Email is not valid");
         }
         UserEntity entity = new UserEntity(login, email, encoder.encode(password), acceptedTerms, acceptedNewsletter);
-        return RegisterResponse.success(repository.save(entity));
+        UserEntity saveUser = repository.save(entity);
+
+        return RegisterResponse.success(saveUser);
     }
 
     @Override

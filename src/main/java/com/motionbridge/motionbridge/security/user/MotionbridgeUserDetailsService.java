@@ -22,11 +22,11 @@ public class MotionbridgeUserDetailsService implements UserDetailsService {
         }
         return repository
                 .findByUserEmailIgnoreCase(email)
-                .map(x -> new UserEntityDetails(x))
+                .map(x -> new UserEntity(x))
                 .orElseThrow(() -> new UsernameNotFoundException(email));
     }
 
-    public String signUpUser(UserEntityDetails userEntityDetails) {
+    public String signUpUser(UserEntity userEntity) {
         return "";
     }
 }
