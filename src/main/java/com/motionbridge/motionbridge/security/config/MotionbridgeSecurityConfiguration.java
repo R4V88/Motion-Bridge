@@ -16,7 +16,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -26,7 +25,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableConfigurationProperties(AdminConfig.class)
 public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private final SecurityGetUserUseCase userEntityRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final SecurityGetUserUseCase securityGetUserUseCase;
     private final AdminConfig config;
 
     @Bean
@@ -68,14 +68,9 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
     @Bean
     AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        MotionbridgeUserDetailsService detailsService = new MotionbridgeUserDetailsService(userEntityRepository, config);
+        MotionbridgeUserDetailsService detailsService = new MotionbridgeUserDetailsService(securityGetUserUseCase, config);
         provider.setUserDetailsService(detailsService);
-        provider.setPasswordEncoder(passwordEncoder());
+        provider.setPasswordEncoder(passwordEncoder);
         return provider;
-    }
-
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }

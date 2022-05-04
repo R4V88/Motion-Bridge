@@ -1,6 +1,7 @@
 package com.motionbridge.motionbridge.users.application;
 
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
+import com.motionbridge.motionbridge.users.application.validators.EmailValidator;
 import com.motionbridge.motionbridge.users.db.UserEntityRepository;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AccessLevel;
@@ -20,7 +21,7 @@ import java.util.Optional;
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserService implements UserDataManipulationUseCase {
-
+    final EmailValidator emailValidator;
     final UserEntityRepository repository;
     final PasswordEncoder encoder;
 
@@ -47,6 +48,9 @@ public class UserService implements UserDataManipulationUseCase {
     public RegisterResponse register(String login, String email, String password, Boolean acceptedTerms, Boolean acceptedNewsletter) {
         if (repository.findByEmailIgnoreCase(email).isPresent()) {
             return RegisterResponse.failure("Account already exists");
+        }
+        if(!emailValidator.test(email)) {
+            return RegisterResponse.failure("Email is not valid");
         }
         UserEntity entity = new UserEntity(login, email, encoder.encode(password), acceptedTerms, acceptedNewsletter);
         return RegisterResponse.success(repository.save(entity));

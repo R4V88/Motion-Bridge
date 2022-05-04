@@ -26,4 +26,7 @@ public class MotionbridgeUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(email));
     }
 
+    public String signUpUser(UserEntityDetails userEntityDetails) {
+        return "";
+    }
 }
