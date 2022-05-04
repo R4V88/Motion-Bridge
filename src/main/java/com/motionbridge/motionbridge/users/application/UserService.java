@@ -44,11 +44,11 @@ public class UserService implements UserDataManipulationUseCase {
 
     @Transactional
     @Override
-    public RegisterResponse register(String login, String username, String password, Boolean acceptedTerms, Boolean acceptedNewsletter) {
-        if (repository.findByUsernameIgnoreCase(username).isPresent()) {
+    public RegisterResponse register(String login, String email, String password, Boolean acceptedTerms, Boolean acceptedNewsletter) {
+        if (repository.findByEmailIgnoreCase(email).isPresent()) {
             return RegisterResponse.failure("Account already exists");
         }
-        UserEntity entity = new UserEntity(login, username, encoder.encode(password), acceptedTerms, acceptedNewsletter);
+        UserEntity entity = new UserEntity(login, email, encoder.encode(password), acceptedTerms, acceptedNewsletter);
         return RegisterResponse.success(repository.save(entity));
     }
 
@@ -90,8 +90,8 @@ public class UserService implements UserDataManipulationUseCase {
     }
 
     @Override
-    public Optional<UserEntity> findByUsernameIgnoreCase(String username) {
-        return repository.findByUsernameIgnoreCase(username);
+    public Optional<UserEntity> findByUserEmailIgnoreCase(String username) {
+        return repository.findByEmailIgnoreCase(username);
     }
 
     @Transactional

@@ -1,5 +1,7 @@
-package com.motionbridge.motionbridge.security;
+package com.motionbridge.motionbridge.security.config;
 
+import com.motionbridge.motionbridge.security.JsonUsernameAuthenticationFilter;
+import com.motionbridge.motionbridge.security.user.MotionbridgeUserDetailsService;
 import com.motionbridge.motionbridge.users.application.port.SecurityGetUserUseCase;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;

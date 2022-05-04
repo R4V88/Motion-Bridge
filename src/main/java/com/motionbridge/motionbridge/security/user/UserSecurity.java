@@ -1,4 +1,4 @@
-package com.motionbridge.motionbridge.security;
+package com.motionbridge.motionbridge.security.user;
 
 
 import org.springframework.security.core.userdetails.UserDetails;

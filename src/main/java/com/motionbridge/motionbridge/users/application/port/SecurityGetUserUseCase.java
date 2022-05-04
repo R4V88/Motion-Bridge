@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface SecurityGetUserUseCase {
 
-    Optional<UserEntity> findByUsernameIgnoreCase(String username);
+    Optional<UserEntity> findByUserEmailIgnoreCase(String email);
 }

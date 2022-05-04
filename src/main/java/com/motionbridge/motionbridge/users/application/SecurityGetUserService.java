@@ -15,7 +15,7 @@ public class SecurityGetUserService implements SecurityGetUserUseCase {
     final UserEntityRepository repository;
 
     @Override
-    public Optional<UserEntity> findByUsernameIgnoreCase(String username) {
-        return repository.findByUsernameIgnoreCase(username);
+    public Optional<UserEntity> findByUserEmailIgnoreCase(String email) {
+        return repository.findByEmailIgnoreCase(email);
     }
 }

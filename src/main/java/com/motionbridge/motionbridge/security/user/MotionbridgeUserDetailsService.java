@@ -1,11 +1,14 @@
-package com.motionbridge.motionbridge.security;
+package com.motionbridge.motionbridge.security.user;
 
+import com.motionbridge.motionbridge.security.config.AdminConfig;
 import com.motionbridge.motionbridge.users.application.port.SecurityGetUserUseCase;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
+@Service
 @AllArgsConstructor
 public class MotionbridgeUserDetailsService implements UserDetailsService {
 
@@ -13,14 +16,14 @@ public class MotionbridgeUserDetailsService implements UserDetailsService {
     private final AdminConfig config;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if (config.getUsername().equalsIgnoreCase(username)) {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        if (config.getUsername().equalsIgnoreCase(email)) {
             return config.adminUser();
         }
         return repository
-                .findByUsernameIgnoreCase(username)
+                .findByUserEmailIgnoreCase(email)
                 .map(x -> new UserEntityDetails(x))
-                .orElseThrow(() -> new UsernameNotFoundException(username));
+                .orElseThrow(() -> new UsernameNotFoundException(email));
     }
 
 }

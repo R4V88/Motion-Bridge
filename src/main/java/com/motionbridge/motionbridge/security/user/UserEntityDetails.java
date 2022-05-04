@@ -1,4 +1,4 @@
-package com.motionbridge.motionbridge.security;
+package com.motionbridge.motionbridge.security.user;
 
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AllArgsConstructor;
@@ -29,7 +29,7 @@ public class UserEntityDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return entity.getUsername();
+        return entity.getEmail();
     }
 
     @Override
@@ -39,7 +39,7 @@ public class UserEntityDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !entity.getIsBlocked();
     }
 
     @Override
@@ -49,6 +49,6 @@ public class UserEntityDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return entity.getIsVerified();
     }
 }

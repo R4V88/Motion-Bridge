@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,7 @@ import static com.motionbridge.motionbridge.order.application.helper.OrderPriceC
 public class CreateOrderService implements CreateOrderUseCase {
     final OrderRepository orderRepository;
 
+    @Autowired
     final UserDataManipulationUseCase userService;
     final ManipulateSubscriptionUseCase subscriptionService;
     final ManipulateProductUseCase productService;

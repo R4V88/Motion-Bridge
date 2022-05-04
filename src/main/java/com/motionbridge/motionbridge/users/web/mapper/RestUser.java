@@ -12,7 +12,7 @@ public class RestUser {
 
     public static RestUser toCreateRestUser(UserEntity userEntity) {
         return new RestUser(
-                userEntity.getUsername(),
+                userEntity.getEmail(),
                 userEntity.getLogin(),
                 userEntity.getIsVerified(),
                 userEntity.getAcceptedNewsletter()

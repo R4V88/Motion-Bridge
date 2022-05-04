@@ -15,7 +15,7 @@ public interface UserDataManipulationUseCase {
 
     UpdatePasswordResponse updatePassword(UpdatePasswordCommand command);
 
-    RegisterResponse register(String login, String username, String password, Boolean acceptedTerms, Boolean acceptedNewsletter);
+    RegisterResponse register(String login, String email, String password, Boolean acceptedTerms, Boolean acceptedNewsletter);
 
     Optional<UserEntity> getUserById(Long id);
 
@@ -23,7 +23,7 @@ public interface UserDataManipulationUseCase {
 
     UserEntity getCurrentUserById(Long userId);
 
-    Optional<UserEntity> findByUsernameIgnoreCase(String username);
+    Optional<UserEntity> findByUserEmailIgnoreCase(String username);
 
     SwitchResponse switchVeryfiedStatus(Long id);
 
