@@ -26,9 +26,9 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@Tag(name = "/api/discount", description = "Manipulate discount")
+@Tag(name = "/api/discounts", description = "Manipulate discount")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@RequestMapping("/api/discount")
+@RequestMapping("/api/discounts")
 public class DiscountController {
 
     final ManipulateDiscountUseCase discountService;

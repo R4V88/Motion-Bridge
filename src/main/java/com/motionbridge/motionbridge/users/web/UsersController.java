@@ -37,7 +37,7 @@ import static com.motionbridge.motionbridge.users.web.mapper.RestUser.toCreateRe
 
 @RestController
 @AllArgsConstructor
-@Tag(name = "/api/user", description = "Manipulate Users")
+@Tag(name = "/api/users", description = "Manipulate Users")
 @RequestMapping("/api/users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UsersController {
