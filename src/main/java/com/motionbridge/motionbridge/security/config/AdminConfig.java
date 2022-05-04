@@ -1,4 +1,4 @@
-package com.motionbridge.motionbridge.security;
+package com.motionbridge.motionbridge.security.config;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -18,7 +18,7 @@ public class AdminConfig {
     String password;
     Set<String> role;
 
-    User adminUser() {
+    public User adminUser() {
         return new User(
                 username,
                 password,

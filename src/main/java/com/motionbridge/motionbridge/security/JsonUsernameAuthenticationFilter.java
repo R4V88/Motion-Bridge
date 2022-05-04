@@ -20,7 +20,7 @@ public class JsonUsernameAuthenticationFilter extends UsernamePasswordAuthentica
         LoginCommand command = mapper.readValue(request.getReader(), LoginCommand.class);
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                command.getUsername(), command.getPassword()
+                command.getEmail(), command.getPassword()
         );
         return this.getAuthenticationManager().authenticate(token);
     }

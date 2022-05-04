@@ -17,10 +17,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +26,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -40,25 +37,14 @@ import static com.motionbridge.motionbridge.users.web.mapper.RestUser.toCreateRe
 
 @RestController
 @AllArgsConstructor
-@Tag(name = "/api/user", description = "Manipulate Users")
-@RequestMapping("/api/user")
+@Tag(name = "/api/users", description = "Manipulate Users")
+@RequestMapping("/api/users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UsersController {
 
     final UserDataManipulationUseCase user;
     final ManipulateOrderUseCase orderService;
     final ManipulateSubscriptionUseCase subscriptionService;
-
-    @Operation(summary = "ALL, Rejestracja użytkownika")
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterCommand command) {
-        return user
-                .register(command.name, command.email, command.password, command.acceptedTerms, command.acceptedNewsletter)
-                .handle(
-                        entity -> ResponseEntity.accepted().build(),
-                        error -> ResponseEntity.badRequest().build()
-                );
-    }
 
     //Todo    @Secured()
     @Operation(summary = "USER zalogowany, zmiana hasła")
@@ -110,13 +96,6 @@ public class UsersController {
     @ResponseStatus(HttpStatus.OK)
     public SwitchResponse blockUserById(@PathVariable Long id) {
         return user.switchBlockStatus(id);
-    }
-
-    @Operation(summary = "ADMIN, zmiana statusu uzytkownika po id z unVerified / Verified i na odwrót")
-    @PutMapping("/{id}/verify")
-    @ResponseStatus(HttpStatus.OK)
-    public SwitchResponse VerifyUserById(@PathVariable Long id) {
-        return user.switchVeryfiedStatus(id);
     }
 
     @Data

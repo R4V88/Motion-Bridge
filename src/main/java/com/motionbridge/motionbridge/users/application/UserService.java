@@ -24,6 +24,7 @@ public class UserService implements UserDataManipulationUseCase {
     final UserEntityRepository repository;
     final PasswordEncoder encoder;
 
+
     @Transactional
     @Override
     public UpdatePasswordResponse updatePassword(UpdatePasswordCommand command) {
@@ -40,16 +41,6 @@ public class UserService implements UserDataManipulationUseCase {
         if (!command.getPassword().equals(user.getPassword())) {
             user.setPassword(encoder.encode(command.getPassword()));
         }
-    }
-
-    @Transactional
-    @Override
-    public RegisterResponse register(String login, String username, String password, Boolean acceptedTerms, Boolean acceptedNewsletter) {
-        if (repository.findByUsernameIgnoreCase(username).isPresent()) {
-            return RegisterResponse.failure("Account already exists");
-        }
-        UserEntity entity = new UserEntity(login, username, encoder.encode(password), acceptedTerms, acceptedNewsletter);
-        return RegisterResponse.success(repository.save(entity));
     }
 
     @Override
@@ -90,8 +81,8 @@ public class UserService implements UserDataManipulationUseCase {
     }
 
     @Override
-    public Optional<UserEntity> findByUsernameIgnoreCase(String username) {
-        return repository.findByUsernameIgnoreCase(username);
+    public Optional<UserEntity> findByUserEmailIgnoreCase(String email) {
+        return repository.findByEmailIgnoreCase(email);
     }
 
     @Transactional

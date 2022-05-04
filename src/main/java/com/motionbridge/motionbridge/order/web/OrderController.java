@@ -28,9 +28,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @AllArgsConstructor
-@Tag(name = "/api/order", description = "Manipulate orders")
+@Tag(name = "/api/orders", description = "Manipulate orders")
 @RestController
-@RequestMapping("/api/order")
+@RequestMapping("/api/orders")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderController {
 

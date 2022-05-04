@@ -1,6 +1,8 @@
-package com.motionbridge.motionbridge.security;
+package com.motionbridge.motionbridge.security.config;
 
-import com.motionbridge.motionbridge.users.application.port.SecurityGetUserUseCase;
+import com.motionbridge.motionbridge.security.JsonUsernameAuthenticationFilter;
+import com.motionbridge.motionbridge.security.user.MotionbridgeUserDetailsService;
+import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -14,7 +16,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -24,7 +25,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableConfigurationProperties(AdminConfig.class)
 public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private final SecurityGetUserUseCase userEntityRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserDataManipulationUseCase userDataManipulationUseCase;
     private final AdminConfig config;
 
     @Bean
@@ -66,14 +68,9 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
     @Bean
     AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        MotionbridgeUserDetailsService detailsService = new MotionbridgeUserDetailsService(userEntityRepository, config);
+        MotionbridgeUserDetailsService detailsService = new MotionbridgeUserDetailsService(userDataManipulationUseCase, config);
         provider.setUserDetailsService(detailsService);
-        provider.setPasswordEncoder(passwordEncoder());
+        provider.setPasswordEncoder(passwordEncoder);
         return provider;
-    }
-
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }

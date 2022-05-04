@@ -47,7 +47,7 @@ public class UserEntity extends BaseEntity {
 
     Boolean acceptedNewsletter;
 
-    String username;
+    String email;
 
     String password;
 
@@ -59,9 +59,9 @@ public class UserEntity extends BaseEntity {
     @ElementCollection(fetch = FetchType.EAGER)
     Set<String> roles = new HashSet<>();
 
-    public UserEntity(String login, String username, String password, Boolean acceptedTerms, Boolean acceptedNewsletter) {
+    public UserEntity(String login, String email, String password, Boolean acceptedTerms, Boolean acceptedNewsletter) {
         this.login = login;
-        this.username = username;
+        this.email = email;
         this.password = password;
         this.acceptedTerms = acceptedTerms;
         this.acceptedNewsletter = acceptedNewsletter;

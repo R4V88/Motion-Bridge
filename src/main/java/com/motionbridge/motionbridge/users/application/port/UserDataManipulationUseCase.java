@@ -1,6 +1,5 @@
 package com.motionbridge.motionbridge.users.application.port;
 
-import com.motionbridge.motionbridge.commons.Either;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,35 +14,18 @@ public interface UserDataManipulationUseCase {
 
     UpdatePasswordResponse updatePassword(UpdatePasswordCommand command);
 
-    RegisterResponse register(String login, String username, String password, Boolean acceptedTerms, Boolean acceptedNewsletter);
-
     Optional<UserEntity> getUserById(Long id);
 
     UserEntity retrieveOrderByUserId(Long id);
 
     UserEntity getCurrentUserById(Long userId);
 
-    Optional<UserEntity> findByUsernameIgnoreCase(String username);
+    Optional<UserEntity> findByUserEmailIgnoreCase(String email);
 
     SwitchResponse switchVeryfiedStatus(Long id);
 
     SwitchResponse switchBlockStatus(Long id);
 
-    class RegisterResponse extends Either<String, UserEntity> {
-
-        public RegisterResponse(boolean success, String left, UserEntity right) {
-            super(success, left, right);
-        }
-
-        public static RegisterResponse success(UserEntity right) {
-            return new RegisterResponse(true, null, right);
-        }
-
-        public static RegisterResponse failure(String left) {
-            return new RegisterResponse(false, left, null);
-        }
-
-    }
 
     @Value
     @Builder
