@@ -53,4 +53,12 @@ public class Product extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     TimePeriod timePeriod;
+
+    public Product(ProductName name, BigDecimal price, Currency currency, Integer animationQuantity, TimePeriod timePeriod) {
+        this.name = name;
+        this.price = price;
+        this.currency = currency;
+        this.animationQuantity = animationQuantity;
+        this.timePeriod = timePeriod;
+    }
 }

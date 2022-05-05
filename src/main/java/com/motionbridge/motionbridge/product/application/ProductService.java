@@ -39,13 +39,13 @@ public class ProductService implements ManipulateProductUseCase {
     @Override
     @Transactional
     public AddProductResponse addProduct(CreateProductCommand command) {
-        Product product = Product.builder()
-                .name(ProductName.valueOf(command.getName().toUpperCase()))
-                .animationQuantity(command.getAnimationQuantity())
-                .price(command.getPrice())
-                .currency(Currency.valueOf(command.getCurrency().toUpperCase()))
-                .timePeriod(TimePeriod.valueOf(command.getTimePeriod().toUpperCase()))
-                .build();
+        Product product = new Product(
+                ProductName.valueOf(command.getName().toUpperCase()),
+                command.getPrice(),
+                Currency.valueOf(command.getCurrency().toUpperCase()),
+                command.getAnimationQuantity(),
+                TimePeriod.valueOf(command.getTimePeriod().toUpperCase())
+        );
         Product saveProduct = repository.save(product);
         return AddProductResponse.success(saveProduct.getId());
     }
