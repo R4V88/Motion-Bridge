@@ -24,10 +24,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Builder
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Product extends BaseEntity {
@@ -46,11 +44,18 @@ public class Product extends BaseEntity {
     @LastModifiedDate
     LocalDateTime updatedAt;
 
-    @Builder.Default
     Boolean isActive = false;
 
     Integer animationQuantity;
 
     @Enumerated(EnumType.STRING)
     TimePeriod timePeriod;
+
+    public Product(ProductName name, BigDecimal price, Currency currency, Integer animationQuantity, TimePeriod timePeriod) {
+        this.name = name;
+        this.price = price;
+        this.currency = currency;
+        this.animationQuantity = animationQuantity;
+        this.timePeriod = timePeriod;
+    }
 }

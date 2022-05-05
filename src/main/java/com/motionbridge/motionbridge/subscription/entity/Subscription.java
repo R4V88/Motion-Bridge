@@ -27,31 +27,23 @@ import static java.time.LocalDateTime.now;
 @Getter
 @Setter
 @Entity
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EntityListeners(AuditingEntityListener.class)
 public class Subscription extends BaseEntity {
 
-    @Builder.Default
     Boolean isActive = false;
 
-    @Builder.Default
     transient LocalDateTime startDate = now();
 
-    @Builder.Default
     transient LocalDateTime endDate = now();
 
-    @Builder.Default
     BigDecimal price = new BigDecimal("00.00");
 
-    @Builder.Default
     BigDecimal currentPrice = new BigDecimal("00.00");
 
     Integer animationsLimit;
 
-    @Builder.Default
     Integer animationsLimitCounter = 0;
 
     String type;
@@ -60,7 +52,6 @@ public class Subscription extends BaseEntity {
 
     Long productId;
 
-    @Builder.Default
     Boolean autoRenew = true;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -75,5 +66,23 @@ public class Subscription extends BaseEntity {
 
     @LastModifiedDate
     LocalDateTime updatedAt;
+
+    public Subscription(BigDecimal price,
+                        BigDecimal currentPrice,
+                        Integer animationsLimit,
+                        String type,
+                        String timePeriod,
+                        Long productId,
+                        UserEntity user,
+                        Order order) {
+        this.price = price;
+        this.currentPrice = currentPrice;
+        this.animationsLimit = animationsLimit;
+        this.type = type;
+        this.timePeriod = timePeriod;
+        this.productId = productId;
+        this.user = user;
+        this.order = order;
+    }
 }
 

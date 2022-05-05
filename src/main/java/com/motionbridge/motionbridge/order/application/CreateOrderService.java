@@ -139,10 +139,7 @@ public class CreateOrderService implements CreateOrderUseCase {
     @Transactional
     @Override
     public Order saveOrder(CreateOrderCommand command) {
-        Order order = Order
-                .builder()
-                .user(command.getUser())
-                .build();
+        Order order = new Order(command.getUser());
 
         return orderRepository.save(order);
     }

@@ -21,9 +21,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Discount extends BaseEntity {
@@ -55,9 +53,26 @@ public class Discount extends BaseEntity {
 
     LocalDateTime endDate;
 
-    @Builder.Default()
     Boolean isActive = false;
 
     //procentowa zniżka wyrazona liczba calkowita np 20% to 20.
     Integer value;
+
+    public Discount(String code,
+                    SubscriptionType subscriptionType,
+                    SubscriptionPeriod subscriptionPeriod,
+                    LocalDateTime startDate,
+                    DurationPeriod durationPeriod,
+                    Integer duration,
+                    LocalDateTime endDate,
+                    Integer value) {
+        this.code = code;
+        this.subscriptionType = subscriptionType;
+        this.subscriptionPeriod = subscriptionPeriod;
+        this.startDate = startDate;
+        this.durationPeriod = durationPeriod;
+        this.duration = duration;
+        this.endDate = endDate;
+        this.value = value;
+    }
 }

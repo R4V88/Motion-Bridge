@@ -64,16 +64,16 @@ public class ManipulateSubscriptionService implements ManipulateSubscriptionUseC
     @Transactional
     @Override
     public void save(CreateSubscriptionCommand command) {
-        Subscription subscription = Subscription.builder()
-                .price(command.getPrice())
-                .currentPrice(command.getCurrentPrice())
-                .animationsLimit(command.getAnimationsLimit())
-                .type(command.getType())
-                .timePeriod(command.getTimePeriod())
-                .user(command.getUser())
-                .order(command.getOrder())
-                .productId(command.getProductId())
-                .build();
+        Subscription subscription = new Subscription(
+                command.getPrice(),
+                command.getCurrentPrice(),
+                command.getAnimationsLimit(),
+                command.getType(),
+                command.getTimePeriod(),
+                command.getProductId(),
+                command.getUser(),
+                command.getOrder()
+        );
         repository.save(subscription);
     }
 
