@@ -1,4 +1,4 @@
-package com.motionbridge.motionbridge.security.token;
+package com.motionbridge.motionbridge.users.entity;
 
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.Getter;

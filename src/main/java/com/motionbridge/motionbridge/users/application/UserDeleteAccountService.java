@@ -1,7 +1,7 @@
 package com.motionbridge.motionbridge.users.application;
 
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
-import com.motionbridge.motionbridge.security.token.application.port.ConfirmationTokenUseCase;
+import com.motionbridge.motionbridge.users.application.port.ConfirmationTokenUseCase;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDeleteAccountUseCase;
 import com.motionbridge.motionbridge.users.db.UserEntityRepository;

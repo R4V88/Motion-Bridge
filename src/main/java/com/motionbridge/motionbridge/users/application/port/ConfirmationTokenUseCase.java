@@ -1,6 +1,6 @@
-package com.motionbridge.motionbridge.security.token.application.port;
+package com.motionbridge.motionbridge.users.application.port;
 
-import com.motionbridge.motionbridge.security.token.ConfirmationToken;
+import com.motionbridge.motionbridge.users.entity.ConfirmationToken;
 
 import java.util.Optional;
 
