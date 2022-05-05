@@ -24,6 +24,8 @@ public interface ManipulateSubscriptionUseCase {
 
     void deleteByIdAndOrderId(Long orderId, Long subscriptionId);
 
+    void deleteAllByUserId(Long id);
+
     AutoRenewResponse autoRenew(Long id);
 
     @Value

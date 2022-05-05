@@ -22,4 +22,6 @@ public interface ManipulateOrderUseCase {
     RestOrder getRestOrderByOrderId(Long orderId);
 
     Order getOrderById(Long orderId);
+
+    void deleteAllOrdersByUserId(Long id);
 }

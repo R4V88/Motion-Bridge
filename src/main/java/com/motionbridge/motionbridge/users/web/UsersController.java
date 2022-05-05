@@ -7,6 +7,7 @@ import com.motionbridge.motionbridge.users.application.port.UserDataManipulation
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.SwitchResponse;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordCommand;
 import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordResponse;
+import com.motionbridge.motionbridge.users.application.port.UserDeleteAccountUseCase;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import com.motionbridge.motionbridge.users.web.mapper.RestSubscription;
 import com.motionbridge.motionbridge.users.web.mapper.RestUser;
@@ -17,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -45,6 +47,7 @@ public class UsersController {
     final UserDataManipulationUseCase user;
     final ManipulateOrderUseCase orderService;
     final ManipulateSubscriptionUseCase subscriptionService;
+    final UserDeleteAccountUseCase deleteAccountUseCase;
 
     //Todo    @Secured()
     @Operation(summary = "USER zalogowany, zmiana hasła")
@@ -68,6 +71,13 @@ public class UsersController {
         } else
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 
+    }
+
+    @Operation(summary = "USER zalogowany, usunięcie konta")
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteById(@PathVariable Long id) {
+        deleteAccountUseCase.deleteUserById(id);
     }
 
     @Operation(summary = "USER zalogowany, pobranie wszystkich orderów użytkowników")

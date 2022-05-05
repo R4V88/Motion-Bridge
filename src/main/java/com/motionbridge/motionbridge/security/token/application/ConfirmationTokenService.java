@@ -30,4 +30,9 @@ public class ConfirmationTokenService implements ConfirmationTokenUseCase {
         return confirmationTokenRepository.updateConfirmedAt(
                 token, LocalDateTime.now());
     }
+
+    @Override
+    public void deleteTokenByUserId(Long id) {
+        confirmationTokenRepository.deleteByUserEntityId(id);
+    }
 }

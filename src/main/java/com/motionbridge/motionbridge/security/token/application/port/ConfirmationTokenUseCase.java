@@ -10,4 +10,6 @@ public interface ConfirmationTokenUseCase {
     Optional<ConfirmationToken> getToken(String token);
 
     Integer setConfirmedAt(String token);
+
+    void deleteTokenByUserId(Long id);
 }

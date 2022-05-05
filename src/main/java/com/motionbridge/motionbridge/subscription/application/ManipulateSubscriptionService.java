@@ -41,6 +41,11 @@ public class ManipulateSubscriptionService implements ManipulateSubscriptionUseC
         repository.deleteSubscriptionByIdAndOrderId(orderId, subscriptionId);
     }
 
+    @Override
+    public void deleteAllByUserId(Long id) {
+        repository.deleteAllByUserId(id);
+    }
+
     @Transactional
     @Override
     public AutoRenewResponse autoRenew(Long id) {
