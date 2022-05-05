@@ -3,10 +3,10 @@ package com.motionbridge.motionbridge.users.web;
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.order.web.mapper.RestRichOrder;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
-import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
-import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.SwitchResponse;
-import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordCommand;
-import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase.UpdatePasswordResponse;
+import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase;
+import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase.SwitchResponse;
+import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase.UpdatePasswordCommand;
+import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase.UpdatePasswordResponse;
 import com.motionbridge.motionbridge.users.application.port.UserDeleteAccountUseCase;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import com.motionbridge.motionbridge.users.web.mapper.RestSubscription;
@@ -44,7 +44,7 @@ import static com.motionbridge.motionbridge.users.web.mapper.RestUser.toCreateRe
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UsersController {
 
-    final UserDataManipulationUseCase user;
+    final ManipulateUserDataUseCase user;
     final ManipulateOrderUseCase orderService;
     final ManipulateSubscriptionUseCase subscriptionService;
     final UserDeleteAccountUseCase deleteAccountUseCase;

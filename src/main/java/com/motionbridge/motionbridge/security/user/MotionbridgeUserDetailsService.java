@@ -1,7 +1,7 @@
 package com.motionbridge.motionbridge.security.user;
 
 import com.motionbridge.motionbridge.security.config.AdminConfig;
-import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
+import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class MotionbridgeUserDetailsService implements UserDetailsService {
 
-    private final UserDataManipulationUseCase userDataManipulationUseCase;
+    private final ManipulateUserDataUseCase userDataManipulationUseCase;
     private final AdminConfig config;
 
     @Override

@@ -10,7 +10,7 @@ import com.motionbridge.motionbridge.product.application.port.ManipulateProductU
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase.CreateSubscriptionCommand;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
-import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
+import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,7 +36,7 @@ public class CreateOrderService implements CreateOrderUseCase {
     final OrderRepository orderRepository;
 
     @Autowired
-    final UserDataManipulationUseCase userService;
+    final ManipulateUserDataUseCase userService;
     final ManipulateSubscriptionUseCase subscriptionService;
     final ManipulateProductUseCase productService;
     final ManipulateDiscountUseCase discountService;

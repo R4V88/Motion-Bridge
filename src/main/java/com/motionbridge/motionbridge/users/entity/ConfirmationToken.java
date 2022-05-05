@@ -1,11 +1,10 @@
 package com.motionbridge.motionbridge.users.entity;
 
-import com.motionbridge.motionbridge.users.entity.UserEntity;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import lombok.experimental.FieldDefaults;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.Column;
@@ -22,6 +21,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ConfirmationToken {
     @SequenceGenerator(
             name = "confirmation_token_sequence",
@@ -33,24 +33,24 @@ public class ConfirmationToken {
             strategy = GenerationType.SEQUENCE,
             generator = "confirmation_token_sequence"
     )
-    private Long id;
+    Long id;
 
     @Column(nullable = false)
-    private String token;
+    String token;
 
     @CreatedDate
-    private LocalDateTime createdAt;
+    LocalDateTime createdAt;
 
-    private LocalDateTime expiresAt;
+    LocalDateTime expiresAt;
 
-    private LocalDateTime confirmedAt;
+    LocalDateTime confirmedAt;
 
     @ManyToOne
     @JoinColumn(
             nullable = false,
             name = "user_id"
     )
-    private UserEntity userEntity;
+    UserEntity userEntity;
 
     public ConfirmationToken(String token,
                              LocalDateTime createdAt,
