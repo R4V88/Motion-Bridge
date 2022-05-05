@@ -26,29 +26,22 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Order extends BaseEntity {
-    @Builder.Default
     Long discountId = 0L;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     UserEntity user;
 
-    @Builder.Default
     BigDecimal currentPrice = new BigDecimal("00.00");
 
-    @Builder.Default
     BigDecimal totalPrice = new BigDecimal("00.00");
 
-    @Builder.Default
     Boolean isLocked = false;
 
-    @Builder.Default
     Boolean activeDiscount = false;
 
     @CreatedDate
@@ -57,7 +50,10 @@ public class Order extends BaseEntity {
     @LastModifiedDate
     LocalDateTime updatedAt;
 
-    @Builder.Default
     @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.NEW;
+
+    public Order(UserEntity user) {
+        this.user = user;
+    }
 }

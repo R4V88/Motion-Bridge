@@ -28,7 +28,6 @@ import static java.time.LocalDateTime.now;
 @Setter
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EntityListeners(AuditingEntityListener.class)
 public class Subscription extends BaseEntity {
@@ -68,7 +67,14 @@ public class Subscription extends BaseEntity {
     @LastModifiedDate
     LocalDateTime updatedAt;
 
-    public Subscription(BigDecimal price, BigDecimal currentPrice, Integer animationsLimit, String type, String timePeriod, Long productId, UserEntity user, Order order) {
+    public Subscription(BigDecimal price,
+                        BigDecimal currentPrice,
+                        Integer animationsLimit,
+                        String type,
+                        String timePeriod,
+                        Long productId,
+                        UserEntity user,
+                        Order order) {
         this.price = price;
         this.currentPrice = currentPrice;
         this.animationsLimit = animationsLimit;

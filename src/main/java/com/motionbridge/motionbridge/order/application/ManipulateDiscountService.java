@@ -42,17 +42,16 @@ public class ManipulateDiscountService implements ManipulateDiscountUseCase {
 
     private static Discount toDiscount(CreateDiscountCommand command) {
         calculatedEndDate = toSetEndDate(command);
-        return Discount
-                .builder()
-                .code(command.getCode().toUpperCase())
-                .subscriptionType(SubscriptionType.valueOf(command.getSubscriptionType().toUpperCase()))
-                .subscriptionPeriod(SubscriptionPeriod.valueOf(command.getSubscriptionPeriod().toUpperCase()))
-                .startDate(command.getStartDate())
-                .durationPeriod(DurationPeriod.valueOf(command.getDurationPeriod().toUpperCase()))
-                .duration(command.getDuration())
-                .endDate(calculatedEndDate)
-                .value(command.getValue())
-                .build();
+        return new Discount(
+                command.getCode().toUpperCase(),
+                SubscriptionType.valueOf(command.getSubscriptionType().toUpperCase()),
+                SubscriptionPeriod.valueOf(command.getSubscriptionPeriod().toUpperCase()),
+                command.getStartDate(),
+                DurationPeriod.valueOf(command.getDurationPeriod().toUpperCase()),
+                command.getDuration(),
+                calculatedEndDate,
+                command.getValue()
+        );
     }
 
     private static RestDiscount toResponseDiscount(Discount discount) {

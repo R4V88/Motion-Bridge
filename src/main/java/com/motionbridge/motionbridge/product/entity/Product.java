@@ -24,10 +24,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Builder
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Product extends BaseEntity {
@@ -46,7 +44,6 @@ public class Product extends BaseEntity {
     @LastModifiedDate
     LocalDateTime updatedAt;
 
-    @Builder.Default
     Boolean isActive = false;
 
     Integer animationQuantity;
