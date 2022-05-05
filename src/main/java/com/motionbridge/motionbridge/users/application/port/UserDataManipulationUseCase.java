@@ -22,10 +22,7 @@ public interface UserDataManipulationUseCase {
 
     Optional<UserEntity> findByUserEmailIgnoreCase(String email);
 
-    SwitchResponse switchVeryfiedStatus(Long id);
-
     SwitchResponse switchBlockStatus(Long id);
-
 
     @Value
     @Builder

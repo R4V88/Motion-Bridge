@@ -54,6 +54,11 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
     }
 
     @Override
+    public void deleteAllOrdersByUserId(Long id) {
+        orderRepository.deleteAllByUserId(id);
+    }
+
+    @Override
     public Order getOrderWithStatusNewByUserId(Long userId) {
         Optional<Order> retrievedOrder = getOptionalOrderWithStatusNewByUserId(userId);
         Order order;
