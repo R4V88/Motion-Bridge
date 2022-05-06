@@ -2,9 +2,11 @@ package com.motionbridge.motionbridge.product.web;
 
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.CreateProductCommand;
+import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.SwitchStatusResponse;
 import com.motionbridge.motionbridge.product.web.mapper.RestActiveProduct;
 import com.motionbridge.motionbridge.product.web.mapper.RestProduct;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
@@ -39,12 +42,13 @@ public class ProductController {
 
     @Operation(summary = "ALL, wszystkie AKTYWNE produkty")
     @GetMapping("/active")
-    @ResponseStatus(HttpStatus.OK)
     public List<RestActiveProduct> getActiveProducts() {
         return productService.getActiveProducts();
     }
 
     @Operation(summary = "ADMIN, dodanie nowego produktu")
+    @ApiResponse(description = "OK", responseCode = "200")
+    @ApiResponse(description = "Invalid arguments", responseCode = "400")
     @PostMapping("/add")
     public ResponseEntity<Object> addNewProduct(@Valid @RequestBody RestProductCommand command) {
         return productService.addProduct(command.toCreateProductCommand())
@@ -56,15 +60,20 @@ public class ProductController {
 
     @Operation(summary = "ADMIN, pobranie wszystkich produktow AKTYWNYCH i NIEAKTYWNYCH")
     @GetMapping()
-    @ResponseStatus(HttpStatus.OK)
     public List<RestProduct> getAllProducts() {
         return productService.getAllProducts();
     }
 
+    @ApiResponse(description = "OK", responseCode = "200")
+    @ApiResponse(description = "Invalid password", responseCode = "400")
     @Operation(summary = "ADMIN, zmiana statusu produktu z inActive na Active i na odwrót")
     @PutMapping("{id}")
     public void switchStatus(@PathVariable Long id) {
-        productService.switchStatus(id);
+        SwitchStatusResponse response = productService.switchStatus(id);
+        if(!response.isSuccess()) {
+            String message = String.join(", ", response.getErrors());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+        }
     }
 
     @Data
