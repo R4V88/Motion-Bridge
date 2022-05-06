@@ -1,4 +1,4 @@
-package com.motionbridge.motionbridge.commons;
+package com.motionbridge.motionbridge;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
