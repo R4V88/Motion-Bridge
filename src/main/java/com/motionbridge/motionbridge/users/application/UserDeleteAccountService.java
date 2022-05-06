@@ -8,9 +8,11 @@ import com.motionbridge.motionbridge.users.db.UserEntityRepository;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -23,9 +25,13 @@ public class UserDeleteAccountService implements UserDeleteAccountUseCase {
     @Transactional
     @Override
     public void deleteUserById(Long id) {
+        log.warn("Executing removing user with id: " + id);
         subscriptionUseCase.deleteAllByUserId(id);
         orderUseCase.deleteAllOrdersByUserId(id);
         confirmationTokenUseCase.deleteTokenByUserId(id);
         repository.deleteById(id);
+        if(repository.findUserById(id).isEmpty()){
+            log.info("User with id: " + id + " successfully removed");
+        }
     }
 }

@@ -12,6 +12,7 @@ import com.motionbridge.motionbridge.users.entity.UserEntity;
 import com.motionbridge.motionbridge.users.web.mapper.RestSubscription;
 import com.motionbridge.motionbridge.users.web.mapper.RestUser;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -49,8 +50,9 @@ public class UsersController {
 
     //Todo    @Secured()
     @Operation(summary = "USER zalogowany, zmiana hasła")
+    @ApiResponse(description = "OK", responseCode = "200")
+    @ApiResponse(description = "Invalid password", responseCode = "400")
     @PutMapping("/{id}/changePassword")
-    @ResponseStatus(HttpStatus.ACCEPTED)
     public void changePassword(@PathVariable Long id, @Valid @RequestBody RestUserCommand command) {
         UpdatePasswordResponse response = user.updatePassword(command.toUpdatePasswordCommand(id));
         if (!response.isSuccess()) {
@@ -61,7 +63,8 @@ public class UsersController {
 
     @Operation(summary = "USER zalogowany, pobranie danych użytkownika - email, name, ActiveAccount, AcceptedNewsletter")
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ApiResponse(description = "OK", responseCode = "200")
+    @ApiResponse(description = "User not found", responseCode = "404")
     public RestUser getById(@PathVariable Long id) {
         UserEntity userEntity = user.retrieveOrderByUserId(id);
         if (userEntity.getId().equals(id)) {
@@ -73,21 +76,20 @@ public class UsersController {
 
     @Operation(summary = "USER zalogowany, usunięcie konta")
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ApiResponse(description = "When successfully deleted account", responseCode = "202")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable Long id) {
         deleteAccountUseCase.deleteUserById(id);
     }
 
     @Operation(summary = "USER zalogowany, pobranie wszystkich orderów użytkowników")
     @GetMapping("/{id}/orders")
-    @ResponseStatus(HttpStatus.OK)
     public RestRichOrder getAllOrders(@PathVariable Long id) {
         return orderService.getAllOrdersWithSubscriptions(id);
     }
 
     @Operation(summary = "USER zalogowany, wszystkie subskrypcje po id usera")
     @GetMapping("/{id}/subscription")
-    @ResponseStatus(HttpStatus.OK)
     public List<RestSubscription> getSubscriptions(@PathVariable Long id) {
         List<RestSubscription> subscriptions = subscriptionService
                 .findAllByUserId(id)
@@ -100,10 +102,15 @@ public class UsersController {
     }
 
     @Operation(summary = "ADMIN, zmiana statusu uzytkownika po id z unBlocked / Blocked i na odwrót")
+    @ApiResponse(description = "When successfully blocked account", responseCode = "200")
+    @ApiResponse(description = "When blocking was a failure", responseCode = "400")
     @PutMapping("/{id}/block")
-    @ResponseStatus(HttpStatus.OK)
-    public SwitchResponse blockUserById(@PathVariable Long id) {
-        return user.switchBlockStatus(id);
+    public void blockUserById(@PathVariable Long id) {
+        SwitchResponse switchResponse = user.switchBlockStatus(id);
+        if (!switchResponse.isSuccess()) {
+            String message = String.join(", ", switchResponse.getErrors());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+        }
     }
 
     @Data
