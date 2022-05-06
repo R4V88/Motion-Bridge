@@ -108,7 +108,7 @@ public class UsersController {
 
     @Data
     private static class RestUserCommand {
-        @NotBlank
+        @NotBlank(message = "Please provide valid new password")
         private String password;
 
         UpdatePasswordCommand toUpdatePasswordCommand(Long id) {

@@ -51,15 +51,15 @@ public class UserRegistrationController {
 
     @Data
     static class RegisterCommand {
-        @NotBlank
+        @NotBlank(message = "Please provide valid name")
         String name;
         @Email
-        @NotBlank
+        @NotBlank(message = "Please provide valid email")
         String email;
         @Size(min = 8, max = 100)
-        @NotEmpty
+        @NotEmpty(message = "Please provide valid password")
         String password;
-        @NotNull
+        @NotNull(message = "Please accept terms to register account")
         Boolean acceptedTerms;
         @NotNull
         Boolean acceptedNewsletter;

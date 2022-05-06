@@ -69,15 +69,15 @@ public class ProductController {
 
     @Data
     public static class RestProductCommand {
-        @NotNull
+        @NotNull(message = "Please provide valid product animation quantity")
         Integer animationQuantity;
-        @NotBlank
+        @NotBlank(message = "Please provide valid product name")
         String name;
-        @NotBlank
+        @NotBlank(message = "Please provide valid currency")
         String currency;
-        @NotNull
+        @NotNull(message = "Please provide valid product time period")
         String timePeriod;
-        @NotNull
+        @NotNull(message = "Please provide valid product price with format like 0.00")
         @DecimalMin("0.00")
         BigDecimal price;
 

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -52,6 +53,9 @@ public class OrderController {
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/discount")
     public void applyDiscount(@Valid @RequestBody RestApplyDiscountCommand restApplyDiscountCommand) {
+        if(restApplyDiscountCommand.code.equalsIgnoreCase("TEAPOT")) {
+            throw new ResponseStatusException(HttpStatus.I_AM_A_TEAPOT, "Sorry can't help you, I'm a teapot");
+        }
         applyDiscountService.applyDiscount(restApplyDiscountCommand.toPlaceDiscountCommand());
     }
 
@@ -59,7 +63,8 @@ public class OrderController {
     @GetMapping("/{orderId}")
     @ResponseStatus(HttpStatus.OK)
     public RestOrder getOrderById(@NotNull @PathVariable Long orderId) {
-        return manipulateOrderService.getRestOrderByOrderId(orderId);
+        return manipulateOrderService
+                .getRestOrderByOrderId(orderId);
     }
 
     @Operation(summary = "USER zalogowany, usuwa wybrana subskrypcje po Id pod wybranym order id")
@@ -92,7 +97,7 @@ public class OrderController {
     @Data
     @FieldDefaults(level = AccessLevel.PRIVATE)
     static class RestApplyDiscountCommand {
-        @NotBlank
+        @NotBlank(message = "Please provide valid code")
         String code;
         @NotNull
         Long userId;

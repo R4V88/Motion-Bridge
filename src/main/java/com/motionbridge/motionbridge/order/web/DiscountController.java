@@ -62,19 +62,19 @@ public class DiscountController {
     @Data
     @FieldDefaults(level = AccessLevel.PRIVATE)
     static class RestDiscountCommand {
-        @NotBlank
+        @NotBlank(message = "Please provide a code")
         String code;
-        @NotBlank
+        @NotBlank (message = "Please provide valid subscription type")
         String subscriptionType;
-        @NotBlank
+        @NotBlank(message = "Please provide valid subscription period")
         String subscriptionPeriod;
-        @NotNull
+        @NotNull(message = "Please provide valid start date")
         LocalDateTime startDate;
-        @NotNull
+        @NotNull(message = "Please provide valid discount duration")
         Integer duration;
-        @NotBlank
+        @NotBlank(message = "Please provide valid discount duration period")
         String durationPeriod;
-        @NotNull
+        @NotNull(message = "Please provide valid discount value")
         Integer value;
 
         CreateDiscountCommand toCreateCommand() {
