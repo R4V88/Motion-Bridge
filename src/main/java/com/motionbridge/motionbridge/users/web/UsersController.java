@@ -13,12 +13,14 @@ import com.motionbridge.motionbridge.users.web.mapper.RestSubscription;
 import com.motionbridge.motionbridge.users.web.mapper.RestUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,8 +52,11 @@ public class UsersController {
 
     //Todo    @Secured()
     @Operation(summary = "USER zalogowany, zmiana hasła")
-    @ApiResponse(description = "OK", responseCode = "200")
-    @ApiResponse(description = "Invalid password", responseCode = "400")
+    @ApiResponses(value = {
+            @ApiResponse(description = "OK", responseCode = "200"),
+            @ApiResponse(description = "Invalid password", responseCode = "400")
+    })
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/changePassword")
     public void changePassword(@PathVariable Long id, @Valid @RequestBody RestUserCommand command) {
         UpdatePasswordResponse response = user.updatePassword(command.toUpdatePasswordCommand(id));
@@ -62,9 +67,12 @@ public class UsersController {
     }
 
     @Operation(summary = "USER zalogowany, pobranie danych użytkownika - email, name, ActiveAccount, AcceptedNewsletter")
+    @ApiResponses(value = {
+            @ApiResponse(description = "OK", responseCode = "200"),
+            @ApiResponse(description = "User not found", responseCode = "404")
+    })
     @GetMapping("/{id}")
-    @ApiResponse(description = "OK", responseCode = "200")
-    @ApiResponse(description = "User not found", responseCode = "404")
+    @ResponseStatus(HttpStatus.OK)
     public RestUser getById(@PathVariable Long id) {
         UserEntity userEntity = user.retrieveOrderByUserId(id);
         if (userEntity.getId().equals(id)) {
@@ -75,9 +83,9 @@ public class UsersController {
     }
 
     @Operation(summary = "USER zalogowany, usunięcie konta")
-    @DeleteMapping("/{id}")
     @ApiResponse(description = "When successfully deleted account", responseCode = "202")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}")
     public void deleteById(@PathVariable Long id) {
         deleteAccountUseCase.deleteUserById(id);
     }
@@ -102,8 +110,11 @@ public class UsersController {
     }
 
     @Operation(summary = "ADMIN, zmiana statusu uzytkownika po id z unBlocked / Blocked i na odwrót")
-    @ApiResponse(description = "When successfully blocked account", responseCode = "200")
-    @ApiResponse(description = "When blocking was a failure", responseCode = "400")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "When successfully blocked account"),
+            @ApiResponse(responseCode = "400", description = "When blocking was a failure")
+    })
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/block")
     public void blockUserById(@PathVariable Long id) {
         SwitchResponse switchResponse = user.switchBlockStatus(id);

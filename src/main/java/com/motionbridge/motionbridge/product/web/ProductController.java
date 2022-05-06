@@ -7,6 +7,7 @@ import com.motionbridge.motionbridge.product.web.mapper.RestActiveProduct;
 import com.motionbridge.motionbridge.product.web.mapper.RestProduct;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -46,8 +48,10 @@ public class ProductController {
     }
 
     @Operation(summary = "ADMIN, dodanie nowego produktu")
-    @ApiResponse(description = "OK", responseCode = "200")
-    @ApiResponse(description = "Invalid arguments", responseCode = "400")
+    @ApiResponses(value = {
+            @ApiResponse(description = "OK", responseCode = "200"),
+            @ApiResponse(description = "Invalid arguments", responseCode = "400")
+    })
     @PostMapping("/add")
     public ResponseEntity<Object> addNewProduct(@Valid @RequestBody RestProductCommand command) {
         return productService.addProduct(command.toCreateProductCommand())
@@ -64,12 +68,15 @@ public class ProductController {
     }
 
     @Operation(summary = "ADMIN, zmiana statusu produktu z inActive na Active i na odwrót")
-    @ApiResponse(description = "OK", responseCode = "200")
-    @ApiResponse(description = "Invalid password", responseCode = "400")
+    @ApiResponses(value = {
+            @ApiResponse(description = "OK", responseCode = "200"),
+            @ApiResponse(description = "Invalid password", responseCode = "400")
+    })
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping("{id}")
     public void switchStatus(@PathVariable Long id) {
         SwitchStatusResponse response = productService.switchStatus(id);
-        if(!response.isSuccess()) {
+        if (!response.isSuccess()) {
             String message = String.join(", ", response.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
         }

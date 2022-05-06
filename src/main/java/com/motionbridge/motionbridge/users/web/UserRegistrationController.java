@@ -3,17 +3,20 @@ package com.motionbridge.motionbridge.users.web;
 import com.motionbridge.motionbridge.users.application.port.UserRegisterationUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -33,8 +36,10 @@ public class UserRegistrationController {
     final UserRegisterationUseCase userRegisterationUseCase;
 
     @Operation(summary = "ALL, Rejestracja użytkownika")
-    @ApiResponse(description = "OK", responseCode = "200")
-    @ApiResponse(description = "Invalid arguments", responseCode = "400")
+    @ApiResponses(value = {
+            @ApiResponse(description = "OK", responseCode = "202"),
+            @ApiResponse(description = "Invalid arguments", responseCode = "400")
+    })
     @PostMapping()
     public ResponseEntity<?> register(@Valid @RequestBody RegisterCommand command) {
         return userRegisterationUseCase
@@ -47,6 +52,7 @@ public class UserRegistrationController {
 
     @Operation(summary = "ALL, Token confirmation ***Tego endpointu nigdzie nie podpinacie, link aktywacyjny leciu w majlu razem z tym endpointem***")
     @ApiResponse(description = "OK", responseCode = "200")
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/confirm")
     public void confirm(@RequestParam("token") String token) {
         userRegisterationUseCase.confirmToken(token);
