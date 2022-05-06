@@ -64,9 +64,9 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
+    @Operation(summary = "ADMIN, zmiana statusu produktu z inActive na Active i na odwrót")
     @ApiResponse(description = "OK", responseCode = "200")
     @ApiResponse(description = "Invalid password", responseCode = "400")
-    @Operation(summary = "ADMIN, zmiana statusu produktu z inActive na Active i na odwrót")
     @PutMapping("{id}")
     public void switchStatus(@PathVariable Long id) {
         SwitchStatusResponse response = productService.switchStatus(id);

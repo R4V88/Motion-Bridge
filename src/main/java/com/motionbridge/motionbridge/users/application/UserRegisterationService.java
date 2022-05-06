@@ -60,7 +60,7 @@ public class UserRegisterationService implements UserRegisterationUseCase {
     }
 
     @Override
-    public String confirmToken(String token) {
+    public void confirmToken(String token) {
         ConfirmationToken confirmationToken = confirmationTokenUseCase
                 .getToken(token)
                 .orElseThrow(() ->
@@ -79,7 +79,6 @@ public class UserRegisterationService implements UserRegisterationUseCase {
         confirmationTokenUseCase.setConfirmedAt(token);
         enableUser(
                 confirmationToken.getUserEntity().getEmail());
-        return "confirmed";
     }
 
     public void enableUser(String email) {

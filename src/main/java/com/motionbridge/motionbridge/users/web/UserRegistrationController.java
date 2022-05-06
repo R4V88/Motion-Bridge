@@ -2,6 +2,7 @@ package com.motionbridge.motionbridge.users.web;
 
 import com.motionbridge.motionbridge.users.application.port.UserRegisterationUseCase;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,8 @@ public class UserRegistrationController {
     final UserRegisterationUseCase userRegisterationUseCase;
 
     @Operation(summary = "ALL, Rejestracja użytkownika")
+    @ApiResponse(description = "OK", responseCode = "200")
+    @ApiResponse(description = "Invalid arguments", responseCode = "400")
     @PostMapping()
     public ResponseEntity<?> register(@Valid @RequestBody RegisterCommand command) {
         return userRegisterationUseCase
@@ -43,9 +46,10 @@ public class UserRegistrationController {
     }
 
     @Operation(summary = "ALL, Token confirmation ***Tego endpointu nigdzie nie podpinacie, link aktywacyjny leciu w majlu razem z tym endpointem***")
+    @ApiResponse(description = "OK", responseCode = "200")
     @GetMapping("/confirm")
-    public String confirm(@RequestParam("token") String token) {
-        return userRegisterationUseCase.confirmToken(token);
+    public void confirm(@RequestParam("token") String token) {
+        userRegisterationUseCase.confirmToken(token);
     }
 
 
