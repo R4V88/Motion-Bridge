@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -43,14 +44,14 @@ public class OrderController {
     @Operation(summary = "USER zalogowany, tworzy nowe zamówienie po id usera i id produktu")
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/create")
-    public void createOrder(@RequestBody RestOrderCommand restOrderCommand) {
+    public void createOrder(@Valid @RequestBody RestOrderCommand restOrderCommand) {
         createOrderService.placeOrder(restOrderCommand.toPlaceOrderCommand());
     }
 
     @Operation(summary = "USER zalogowany, dodaje discount")
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/discount")
-    public void applyDiscount(@RequestBody RestApplyDiscountCommand restApplyDiscountCommand) {
+    public void applyDiscount(@Valid @RequestBody RestApplyDiscountCommand restApplyDiscountCommand) {
         applyDiscountService.applyDiscount(restApplyDiscountCommand.toPlaceDiscountCommand());
     }
 

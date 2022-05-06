@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @RestController
 @AllArgsConstructor
@@ -27,7 +33,7 @@ public class UserRegistrationController {
 
     @Operation(summary = "ALL, Rejestracja użytkownika")
     @PostMapping()
-    public ResponseEntity<?> register(@Valid @RequestBody UsersController.RegisterCommand command) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterCommand command) {
         return userRegisterationUseCase
                 .register(command.name, command.email, command.password, command.acceptedTerms, command.acceptedNewsletter)
                 .handle(
@@ -40,5 +46,22 @@ public class UserRegistrationController {
     @GetMapping("/confirm")
     public String confirm(@RequestParam("token") String token) {
         return userRegisterationUseCase.confirmToken(token);
+    }
+
+
+    @Data
+    static class RegisterCommand {
+        @NotBlank
+        String name;
+        @Email
+        @NotBlank
+        String email;
+        @Size(min = 8, max = 100)
+        @NotEmpty
+        String password;
+        @NotNull
+        Boolean acceptedTerms;
+        @NotNull
+        Boolean acceptedNewsletter;
     }
 }

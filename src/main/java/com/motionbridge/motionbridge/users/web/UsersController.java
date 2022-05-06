@@ -28,10 +28,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.constraints.Email;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,7 +51,7 @@ public class UsersController {
     @Operation(summary = "USER zalogowany, zmiana hasła")
     @PutMapping("/{id}/changePassword")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void changePassword(@PathVariable Long id, @RequestBody RestUserCommand command) {
+    public void changePassword(@PathVariable Long id, @Valid @RequestBody RestUserCommand command) {
         UpdatePasswordResponse response = user.updatePassword(command.toUpdatePasswordCommand(id));
         if (!response.isSuccess()) {
             String message = String.join(", ", response.getErrors());
@@ -106,20 +104,6 @@ public class UsersController {
     @ResponseStatus(HttpStatus.OK)
     public SwitchResponse blockUserById(@PathVariable Long id) {
         return user.switchBlockStatus(id);
-    }
-
-    @Data
-    static class RegisterCommand {
-        @NotBlank
-        String name;
-        @Email
-        @NotBlank
-        String email;
-        @Size(min = 8, max = 100)
-        @NotEmpty
-        String password;
-        Boolean acceptedTerms;
-        Boolean acceptedNewsletter;
     }
 
     @Data

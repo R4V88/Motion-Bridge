@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -41,7 +42,7 @@ public class DiscountController {
 
     @Operation(summary = "ADMIN, dodawanie nowego discounta")
     @PostMapping("/add")
-    public void addNewDiscount(@RequestBody RestDiscountCommand command) {
+    public void addNewDiscount(@Valid @RequestBody RestDiscountCommand command) {
         CreateDiscountCommand createDiscountCommand = command.toCreateCommand();
         discountService.addNewDiscount(createDiscountCommand);
     }

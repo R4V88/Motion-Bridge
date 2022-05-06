@@ -21,6 +21,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -42,7 +46,7 @@ public class ProductController {
 
     @Operation(summary = "ADMIN, dodanie nowego produktu")
     @PostMapping("/add")
-    public ResponseEntity<Object> addNewProduct(@RequestBody RestProductCommand command) {
+    public ResponseEntity<Object> addNewProduct(@Valid @RequestBody RestProductCommand command) {
         return productService.addProduct(command.toCreateProductCommand())
                 .handle(
                         newProduct -> ResponseEntity.ok().build(),
@@ -65,10 +69,16 @@ public class ProductController {
 
     @Data
     public static class RestProductCommand {
+        @NotNull
         Integer animationQuantity;
+        @NotBlank
         String name;
+        @NotBlank
         String currency;
+        @NotNull
         String timePeriod;
+        @NotNull
+        @DecimalMin("0.00")
         BigDecimal price;
 
         CreateProductCommand toCreateProductCommand() {
