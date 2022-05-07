@@ -46,7 +46,7 @@ public class UserRegistrationController {
                 .register(command.name, command.email, command.password, command.acceptedTerms, command.acceptedNewsletter)
                 .handle(
                         entity -> ResponseEntity.accepted().build(),
-                        error -> ResponseEntity.badRequest().build()
+                        error -> ResponseEntity.badRequest().body(error)
                 );
     }
 

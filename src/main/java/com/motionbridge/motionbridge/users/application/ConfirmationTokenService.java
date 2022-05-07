@@ -1,8 +1,8 @@
 package com.motionbridge.motionbridge.users.application;
 
-import com.motionbridge.motionbridge.users.entity.ConfirmationToken;
 import com.motionbridge.motionbridge.users.application.port.ConfirmationTokenUseCase;
 import com.motionbridge.motionbridge.users.db.ConfirmationTokenRepository;
+import com.motionbridge.motionbridge.users.entity.ConfirmationToken;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;

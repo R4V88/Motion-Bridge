@@ -4,8 +4,6 @@ import com.motionbridge.motionbridge.jpa.BaseEntity;
 import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

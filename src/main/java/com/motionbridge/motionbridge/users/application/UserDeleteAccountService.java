@@ -1,8 +1,8 @@
 package com.motionbridge.motionbridge.users.application;
 
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
-import com.motionbridge.motionbridge.users.application.port.ConfirmationTokenUseCase;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
+import com.motionbridge.motionbridge.users.application.port.ConfirmationTokenUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDeleteAccountUseCase;
 import com.motionbridge.motionbridge.users.db.UserEntityRepository;
 import lombok.AccessLevel;
@@ -30,7 +30,7 @@ public class UserDeleteAccountService implements UserDeleteAccountUseCase {
         orderUseCase.deleteAllOrdersByUserId(id);
         confirmationTokenUseCase.deleteTokenByUserId(id);
         repository.deleteById(id);
-        if(repository.findUserById(id).isEmpty()){
+        if (repository.findUserById(id).isEmpty()) {
             log.info("User with id: " + id + " successfully removed");
         }
     }

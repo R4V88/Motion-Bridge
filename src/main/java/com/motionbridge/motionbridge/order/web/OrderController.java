@@ -9,6 +9,8 @@ import com.motionbridge.motionbridge.order.application.port.RemoveDiscountUseCas
 import com.motionbridge.motionbridge.order.application.port.RemoveSubscriptionFromOrderUseCase;
 import com.motionbridge.motionbridge.order.web.mapper.RestOrder;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -43,23 +45,29 @@ public class OrderController {
     final RemoveSubscriptionFromOrderUseCase removeSubscriptionFromOrderUseCase;
 
     @Operation(summary = "USER zalogowany, tworzy nowe zamówienie po id usera i id produktu")
-    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(description = "Created new Order", responseCode = "201"),
+            @ApiResponse(description = "Invalid arguments", responseCode = "400")
+    })
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/create")
     public void createOrder(@Valid @RequestBody RestOrderCommand restOrderCommand) {
         createOrderService.placeOrder(restOrderCommand.toPlaceOrderCommand());
     }
 
     @Operation(summary = "USER zalogowany, dodaje discount")
+    @ApiResponse(description = "Successfully added a discount", responseCode = "200")
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/discount")
     public void applyDiscount(@Valid @RequestBody RestApplyDiscountCommand restApplyDiscountCommand) {
-        if(restApplyDiscountCommand.code.equalsIgnoreCase("TEAPOT")) {
+        if (restApplyDiscountCommand.code.equalsIgnoreCase("TEAPOT")) {
             throw new ResponseStatusException(HttpStatus.I_AM_A_TEAPOT, "Sorry can't help you, I'm a teapot");
         }
         applyDiscountService.applyDiscount(restApplyDiscountCommand.toPlaceDiscountCommand());
     }
 
     @Operation(summary = "USER zalogowany , wyszukuje wybrany order po jego id z subskrypcjami")
+    @ApiResponse(description = "When order successfully found", responseCode = "200")
     @GetMapping("/{orderId}")
     @ResponseStatus(HttpStatus.OK)
     public RestOrder getOrderById(@NotNull @PathVariable Long orderId) {
@@ -68,15 +76,17 @@ public class OrderController {
     }
 
     @Operation(summary = "USER zalogowany, usuwa wybrana subskrypcje po Id pod wybranym order id")
-    @DeleteMapping("/{orderId}/subscription/{subscriptionId}")
+    @ApiResponse(description = "When subscription Successfully deleted", responseCode = "204")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{orderId}/subscription/{subscriptionId}")
     public void deleteSubscription(@NotNull @PathVariable Long orderId, @NotNull @PathVariable Long subscriptionId) {
         removeSubscriptionFromOrderUseCase.deleteSubscriptionInOrderByIdAndSubscriptionId(orderId, subscriptionId);
     }
 
     @Operation(summary = "USER zalogowany, usuwa discount z ordera")
-    @DeleteMapping("/{orderId}/removeDiscount")
+    @ApiResponse(description = "When subscription Successfully deleted", responseCode = "204")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{orderId}/removeDiscount")
     public void removeDiscount(@NotNull @PathVariable Long orderId) {
         removeDiscountUseCase.removeDiscountFromOrderByOrderId(orderId);
     }

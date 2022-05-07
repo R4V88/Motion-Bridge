@@ -5,8 +5,6 @@ import com.motionbridge.motionbridge.subscription.entity.Currency;
 import com.motionbridge.motionbridge.subscription.entity.ProductName;
 import com.motionbridge.motionbridge.subscription.entity.TimePeriod;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

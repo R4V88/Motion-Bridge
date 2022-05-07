@@ -140,14 +140,7 @@ public class CreateOrderService implements CreateOrderUseCase {
     @Override
     public Order saveOrder(CreateOrderCommand command) {
         Order order = new Order(command.getUser());
-
         return orderRepository.save(order);
-    }
-
-    @Transactional
-    @Override
-    public void save(Order order) {
-        orderRepository.save(order);
     }
 
     private SubscriptionOrder toCreateSubscriptionOrder(Subscription subscription) {

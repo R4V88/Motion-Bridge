@@ -56,7 +56,7 @@ public class ProductController {
     public ResponseEntity<Object> addNewProduct(@Valid @RequestBody RestProductCommand command) {
         return productService.addProduct(command.toCreateProductCommand())
                 .handle(
-                        newProduct -> ResponseEntity.ok().build(),
+                        newProduct -> ResponseEntity.ok().body(newProduct),
                         error -> ResponseEntity.badRequest().body(error)
                 );
     }
@@ -70,7 +70,7 @@ public class ProductController {
     @Operation(summary = "ADMIN, zmiana statusu produktu z inActive na Active i na odwrót")
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "200"),
-            @ApiResponse(description = "Invalid password", responseCode = "400")
+            @ApiResponse(description = "Status change failed", responseCode = "400")
     })
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("{id}")
