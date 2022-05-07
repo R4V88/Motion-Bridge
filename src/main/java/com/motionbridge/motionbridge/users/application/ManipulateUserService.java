@@ -1,6 +1,6 @@
 package com.motionbridge.motionbridge.users.application;
 
-import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
+import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase;
 import com.motionbridge.motionbridge.users.db.UserEntityRepository;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AccessLevel;
@@ -19,7 +19,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserService implements UserDataManipulationUseCase {
+public class ManipulateUserService implements ManipulateUserDataUseCase {
 
     final UserEntityRepository repository;
     final PasswordEncoder encoder;

@@ -1,5 +1,6 @@
 package com.motionbridge.motionbridge.order.application.port;
 
+import com.motionbridge.motionbridge.commons.Either;
 import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.Value;
@@ -12,7 +13,20 @@ public interface CreateOrderUseCase {
 
     Order saveOrder(CreateOrderCommand command);
 
-    void save(Order order);
+    class CreateOrderResponse extends Either<String, Order> {
+
+        public CreateOrderResponse(boolean success, String left, Order right) {
+            super(success, left, right);
+        }
+
+        public static CreateOrderResponse success(Order right) {
+            return new CreateOrderResponse(true, null, right);
+        }
+
+        public static CreateOrderResponse failure(String left) {
+            return new CreateOrderResponse(false, left, null);
+        }
+    }
 
     @Value
     class PlaceOrderCommand {

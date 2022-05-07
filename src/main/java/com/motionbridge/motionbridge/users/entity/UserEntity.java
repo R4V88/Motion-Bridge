@@ -31,7 +31,7 @@ import java.util.Set;
 @Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
-@OnDelete(action= OnDeleteAction.CASCADE)
+@OnDelete(action = OnDeleteAction.CASCADE)
 public class UserEntity extends BaseEntity {
 
     @CreatedDate

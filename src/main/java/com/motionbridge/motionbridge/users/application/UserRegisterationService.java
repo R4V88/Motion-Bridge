@@ -1,11 +1,11 @@
 package com.motionbridge.motionbridge.users.application;
 
 import com.motionbridge.motionbridge.email.application.port.EmailSender;
-import com.motionbridge.motionbridge.security.token.ConfirmationToken;
-import com.motionbridge.motionbridge.security.token.application.port.ConfirmationTokenUseCase;
+import com.motionbridge.motionbridge.users.application.port.ConfirmationTokenUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserRegisterationUseCase;
 import com.motionbridge.motionbridge.users.application.validators.EmailValidator;
 import com.motionbridge.motionbridge.users.db.UserEntityRepository;
+import com.motionbridge.motionbridge.users.entity.ConfirmationToken;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -60,7 +60,7 @@ public class UserRegisterationService implements UserRegisterationUseCase {
     }
 
     @Override
-    public String confirmToken(String token) {
+    public void confirmToken(String token) {
         ConfirmationToken confirmationToken = confirmationTokenUseCase
                 .getToken(token)
                 .orElseThrow(() ->
@@ -79,7 +79,6 @@ public class UserRegisterationService implements UserRegisterationUseCase {
         confirmationTokenUseCase.setConfirmedAt(token);
         enableUser(
                 confirmationToken.getUserEntity().getEmail());
-        return "confirmed";
     }
 
     public void enableUser(String email) {

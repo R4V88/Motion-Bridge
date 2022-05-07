@@ -1,8 +1,8 @@
 package com.motionbridge.motionbridge.security.config;
 
-import com.motionbridge.motionbridge.security.JsonUsernameAuthenticationFilter;
+import com.motionbridge.motionbridge.security.login.JsonUsernameAuthenticationFilter;
 import com.motionbridge.motionbridge.security.user.MotionbridgeUserDetailsService;
-import com.motionbridge.motionbridge.users.application.port.UserDataManipulationUseCase;
+import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -26,7 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
-    private final UserDataManipulationUseCase userDataManipulationUseCase;
+    private final ManipulateUserDataUseCase userDataManipulationUseCase;
     private final AdminConfig config;
 
     @Bean

@@ -1,4 +1,4 @@
-package com.motionbridge.motionbridge.security;
+package com.motionbridge.motionbridge.security.login;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;

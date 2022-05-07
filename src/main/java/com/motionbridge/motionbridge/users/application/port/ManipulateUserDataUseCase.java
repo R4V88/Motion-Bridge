@@ -10,7 +10,7 @@ import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 
-public interface UserDataManipulationUseCase {
+public interface ManipulateUserDataUseCase {
 
     UpdatePasswordResponse updatePassword(UpdatePasswordCommand command);
 

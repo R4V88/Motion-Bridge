@@ -1,5 +1,6 @@
 package com.motionbridge.motionbridge.order.application.port;
 
+import com.motionbridge.motionbridge.commons.Either;
 import com.motionbridge.motionbridge.order.entity.Discount;
 import com.motionbridge.motionbridge.order.web.mapper.RestDiscount;
 import lombok.Value;
@@ -13,7 +14,7 @@ public interface ManipulateDiscountUseCase {
 
     List<RestDiscount> getAllDiscounts();
 
-    void addNewDiscount(CreateDiscountCommand discount);
+    CreateDiscountResponse addNewDiscount(CreateDiscountCommand discount);
 
     SwitchStatusResponse switchStatus(Long id);
 
@@ -29,6 +30,21 @@ public interface ManipulateDiscountUseCase {
 
         boolean success;
         List<String> errors;
+    }
+
+    class CreateDiscountResponse extends Either<String, Discount> {
+
+        public CreateDiscountResponse(boolean success, String left, Discount right) {
+            super(success, left, right);
+        }
+
+        public static CreateDiscountResponse success(Discount right) {
+            return new CreateDiscountResponse(true, null, right);
+        }
+
+        public static CreateDiscountResponse failure(String left) {
+            return new CreateDiscountResponse(false, left, null);
+        }
     }
 
     @Value

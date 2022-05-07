@@ -2,9 +2,12 @@ package com.motionbridge.motionbridge.product.web;
 
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.CreateProductCommand;
+import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.SwitchStatusResponse;
 import com.motionbridge.motionbridge.product.web.mapper.RestActiveProduct;
 import com.motionbridge.motionbridge.product.web.mapper.RestProduct;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,7 +23,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -35,40 +43,57 @@ public class ProductController {
 
     @Operation(summary = "ALL, wszystkie AKTYWNE produkty")
     @GetMapping("/active")
-    @ResponseStatus(HttpStatus.OK)
     public List<RestActiveProduct> getActiveProducts() {
         return productService.getActiveProducts();
     }
 
     @Operation(summary = "ADMIN, dodanie nowego produktu")
+    @ApiResponses(value = {
+            @ApiResponse(description = "OK", responseCode = "200"),
+            @ApiResponse(description = "Invalid arguments", responseCode = "400")
+    })
     @PostMapping("/add")
-    public ResponseEntity<Object> addNewProduct(@RequestBody RestProductCommand command) {
+    public ResponseEntity<Object> addNewProduct(@Valid @RequestBody RestProductCommand command) {
         return productService.addProduct(command.toCreateProductCommand())
                 .handle(
-                        newProduct -> ResponseEntity.ok().build(),
+                        newProduct -> ResponseEntity.ok().body(newProduct),
                         error -> ResponseEntity.badRequest().body(error)
                 );
     }
 
     @Operation(summary = "ADMIN, pobranie wszystkich produktow AKTYWNYCH i NIEAKTYWNYCH")
     @GetMapping()
-    @ResponseStatus(HttpStatus.OK)
     public List<RestProduct> getAllProducts() {
         return productService.getAllProducts();
     }
 
     @Operation(summary = "ADMIN, zmiana statusu produktu z inActive na Active i na odwrót")
+    @ApiResponses(value = {
+            @ApiResponse(description = "OK", responseCode = "200"),
+            @ApiResponse(description = "Status change failed", responseCode = "400")
+    })
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping("{id}")
     public void switchStatus(@PathVariable Long id) {
-        productService.switchStatus(id);
+        SwitchStatusResponse response = productService.switchStatus(id);
+        if (!response.isSuccess()) {
+            String message = String.join(", ", response.getErrors());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+        }
     }
 
     @Data
     public static class RestProductCommand {
+        @NotNull(message = "Please provide valid product animation quantity")
         Integer animationQuantity;
+        @NotBlank(message = "Please provide valid product name")
         String name;
+        @NotBlank(message = "Please provide valid currency")
         String currency;
+        @NotNull(message = "Please provide valid product time period")
         String timePeriod;
+        @NotNull(message = "Please provide valid product price with format like 0.00")
+        @DecimalMin("0.00")
         BigDecimal price;
 
         CreateProductCommand toCreateProductCommand() {

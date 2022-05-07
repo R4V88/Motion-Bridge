@@ -2,8 +2,6 @@ package com.motionbridge.motionbridge.order.entity;
 
 import com.motionbridge.motionbridge.jpa.BaseEntity;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

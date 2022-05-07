@@ -1,4 +1,4 @@
-package com.motionbridge.motionbridge.security;
+package com.motionbridge.motionbridge.security.login;
 
 import lombok.AccessLevel;
 import lombok.Data;

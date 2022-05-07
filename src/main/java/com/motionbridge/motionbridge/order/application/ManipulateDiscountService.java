@@ -79,8 +79,16 @@ public class ManipulateDiscountService implements ManipulateDiscountUseCase {
 
     @Transactional
     @Override
-    public void addNewDiscount(CreateDiscountCommand command) {
-        repository.save(toDiscount(command));
+    public CreateDiscountResponse addNewDiscount(CreateDiscountCommand command) {
+        List<Discount> availableDiscounts = repository.findAll();
+        Discount newDiscount = toDiscount(command);
+        for (Discount discount : availableDiscounts) {
+            if (discount.getCode().equals(newDiscount.getCode())) {
+                return CreateDiscountResponse.failure("Discount already exist");
+            }
+        }
+        repository.save(newDiscount);
+        return CreateDiscountResponse.success(newDiscount);
     }
 
     @Transactional
