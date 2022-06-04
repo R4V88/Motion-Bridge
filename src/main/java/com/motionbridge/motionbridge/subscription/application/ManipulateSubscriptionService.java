@@ -10,8 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -22,7 +24,18 @@ public class ManipulateSubscriptionService implements ManipulateSubscriptionUseC
 
     @Override
     public List<Subscription> findAllByUserId(Long id) {
-        return repository.findSubscriptionsByUserId(id);
+        return repository.findSubscriptionsByUserId(id)
+                .stream()
+                .peek(this::subscriptionEndDateValidator)
+                .collect(Collectors.toList());
+    }
+
+    private void subscriptionEndDateValidator(Subscription subscription) {
+        if(LocalDateTime.now().isAfter(subscription.getEndDate())){
+            subscription.setIsActive(false);
+            log.info("Subscription with id: " + subscription.getId() + "changed activity status to " + subscription.getIsActive() + " of User with id: " + subscription.getUser().getId());
+        }
+        repository.save(subscription);
     }
 
     @Override
