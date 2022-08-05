@@ -6,6 +6,7 @@ import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCa
 import com.motionbridge.motionbridge.order.application.port.RemoveDiscountUseCase;
 import com.motionbridge.motionbridge.order.application.port.RemoveSubscriptionFromOrderUseCase;
 import com.motionbridge.motionbridge.order.entity.Order;
+import com.motionbridge.motionbridge.security.user.UserEntityDetails;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
 import lombok.AllArgsConstructor;
@@ -30,7 +31,7 @@ public class RemoveSubscriptionFromOrderService implements RemoveSubscriptionFro
 
     @Transactional
     @Override
-    public void deleteSubscriptionInOrderByIdAndSubscriptionId(Long orderId, Long subscriptionId) {
+    public void deleteSubscriptionInOrderByIdAndSubscriptionId(Long orderId, Long subscriptionId, UserEntityDetails userEntityDetails) {
         Order order = manipulateOrderUseCase.getOrderById(orderId);
         List<Subscription> subscriptions = manipulateSubscriptionUseCase.findAllByOrderId(orderId);
 
@@ -44,7 +45,7 @@ public class RemoveSubscriptionFromOrderService implements RemoveSubscriptionFro
             if (order.getActiveDiscount()) {
                 Long discountId = order.getDiscountId();
                 String code = manipulateDiscountUseCase.getDiscountById(discountId).getCode();
-                removeDiscountUseCase.removeDiscountFromOrderByOrderId(orderId);
+                removeDiscountUseCase.removeDiscountFromOrderByOrderId(orderId, userEntityDetails);
                 log.info("Removed discount for order: " + orderId);
 
                 manipulateSubscriptionUseCase.deleteByIdAndOrderId(orderId, subscriptionId);

@@ -1,5 +1,6 @@
 package com.motionbridge.motionbridge.users.application.port;
 
+import com.motionbridge.motionbridge.security.user.UserEntityDetails;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,11 +13,11 @@ import static java.util.Collections.emptyList;
 
 public interface ManipulateUserDataUseCase {
 
-    UpdatePasswordResponse updatePassword(UpdatePasswordCommand command);
+    UpdatePasswordResponse updatePassword(UpdatePasswordCommand command, UserEntityDetails user);
 
     Optional<UserEntity> getUserById(Long id);
 
-    UserEntity retrieveOrderByUserId(Long id);
+    UserEntity retrieveOrderByUserId(Long id, UserEntityDetails user);
 
     UserEntity getCurrentUserById(Long userId);
 

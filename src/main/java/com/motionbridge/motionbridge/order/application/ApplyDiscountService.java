@@ -6,11 +6,16 @@ import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCa
 import com.motionbridge.motionbridge.order.entity.Discount;
 import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.order.entity.SubscriptionType;
+import com.motionbridge.motionbridge.security.user.UserEntityDetails;
+import com.motionbridge.motionbridge.security.user.UserSecurity;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
+import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -29,14 +34,20 @@ public class ApplyDiscountService implements ApplyDiscountUseCase {
     final ManipulateOrderUseCase orderService;
     final ManipulateSubscriptionUseCase subscriptionService;
     final ManipulateDiscountUseCase discountService;
+    final UserSecurity userSecurity;
+    final ManipulateUserDataUseCase manipulateUserDataUseCase;
 
     @Override
-    public void applyDiscount(PlaceDiscountCommand placeDiscountCommand) {
+    public void applyDiscount(PlaceDiscountCommand placeDiscountCommand, UserEntityDetails user) {
         Long userId = placeDiscountCommand.getUserId();
         String code = placeDiscountCommand.getCode();
 
-        Order order = orderService.getOrderWithStatusNewByUserId(userId);
-        getValidDiscountToOrder(code, order);
+        if (userSecurity.isOwnerOrAdmin(manipulateUserDataUseCase.getUserById(userId).get().getEmail(), user)) {
+            Order order = orderService.getOrderWithStatusNewByUserId(userId);
+            getValidDiscountToOrder(code, order);
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
     }
 
     public void getValidDiscountToOrder(String code, Order order) {

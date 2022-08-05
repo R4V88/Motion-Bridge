@@ -2,6 +2,8 @@ package com.motionbridge.motionbridge.users.web;
 
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.order.web.mapper.RestRichOrder;
+import com.motionbridge.motionbridge.security.user.UserEntityDetails;
+import com.motionbridge.motionbridge.security.user.UserSecurity;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase;
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase.SwitchResponse;
@@ -20,6 +22,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,12 +49,13 @@ import static com.motionbridge.motionbridge.users.web.mapper.RestUser.toCreateRe
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UsersController {
 
-    final ManipulateUserDataUseCase user;
+    final ManipulateUserDataUseCase userService;
     final ManipulateOrderUseCase orderService;
     final ManipulateSubscriptionUseCase subscriptionService;
     final UserDeleteAccountUseCase deleteAccountUseCase;
+    final UserSecurity userSecurity;
 
-    //Todo    @Secured()
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @Operation(summary = "USER zalogowany, zmiana hasła")
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "200"),
@@ -57,14 +63,15 @@ public class UsersController {
     })
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/changePassword")
-    public void changePassword(@PathVariable Long id, @Valid @RequestBody RestUserCommand command) {
-        UpdatePasswordResponse response = user.updatePassword(command.toUpdatePasswordCommand(id));
+    public void changePassword(@PathVariable Long id, @Valid @RequestBody RestUserCommand command, @AuthenticationPrincipal UserEntityDetails user) {
+        UpdatePasswordResponse response = userService.updatePassword(command.toUpdatePasswordCommand(id), user);
         if (!response.isSuccess()) {
             String message = String.join(", ", response.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
         }
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @Operation(summary = "USER zalogowany, pobranie danych użytkownika - email, name, ActiveAccount, AcceptedNewsletter")
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "200"),
@@ -72,8 +79,8 @@ public class UsersController {
     })
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public RestUser getById(@PathVariable Long id) {
-        UserEntity userEntity = user.retrieveOrderByUserId(id);
+    public RestUser getById(@PathVariable Long id, @AuthenticationPrincipal UserEntityDetails user) {
+        UserEntity userEntity = userService.retrieveOrderByUserId(id, user);
         if (userEntity.getId().equals(id)) {
             return toCreateRestUser(userEntity);
         } else
@@ -81,33 +88,39 @@ public class UsersController {
 
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @Operation(summary = "USER zalogowany, usunięcie konta")
     @ApiResponse(description = "When successfully deleted account", responseCode = "202")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable Long id) {
-        deleteAccountUseCase.deleteUserById(id);
+    public void deleteById(@PathVariable Long id, @AuthenticationPrincipal UserEntityDetails user) {
+        deleteAccountUseCase.deleteUserById(id, user);
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @Operation(summary = "USER zalogowany, pobranie wszystkich orderów użytkowników")
     @GetMapping("/{id}/orders")
-    public RestRichOrder getAllOrders(@PathVariable Long id) {
-        return orderService.getAllOrdersWithSubscriptions(id);
+    public RestRichOrder getAllOrders(@PathVariable Long id, @AuthenticationPrincipal UserEntityDetails user) {
+        return orderService.getAllOrdersWithSubscriptions(id, user);
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @Operation(summary = "USER zalogowany, wszystkie subskrypcje po id usera")
     @GetMapping("/{id}/subscription")
-    public List<RestSubscription> getSubscriptions(@PathVariable Long id) {
+    public ResponseEntity<List<RestSubscription>> getSubscriptions(@PathVariable Long id, @AuthenticationPrincipal UserEntityDetails user) {
         List<RestSubscription> subscriptions = subscriptionService
                 .findAllByUserId(id)
                 .stream()
+                .filter(subscription -> userSecurity.isOwnerOrAdmin(subscription.getUser().getEmail(), user))
                 .map(RestSubscription::toRestSubscription)
                 .collect(Collectors.toList());
         if (subscriptions.size() != 0) {
-            return subscriptions;
-        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            return ResponseEntity.ok(subscriptions);
+        } else
+            return ResponseEntity.notFound().build();
     }
 
+    @Secured({"ROLE_ADMIN"})
     @Operation(summary = "ADMIN, zmiana statusu uzytkownika po id z unBlocked / Blocked i na odwrót")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "When successfully blocked account"),
@@ -116,7 +129,7 @@ public class UsersController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}/block")
     public void blockUserById(@PathVariable Long id) {
-        SwitchResponse switchResponse = user.switchBlockStatus(id);
+        SwitchResponse switchResponse = userService.switchBlockStatus(id);
         if (!switchResponse.isSuccess()) {
             String message = String.join(", ", switchResponse.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);

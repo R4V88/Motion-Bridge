@@ -42,14 +42,25 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
 
         http
                 .authorizeRequests()
-                .mvcMatchers(HttpMethod.GET, "/**").permitAll()
-                .mvcMatchers(HttpMethod.POST, "/login", "/users").permitAll()
-                .mvcMatchers(HttpMethod.DELETE, "/**").permitAll()
-                .mvcMatchers(HttpMethod.PUT, "/**").permitAll()
-                //TODO: przejście z dostępami na autoryzowanych uzytkowników
-//                .anyRequest().authenticated();
-                .and().httpBasic()
-                .and().addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .mvcMatchers(HttpMethod.GET, "/api/products/active").permitAll()
+                .mvcMatchers(HttpMethod.POST, "/login", "/api/registration").permitAll()
+//                .mvcMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+                .and()
+                .httpBasic()
+                .and()
+                .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
+
+//        http
+//                .authorizeRequests()
+//                .mvcMatchers(HttpMethod.GET, "/**").permitAll()
+//                .mvcMatchers(HttpMethod.POST, "/login", "/users").permitAll()
+//                .mvcMatchers(HttpMethod.DELETE, "/**").permitAll()
+//                .mvcMatchers(HttpMethod.PUT, "/**").permitAll()
+////                .anyRequest().authenticated();
+//                .and().httpBasic()
+//                .and().addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     @SneakyThrows

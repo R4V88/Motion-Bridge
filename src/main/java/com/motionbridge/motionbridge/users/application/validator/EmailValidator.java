@@ -1,4 +1,4 @@
-package com.motionbridge.motionbridge.users.application.validators;
+package com.motionbridge.motionbridge.users.application.validator;
 
 import org.springframework.stereotype.Service;
 

@@ -3,7 +3,7 @@ package com.motionbridge.motionbridge.users.application;
 import com.motionbridge.motionbridge.email.application.port.EmailSender;
 import com.motionbridge.motionbridge.users.application.port.ConfirmationTokenUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserRegisterationUseCase;
-import com.motionbridge.motionbridge.users.application.validators.EmailValidator;
+import com.motionbridge.motionbridge.users.application.validator.EmailValidator;
 import com.motionbridge.motionbridge.users.db.UserEntityRepository;
 import com.motionbridge.motionbridge.users.entity.ConfirmationToken;
 import com.motionbridge.motionbridge.users.entity.UserEntity;

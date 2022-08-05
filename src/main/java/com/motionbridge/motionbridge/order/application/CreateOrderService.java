@@ -7,6 +7,8 @@ import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.order.entity.OrderStatus;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.ProductOrder;
+import com.motionbridge.motionbridge.security.user.UserEntityDetails;
+import com.motionbridge.motionbridge.security.user.UserSecurity;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase.CreateSubscriptionCommand;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
@@ -16,9 +18,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -35,23 +38,27 @@ import static com.motionbridge.motionbridge.order.application.helper.OrderPriceC
 public class CreateOrderService implements CreateOrderUseCase {
     final OrderRepository orderRepository;
 
-    @Autowired
     final ManipulateUserDataUseCase userService;
     final ManipulateSubscriptionUseCase subscriptionService;
     final ManipulateProductUseCase productService;
     final ManipulateDiscountUseCase discountService;
+    final UserSecurity userSecurity;
 
     @Override
     @Transactional
-    public void placeOrder(PlaceOrderCommand command) {
+    public void placeOrder(PlaceOrderCommand command, UserEntityDetails user) {
         final OrderStatus orderStatus = OrderStatus.NEW;
         final Long productId = command.getProductId();
         final Long userId = command.getUserId();
 
-        UserEntity user = userService.getCurrentUserById(userId);
+        UserEntity userById = userService.getCurrentUserById(userId);
         ProductOrder productOrder = productService.checkIfProductExistInOrderThenGet(productId);
-        Order order = getOrderElseCreate(user, orderStatus);
-        checkIfEqualSubscriptionAlreadyExistElseCreate(user, order, productOrder);
+        Order order = getOrderElseCreate(userById, orderStatus);
+        if (userSecurity.isOwnerOrAdmin(userById.getEmail(), user)) {
+            checkIfEqualSubscriptionAlreadyExistElseCreate(userById, order, productOrder);
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
     }
 
     void checkIfEqualSubscriptionAlreadyExistElseCreate(UserEntity user, Order order, ProductOrder productOrder) {
