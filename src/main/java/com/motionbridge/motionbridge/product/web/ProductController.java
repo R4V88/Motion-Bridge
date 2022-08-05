@@ -15,6 +15,7 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,6 +48,7 @@ public class ProductController {
         return productService.getActiveProducts();
     }
 
+    @Secured({"ROLE_ADMIN"})
     @Operation(summary = "ADMIN, dodanie nowego produktu")
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "200"),
@@ -61,12 +63,14 @@ public class ProductController {
                 );
     }
 
+    @Secured({"ROLE_ADMIN"})
     @Operation(summary = "ADMIN, pobranie wszystkich produktow AKTYWNYCH i NIEAKTYWNYCH")
     @GetMapping()
     public List<RestProduct> getAllProducts() {
         return productService.getAllProducts();
     }
 
+    @Secured({"ROLE_ADMIN"})
     @Operation(summary = "ADMIN, zmiana statusu produktu z inActive na Active i na odwrót")
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "200"),

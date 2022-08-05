@@ -1,5 +1,7 @@
 package com.motionbridge.motionbridge.users.application;
 
+import com.motionbridge.motionbridge.security.user.UserEntityDetails;
+import com.motionbridge.motionbridge.security.user.UserSecurity;
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase;
 import com.motionbridge.motionbridge.users.db.UserEntityRepository;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
@@ -19,22 +21,24 @@ import java.util.Optional;
 @AllArgsConstructor
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ManipulateUserService implements ManipulateUserDataUseCase {
+public class ManipulateUserDataService implements ManipulateUserDataUseCase {
 
     final UserEntityRepository repository;
     final PasswordEncoder encoder;
+    final UserSecurity userSecurity;
 
 
     @Transactional
     @Override
-    public UpdatePasswordResponse updatePassword(UpdatePasswordCommand command) {
+    public UpdatePasswordResponse updatePassword(UpdatePasswordCommand command, UserEntityDetails user) {
         return repository.findUserById(command.getId())
-                .map(user -> {
-                    updateActualPassword(command, user);
-                    log.warn("Password has been changed");
+                .filter(userById -> userSecurity.isOwnerOrAdmin(userById.getEmail(), user))
+                .map(userById -> {
+                    updateActualPassword(command, userById);
+                    log.warn("Password for user with id: {} has been changed", command.getId());
                     return UpdatePasswordResponse.SUCCESS;
                 })
-                .orElseGet(() -> new UpdatePasswordResponse(false, Collections.singletonList("New password is same as old")));
+                .orElseGet(() -> new UpdatePasswordResponse(false, Collections.singletonList("New password for user with id: " + command.getId() + " is same as old")));
     }
 
     private void updateActualPassword(UpdatePasswordCommand command, UserEntity user) {
@@ -44,11 +48,11 @@ public class ManipulateUserService implements ManipulateUserDataUseCase {
     }
 
     @Override
-    public UserEntity retrieveOrderByUserId(Long id) {
-        Optional<UserEntity> user = getUserById(id);
+    public UserEntity retrieveOrderByUserId(Long id, UserEntityDetails user) {
+        Optional<UserEntity> userById = getUserById(id);
         UserEntity userEntity;
-        if (user.isPresent()) {
-            userEntity = user.get();
+        if (userById.isPresent() && userSecurity.isOwnerOrAdmin(userById.get().getEmail(), user)) {
+            userEntity = userById.get();
             return userEntity;
         } else {
             throw new NoSuchElementException("User with id: " + id + "does not exist");

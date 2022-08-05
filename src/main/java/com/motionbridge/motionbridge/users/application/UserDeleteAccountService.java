@@ -1,6 +1,8 @@
 package com.motionbridge.motionbridge.users.application;
 
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
+import com.motionbridge.motionbridge.security.user.UserEntityDetails;
+import com.motionbridge.motionbridge.security.user.UserSecurity;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.users.application.port.ConfirmationTokenUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDeleteAccountUseCase;
@@ -21,17 +23,20 @@ public class UserDeleteAccountService implements UserDeleteAccountUseCase {
     final ManipulateSubscriptionUseCase subscriptionUseCase;
     final ManipulateOrderUseCase orderUseCase;
     final ConfirmationTokenUseCase confirmationTokenUseCase;
+    final UserSecurity userSecurity;
 
     @Transactional
     @Override
-    public void deleteUserById(Long id) {
-        log.warn("Executing removing user with id: " + id);
-        subscriptionUseCase.deleteAllByUserId(id);
-        orderUseCase.deleteAllOrdersByUserId(id);
-        confirmationTokenUseCase.deleteTokenByUserId(id);
-        repository.deleteById(id);
-        if (repository.findUserById(id).isEmpty()) {
-            log.info("User with id: " + id + " successfully removed");
+    public void deleteUserById(Long id, UserEntityDetails user) {
+        if (userSecurity.isOwnerOrAdmin(repository.findUserById(id).get().getEmail(), user)) {
+            log.warn("Executing removing user with id: " + id);
+            subscriptionUseCase.deleteAllByUserId(id);
+            orderUseCase.deleteAllOrdersByUserId(id);
+            confirmationTokenUseCase.deleteTokenByUserId(id);
+            repository.deleteById(id);
+            if (repository.findUserById(id).isEmpty()) {
+                log.info("User with id: " + id + " successfully removed");
+            }
         }
     }
 }

@@ -2,11 +2,12 @@ package com.motionbridge.motionbridge.security.user;
 
 
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserSecurity {
 
-    //TODO: Use as filter with @AuthenticationPrincipal
-    public boolean isOwnerOrAdmin(String objectOwner, UserDetails user) {
+    public boolean isOwnerOrAdmin(String objectOwner, UserEntityDetails user) {
         return isAdmin(user) || isOwner(objectOwner, user);
     }
 

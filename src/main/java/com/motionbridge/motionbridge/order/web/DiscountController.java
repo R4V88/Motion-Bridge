@@ -14,6 +14,7 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,12 +41,14 @@ public class DiscountController {
 
     final ManipulateDiscountUseCase discountService;
 
+    @Secured({"ROLE_ADMIN"})
     @Operation(summary = "ADMIN, wyszukuje wszystkie dostepne znizki")
     @GetMapping
     public List<RestDiscount> getAllDiscounts() {
         return discountService.getAllDiscounts();
     }
 
+    @Secured({"ROLE_ADMIN"})
     @Operation(summary = "ADMIN, dodawanie nowego discounta")
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "201"),
@@ -62,6 +65,7 @@ public class DiscountController {
                 );
     }
 
+    @Secured({"ROLE_ADMIN"})
     @Operation(summary = "ADMIN, zmiana statusu nowego discounta po id z inActive / Active i na odwrót")
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "200"),
@@ -77,6 +81,7 @@ public class DiscountController {
         return switchStatusResponse;
     }
 
+    @Secured({"ROLE_ADMIN"})
     @Operation(summary = "ADMIN, usunięcie discounta z bazy po id")
     @ApiResponse(description = "When successfully deleted discount", responseCode = "202")
     @DeleteMapping("{id}")

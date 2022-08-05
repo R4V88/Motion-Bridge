@@ -9,5 +9,4 @@ import java.util.List;
 @Builder
 public class RestRichOrder {
     List<RestOrder> restOrders;
-
 }
