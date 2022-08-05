@@ -1,0 +1,11 @@
+create sequence hibernate_sequence start 1 increment 1;
+create table discount (id int8 not null, uuid varchar(255), version int8, code varchar(255), created_at timestamp, duration int4, duration_period varchar(255), end_date timestamp, is_active boolean, start_date timestamp, subscription_period varchar(255), subscription_type varchar(255), updated_at timestamp, value int4, primary key (id));
+create table orders (id int8 not null, uuid varchar(255), version int8, active_discount boolean, created_at timestamp, current_price numeric(19, 2), discount_id int8, is_locked boolean, status varchar(255), total_price numeric(19, 2), updated_at timestamp, user_id int8, primary key (id));
+create table product (id int8 not null, uuid varchar(255), version int8, animation_quantity int4, created_at timestamp, currency varchar(255), is_active boolean, name varchar(255), price numeric(19, 2), time_period varchar(255), updated_at timestamp, primary key (id));
+create table subscription (id int8 not null, uuid varchar(255), version int8, animations_limit int4, animations_limit_counter int4, created_at timestamp, current_price numeric(19, 2), is_active boolean, price numeric(19, 2), time_period varchar(255), type varchar(255), updated_at timestamp, order_id int8, user_id int8, primary key (id));
+create table users (id int8 not null, uuid varchar(255), version int8, accepted_newsletter boolean, accepted_terms boolean, created_at timestamp, is_blocked boolean, is_verified boolean, login varchar(255), modified_at timestamp, password varchar(255), username varchar(255), primary key (id));
+create table users_roles (user_id int8 not null, role varchar(255));
+alter table if exists orders add constraint FK32ql8ubntj5uh44ph9659tiih foreign key (user_id) references users;
+alter table if exists subscription add constraint FKfrn9mw3omcmivl1wqsnh1nlw1 foreign key (order_id) references orders;
+alter table if exists subscription add constraint FKqwd9pkhbsmapx9poug5wnnpkc foreign key (user_id) references users;
+alter table if exists users_roles add constraint FK2o0jvgh89lemvvo17cbqvdxaa foreign key (user_id) references users;
