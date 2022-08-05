@@ -50,17 +50,6 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
                 .httpBasic()
                 .and()
                 .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-
-
-//        http
-//                .authorizeRequests()
-//                .mvcMatchers(HttpMethod.GET, "/**").permitAll()
-//                .mvcMatchers(HttpMethod.POST, "/login", "/users").permitAll()
-//                .mvcMatchers(HttpMethod.DELETE, "/**").permitAll()
-//                .mvcMatchers(HttpMethod.PUT, "/**").permitAll()
-////                .anyRequest().authenticated();
-//                .and().httpBasic()
-//                .and().addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     @SneakyThrows
