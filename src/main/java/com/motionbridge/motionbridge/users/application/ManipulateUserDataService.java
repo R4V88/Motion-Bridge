@@ -9,9 +9,11 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 import java.util.NoSuchElementException;
@@ -31,14 +33,14 @@ public class ManipulateUserDataService implements ManipulateUserDataUseCase {
     @Transactional
     @Override
     public UpdatePasswordResponse updatePassword(UpdatePasswordCommand command, UserEntityDetails user) {
-        return repository.findUserById(command.getId())
-                .filter(userById -> userSecurity.isOwnerOrAdmin(userById.getEmail(), user))
-                .map(userById -> {
-                    updateActualPassword(command, userById);
-                    log.warn("Password for user with id: {} has been changed", command.getId());
+        return repository.findByEmailIgnoreCase(user.getUsername())
+                .filter(userByEmail -> userSecurity.isOwnerOrAdmin(userByEmail.getEmail(), user))
+                .map(userByEmail -> {
+                    updateActualPassword(command, userByEmail);
+                    log.warn("Password for user with id: {} has been changed", userByEmail.getId());
                     return UpdatePasswordResponse.SUCCESS;
                 })
-                .orElseGet(() -> new UpdatePasswordResponse(false, Collections.singletonList("New password for user with id: " + command.getId() + " is same as old")));
+                .orElseGet(() -> new UpdatePasswordResponse(false, Collections.singletonList("New password for user with name " + user.getUsername() + " is same as old")));
     }
 
     private void updateActualPassword(UpdatePasswordCommand command, UserEntity user) {
@@ -57,6 +59,18 @@ public class ManipulateUserDataService implements ManipulateUserDataUseCase {
         } else {
             throw new NoSuchElementException("User with id: " + id + "does not exist");
         }
+    }
+
+    public Optional<UserEntity> getUserByEmail(UserEntityDetails userEntityDetails) {
+        Optional<UserEntity> userByEmail = repository.findByEmailIgnoreCase(userEntityDetails.getUsername());
+        UserEntity userEntity;
+        if (userByEmail.isPresent() && userSecurity.isOwnerOrAdmin(userByEmail.get().getEmail(), userEntityDetails)) {
+            userEntity = userByEmail.get();
+            return Optional.of(userEntity);
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+//        return null;
     }
 
     @Override

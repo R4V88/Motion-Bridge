@@ -14,7 +14,7 @@ public interface ManipulateOrderUseCase {
 
     void deleteOrder(Long orderId);
 
-    RestRichOrder getAllOrdersWithSubscriptions(Long userId, UserEntityDetails user);
+    RestRichOrder getAllOrdersWithSubscriptions(UserEntityDetails user);
 
     List<Order> getOrdersByUserIdAndStatus(Long userId, OrderStatus status);
 

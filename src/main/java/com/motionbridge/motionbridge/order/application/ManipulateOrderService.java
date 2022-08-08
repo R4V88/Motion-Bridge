@@ -10,6 +10,7 @@ import com.motionbridge.motionbridge.security.user.UserEntityDetails;
 import com.motionbridge.motionbridge.security.user.UserSecurity;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
+import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,7 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
     final OrderRepository orderRepository;
     final ManipulateSubscriptionUseCase subscriptionService;
     final UserSecurity userSecurity;
+    final ManipulateUserDataUseCase userService;
 
 
     @Transactional
@@ -47,15 +49,15 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
     }
 
     @Override
-    public RestRichOrder getAllOrdersWithSubscriptions(Long userId, UserEntityDetails user) {
+    public RestRichOrder getAllOrdersWithSubscriptions(UserEntityDetails user) {
         return RestRichOrder.builder()
-                .restOrders(toRestOrdersList(userId, user))
+                .restOrders(toRestOrdersList(user))
                 .build();
     }
 
-    private List<RestOrder> toRestOrdersList(Long userId, UserEntityDetails user) {
+    private List<RestOrder> toRestOrdersList(UserEntityDetails user) {
         List<RestOrder> restOrders = new ArrayList<>(Collections.emptyList());
-        for (Order order : getAllOrdersByUserId(userId)) {
+        for (Order order : getAllOrdersByUserId(user)) {
             restOrders.add(getRestOrderByOrderId(order.getId(), user));
         }
         return restOrders;
@@ -108,7 +110,13 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
         }
     }
 
-    private List<Order> getAllOrdersByUserId(Long userId) {
+    private List<Order> getAllOrdersByUserId(UserEntityDetails user) {
+        long userId;
+        if (userService.findByUserEmailIgnoreCase(user.getUsername()).isPresent()) {
+            userId = userService.findByUserEmailIgnoreCase(user.getUsername()).get().getId();
+        } else {
+            throw new RuntimeException("No user found with login: " + user.getUsername());
+        }
         return orderRepository.findAllByUserId(userId);
     }
 }

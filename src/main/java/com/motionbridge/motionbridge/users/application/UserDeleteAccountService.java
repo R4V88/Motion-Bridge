@@ -7,6 +7,7 @@ import com.motionbridge.motionbridge.subscription.application.port.ManipulateSub
 import com.motionbridge.motionbridge.users.application.port.ConfirmationTokenUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDeleteAccountUseCase;
 import com.motionbridge.motionbridge.users.db.UserEntityRepository;
+import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,9 +28,15 @@ public class UserDeleteAccountService implements UserDeleteAccountUseCase {
 
     @Transactional
     @Override
-    public void deleteUserById(Long id, UserEntityDetails user) {
-        if (userSecurity.isOwnerOrAdmin(repository.findUserById(id).get().getEmail(), user)) {
-            log.warn("Executing removing user with id: " + id);
+    public void deleteUserById(UserEntityDetails user) {
+        if (userSecurity.isOwnerOrAdmin(user.getUsername(), user)) {
+            long id;
+            if (repository.findByEmailIgnoreCase(user.getUsername()).isPresent()) {
+                id = repository.findByEmailIgnoreCase(user.getUsername()).get().getId();
+            } else {
+                throw new RuntimeException("User with login " + user.getUsername() + " does not exist!");
+            }
+            log.warn("Executing removing user with id: {}", id);
             subscriptionUseCase.deleteAllByUserId(id);
             orderUseCase.deleteAllOrdersByUserId(id);
             confirmationTokenUseCase.deleteTokenByUserId(id);

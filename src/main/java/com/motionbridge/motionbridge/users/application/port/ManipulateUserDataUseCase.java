@@ -17,6 +17,8 @@ public interface ManipulateUserDataUseCase {
 
     Optional<UserEntity> getUserById(Long id);
 
+    Optional<UserEntity> getUserByEmail(UserEntityDetails userEntityDetails);
+
     UserEntity retrieveOrderByUserId(Long id, UserEntityDetails user);
 
     UserEntity getCurrentUserById(Long userId);
@@ -29,7 +31,6 @@ public interface ManipulateUserDataUseCase {
     @Builder
     @AllArgsConstructor
     class UpdatePasswordCommand {
-        Long id;
         String password;
     }
 
