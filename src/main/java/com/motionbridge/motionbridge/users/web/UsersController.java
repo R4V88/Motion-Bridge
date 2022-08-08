@@ -10,7 +10,6 @@ import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUs
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase.UpdatePasswordCommand;
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase.UpdatePasswordResponse;
 import com.motionbridge.motionbridge.users.application.port.UserDeleteAccountUseCase;
-import com.motionbridge.motionbridge.users.entity.UserEntity;
 import com.motionbridge.motionbridge.users.web.mapper.RestSubscription;
 import com.motionbridge.motionbridge.users.web.mapper.RestUser;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,8 +39,6 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.motionbridge.motionbridge.users.web.mapper.RestUser.toCreateRestUser;
-
 @RestController
 @AllArgsConstructor
 @Tag(name = "/api/users", description = "Manipulate Users")
@@ -62,9 +59,9 @@ public class UsersController {
             @ApiResponse(description = "Invalid password", responseCode = "400")
     })
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/{id}/changePassword")
-    public void changePassword(@PathVariable Long id, @Valid @RequestBody RestUserCommand command, @AuthenticationPrincipal UserEntityDetails user) {
-        UpdatePasswordResponse response = userService.updatePassword(command.toUpdatePasswordCommand(id), user);
+    @PutMapping("/changePassword")
+    public void changePassword(@Valid @RequestBody RestUserCommand command, @AuthenticationPrincipal UserEntityDetails user) {
+        UpdatePasswordResponse response = userService.updatePassword(command.toUpdatePasswordCommand(), user);
         if (!response.isSuccess()) {
             String message = String.join(", ", response.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
@@ -77,37 +74,41 @@ public class UsersController {
             @ApiResponse(description = "OK", responseCode = "200"),
             @ApiResponse(description = "User not found", responseCode = "404")
     })
-    @GetMapping("/{id}")
+    @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    public RestUser getById(@PathVariable Long id, @AuthenticationPrincipal UserEntityDetails user) {
-        UserEntity userEntity = userService.retrieveOrderByUserId(id, user);
-        if (userEntity.getId().equals(id)) {
-            return toCreateRestUser(userEntity);
-        } else
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-
+    public RestUser getDetails(@AuthenticationPrincipal UserEntityDetails user) {
+        return userService.getUserByEmail(user)
+                .map(RestUser::toCreateRestUser)
+                .orElseThrow(() -> new RuntimeException("User does not exist"));
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @Operation(summary = "USER zalogowany, usunięcie konta")
     @ApiResponse(description = "When successfully deleted account", responseCode = "202")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable Long id, @AuthenticationPrincipal UserEntityDetails user) {
-        deleteAccountUseCase.deleteUserById(id, user);
+    @DeleteMapping()
+    public void deleteAccount(@AuthenticationPrincipal UserEntityDetails user) {
+        deleteAccountUseCase.deleteUserById(user);
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @Operation(summary = "USER zalogowany, pobranie wszystkich orderów użytkowników")
-    @GetMapping("/{id}/orders")
-    public RestRichOrder getAllOrders(@PathVariable Long id, @AuthenticationPrincipal UserEntityDetails user) {
-        return orderService.getAllOrdersWithSubscriptions(id, user);
+    @GetMapping("/orders")
+    public RestRichOrder getAllOrders(@AuthenticationPrincipal UserEntityDetails user) {
+        return orderService.getAllOrdersWithSubscriptions(user);
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @Operation(summary = "USER zalogowany, wszystkie subskrypcje po id usera")
-    @GetMapping("/{id}/subscription")
-    public ResponseEntity<List<RestSubscription>> getSubscriptions(@PathVariable Long id, @AuthenticationPrincipal UserEntityDetails user) {
+    @GetMapping("/subscriptions")
+    public ResponseEntity<List<RestSubscription>> getSubscriptions(@AuthenticationPrincipal UserEntityDetails user) {
+        long id;
+        if (userService.findByUserEmailIgnoreCase(user.getUsername()).isPresent()) {
+            id = userService.findByUserEmailIgnoreCase(user.getUsername()).get().getId();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+
         List<RestSubscription> subscriptions = subscriptionService
                 .findAllByUserId(id)
                 .stream()
@@ -141,8 +142,8 @@ public class UsersController {
         @NotBlank(message = "Please provide valid new password")
         private String password;
 
-        UpdatePasswordCommand toUpdatePasswordCommand(Long id) {
-            return new UpdatePasswordCommand(id, password);
+        UpdatePasswordCommand toUpdatePasswordCommand() {
+            return new UpdatePasswordCommand(password);
         }
     }
 }
