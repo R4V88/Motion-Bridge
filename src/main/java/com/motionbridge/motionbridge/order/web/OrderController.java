@@ -103,12 +103,10 @@ public class OrderController {
     @FieldDefaults(level = AccessLevel.PRIVATE)
     static class RestOrderCommand {
         @NotNull
-        Long userId;
-        @NotNull
         Long productId;
 
         PlaceOrderCommand toPlaceOrderCommand() {
-            return new PlaceOrderCommand(userId, productId);
+            return new PlaceOrderCommand(productId);
         }
     }
 
@@ -117,11 +115,9 @@ public class OrderController {
     static class RestApplyDiscountCommand {
         @NotBlank(message = "Please provide valid code")
         String code;
-        @NotNull
-        Long userId;
 
         PlaceDiscountCommand toPlaceDiscountCommand() {
-            return new PlaceDiscountCommand(code, userId);
+            return new PlaceDiscountCommand(code);
         }
     }
 }

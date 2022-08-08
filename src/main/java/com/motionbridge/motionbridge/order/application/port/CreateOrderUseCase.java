@@ -31,7 +31,6 @@ public interface CreateOrderUseCase {
 
     @Value
     class PlaceOrderCommand {
-        Long userId;
         Long productId;
     }
 

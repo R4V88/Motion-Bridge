@@ -9,6 +9,5 @@ public interface ApplyDiscountUseCase {
     @Value
     class PlaceDiscountCommand {
         String code;
-        Long userId;
     }
 }

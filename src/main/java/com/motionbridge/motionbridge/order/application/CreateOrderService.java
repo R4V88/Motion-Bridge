@@ -49,7 +49,12 @@ public class CreateOrderService implements CreateOrderUseCase {
     public void placeOrder(PlaceOrderCommand command, UserEntityDetails user) {
         final OrderStatus orderStatus = OrderStatus.NEW;
         final Long productId = command.getProductId();
-        final Long userId = command.getUserId();
+        final Long userId;
+        if (userService.findByUserEmailIgnoreCase(user.getUsername()).isPresent()) {
+            userId = userService.findByUserEmailIgnoreCase(user.getUsername()).get().getId();
+        } else {
+            throw new RuntimeException("User with login: " + user.getUsername() + " does not exist");
+        }
 
         UserEntity userById = userService.getCurrentUserById(userId);
         ProductOrder productOrder = productService.checkIfProductExistInOrderThenGet(productId);
