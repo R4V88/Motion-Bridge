@@ -39,7 +39,14 @@ public class ApplyDiscountService implements ApplyDiscountUseCase {
 
     @Override
     public void applyDiscount(PlaceDiscountCommand placeDiscountCommand, UserEntityDetails user) {
-        Long userId = placeDiscountCommand.getUserId();
+        Long userId;
+
+        if (manipulateUserDataUseCase.findByUserEmailIgnoreCase(user.getUsername()).isPresent()) {
+            userId = manipulateUserDataUseCase.findByUserEmailIgnoreCase(user.getUsername()).get().getId();
+        } else {
+            throw new RuntimeException("User with login: " + user.getUsername() + " does not exist");
+        }
+
         String code = placeDiscountCommand.getCode();
 
         if (userSecurity.isOwnerOrAdmin(manipulateUserDataUseCase.getUserById(userId).get().getEmail(), user)) {
