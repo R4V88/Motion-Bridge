@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 @Value
 public class RestActiveProduct {
+    Long id;
     String name;
     BigDecimal price;
     String currency;
@@ -15,6 +16,7 @@ public class RestActiveProduct {
 
     public static RestActiveProduct toRestActiveProduct(Product product) {
         return new RestActiveProduct(
+                product.getId(),
                 product.getName().toString(),
                 product.getPrice(),
                 product.getCurrency().toString().toLowerCase(),
