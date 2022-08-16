@@ -17,8 +17,8 @@ public class CorsConfig {
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedMethods("*")
-                        .allowedHeaders("*")
-                        .allowedOrigins("*");
+//                        .allowedHeaders("*")
+                        .allowedOrigins("https://next-motionbridge.herokuapp.com", "http://localhost:3000");
             }
         };
     }
