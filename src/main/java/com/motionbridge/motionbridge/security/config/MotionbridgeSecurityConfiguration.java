@@ -42,7 +42,7 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
 
         http
                 .authorizeRequests()
-                .mvcMatchers(HttpMethod.GET, "/api/products/active").permitAll()
+                .mvcMatchers(HttpMethod.GET, "/api/products/active", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .mvcMatchers(HttpMethod.POST, "/login", "/api/registration").permitAll()
 //                .mvcMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
