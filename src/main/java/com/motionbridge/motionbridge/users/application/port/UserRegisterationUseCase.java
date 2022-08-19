@@ -6,7 +6,7 @@ import com.motionbridge.motionbridge.users.entity.UserEntity;
 public interface UserRegisterationUseCase {
     RegisterResponse register(String login, String email, String password, Boolean acceptedTerms, Boolean acceptedNewsletter);
 
-    void confirmToken(String token);
+    String confirmToken(String token);
 
     class RegisterResponse extends Either<String, UserEntity> {
 

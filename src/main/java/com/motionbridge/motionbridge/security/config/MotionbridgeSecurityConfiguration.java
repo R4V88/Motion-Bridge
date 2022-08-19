@@ -14,6 +14,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +23,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @AllArgsConstructor
 @EnableGlobalMethodSecurity(securedEnabled = true)
-@EnableConfigurationProperties(AdminConfig.class)
+@EnableConfigurationProperties({AdminConfig.class})
+//@EnableWebSecurity
 public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
@@ -36,22 +38,51 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .cors()
-                .disable()
-                .csrf()
-                .disable();
 
         http
-                .authorizeRequests()
-                .mvcMatchers(HttpMethod.GET, "/api/products/active", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .mvcMatchers(HttpMethod.POST, "/login", "/api/registration").permitAll()
-//                .mvcMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
+                .csrf()
+                .disable();
+        http
+                .cors();
+
+//        http
+//                .authorizeRequests()
+//                .mvcMatchers(HttpMethod.POST, "/login").permitAll()
+//                .mvcMatchers(HttpMethod.GET, "/api/registration/confirm").permitAll()
+//                .mvcMatchers(HttpMethod.POST, "/api/registration").permitAll()
+//                .mvcMatchers(HttpMethod.GET, "/api/products/active").permitAll()
+//                .mvcMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
+        http.authorizeRequests()
+                .antMatchers(
+                        "/login",
+                        "/api/registration/confirm*",
+                        "/api/registration",
+                        "/api/products/active",
+                        "/swagger-ui/**", "/v3/api-docs/**"
+                )
+                .permitAll()
+                .anyRequest()
+                .authenticated()
                 .and()
                 .httpBasic()
                 .and()
                 .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
+//                .formLogin()
+//                .and().addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
+//                .mvcMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**").hasRole("ADMIN")
+
+    }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring()
+                .mvcMatchers(HttpMethod.POST, "/login")
+                .mvcMatchers(HttpMethod.GET, "/api/registration/confirm")
+                .mvcMatchers(HttpMethod.POST, "/api/registration")
+                .mvcMatchers(HttpMethod.GET, "/api/products/active");
     }
 
     @SneakyThrows
