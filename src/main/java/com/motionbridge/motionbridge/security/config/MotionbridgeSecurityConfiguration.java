@@ -8,7 +8,6 @@ import lombok.SneakyThrows;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -24,7 +23,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @AllArgsConstructor
 @EnableGlobalMethodSecurity(securedEnabled = true)
 @EnableConfigurationProperties({AdminConfig.class})
-//@EnableWebSecurity
 public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
@@ -45,21 +43,11 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
         http
                 .cors();
 
-//        http
-//                .authorizeRequests()
-//                .mvcMatchers(HttpMethod.POST, "/login").permitAll()
-//                .mvcMatchers(HttpMethod.GET, "/api/registration/confirm").permitAll()
-//                .mvcMatchers(HttpMethod.POST, "/api/registration").permitAll()
-//                .mvcMatchers(HttpMethod.GET, "/api/products/active").permitAll()
-//                .mvcMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-
         http.authorizeRequests()
                 .antMatchers(
                         "/login",
-                        "/api/registration/confirm*",
                         "/api/registration",
-                        "/api/products/active",
-                        "/swagger-ui/**", "/v3/api-docs/**"
+                        "/api/products/active"
                 )
                 .permitAll()
                 .anyRequest()
@@ -68,21 +56,12 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
                 .httpBasic()
                 .and()
                 .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-
-//                .formLogin()
-//                .and().addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-
-//                .mvcMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**").hasRole("ADMIN")
-
     }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring()
-                .mvcMatchers(HttpMethod.POST, "/login")
-                .mvcMatchers(HttpMethod.GET, "/api/registration/confirm")
-                .mvcMatchers(HttpMethod.POST, "/api/registration")
-                .mvcMatchers(HttpMethod.GET, "/api/products/active");
+                .antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/registration/confirm*");
     }
 
     @SneakyThrows
