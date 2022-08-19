@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -54,8 +55,8 @@ public class UserRegistrationController {
     @ApiResponse(description = "OK", responseCode = "200")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/confirm")
-    public void confirm(@RequestParam("token") String token) {
-        userRegisterationUseCase.confirmToken(token);
+    public String confirm(@RequestParam("token") String token) {
+        return userRegisterationUseCase.confirmToken(token);
     }
 
 
