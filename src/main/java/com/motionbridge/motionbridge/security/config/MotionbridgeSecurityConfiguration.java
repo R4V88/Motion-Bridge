@@ -45,7 +45,7 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
 
         http.authorizeRequests()
                 .antMatchers(
-                        "/login",
+                        "/api/login",
                         "/api/registration",
                         "/api/products/active"
                 )
