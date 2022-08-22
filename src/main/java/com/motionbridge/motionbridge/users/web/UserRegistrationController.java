@@ -30,7 +30,7 @@ import javax.validation.constraints.Size;
 @RestController
 @AllArgsConstructor
 @Tag(name = "/api/registration", description = "Users registration")
-@RequestMapping("/api/registration")
+@RequestMapping("/api/register")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserRegistrationController {
 
