@@ -53,7 +53,7 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
 
         http.authorizeRequests()
                 .antMatchers("/api/users/login",
-                        "/api/registration",
+                        "/api/register",
                         "/api/products/active")
                 .permitAll()
                 .and()
@@ -68,7 +68,7 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring()
-                .antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/registration/confirm*");
+                .antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/register/confirm*");
     }
 
 
