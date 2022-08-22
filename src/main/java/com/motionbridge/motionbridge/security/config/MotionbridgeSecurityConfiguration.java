@@ -52,7 +52,7 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authorizeRequests()
-                .antMatchers("/api/login",
+                .antMatchers("/api/users/login",
                         "/api/registration",
                         "/api/products/active")
                 .permitAll()

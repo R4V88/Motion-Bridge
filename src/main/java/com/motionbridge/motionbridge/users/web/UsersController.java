@@ -2,6 +2,7 @@ package com.motionbridge.motionbridge.users.web;
 
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.order.web.mapper.RestRichOrder;
+import com.motionbridge.motionbridge.security.jwt.CurrentlyLoggedUserProvider;
 import com.motionbridge.motionbridge.security.jwt.JwtConfig;
 import com.motionbridge.motionbridge.security.user.UserEntityDetails;
 import com.motionbridge.motionbridge.security.user.UserSecurity;
@@ -63,6 +64,7 @@ public class UsersController {
     final UserDeleteAccountUseCase deleteAccountUseCase;
     final UserSecurity userSecurity;
     final AuthenticationManager authenticationManager;
+    final CurrentlyLoggedUserProvider currentlyLoggedUserProvider;
     final JwtConfig jwtConfig;
     final SecretKey secretKey;
 
@@ -141,8 +143,9 @@ public class UsersController {
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @Operation(summary = "USER zalogowany, pobranie wszystkich orderów użytkowników")
     @GetMapping("/orders")
-    public RestRichOrder getAllOrders(@AuthenticationPrincipal UserEntityDetails user) {
-        return orderService.getAllOrdersWithSubscriptions(user);
+    public RestRichOrder getAllOrders() {
+        final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
+        return orderService.getAllOrdersWithSubscriptions(currentLoggedUsername);
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})

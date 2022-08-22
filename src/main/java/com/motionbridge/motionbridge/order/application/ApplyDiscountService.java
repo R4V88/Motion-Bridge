@@ -6,7 +6,6 @@ import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCa
 import com.motionbridge.motionbridge.order.entity.Discount;
 import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.order.entity.SubscriptionType;
-import com.motionbridge.motionbridge.security.user.UserEntityDetails;
 import com.motionbridge.motionbridge.security.user.UserSecurity;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
@@ -38,21 +37,21 @@ public class ApplyDiscountService implements ApplyDiscountUseCase {
     final ManipulateUserDataUseCase manipulateUserDataUseCase;
 
     @Override
-    public void applyDiscount(PlaceDiscountCommand placeDiscountCommand, UserEntityDetails user) {
+    public void applyDiscount(PlaceDiscountCommand placeDiscountCommand, String userEmail) {
         Long userId;
 
-        if (manipulateUserDataUseCase.findByUserEmailIgnoreCase(user.getUsername()).isPresent()) {
-            userId = manipulateUserDataUseCase.findByUserEmailIgnoreCase(user.getUsername()).get().getId();
+        if (manipulateUserDataUseCase.findByUserEmailIgnoreCase(userEmail).isPresent()) {
+            userId = manipulateUserDataUseCase.findByUserEmailIgnoreCase(userEmail).get().getId();
         } else {
-            throw new RuntimeException("User with login: " + user.getUsername() + " does not exist");
+            throw new RuntimeException("User with login: " + userEmail + " does not exist");
         }
 
         String code = placeDiscountCommand.getCode();
-
-        if (userSecurity.isOwnerOrAdmin(manipulateUserDataUseCase.getUserById(userId).get().getEmail(), user)) {
-            Order order = orderService.getOrderWithStatusNewByUserId(userId);
+        Order order = orderService.getOrderWithStatusNewByUserId(userId);
+        if (order.getUser().getEmail().equals(userEmail)) {
             getValidDiscountToOrder(code, order);
         } else {
+            log.warn("User " + userEmail + " is not owner of given order id " + order.getId());
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
     }
