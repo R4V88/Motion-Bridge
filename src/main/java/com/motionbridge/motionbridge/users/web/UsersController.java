@@ -2,6 +2,7 @@ package com.motionbridge.motionbridge.users.web;
 
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.order.web.mapper.RestRichOrder;
+import com.motionbridge.motionbridge.security.jwt.JwtConfig;
 import com.motionbridge.motionbridge.security.user.UserEntityDetails;
 import com.motionbridge.motionbridge.security.user.UserSecurity;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
@@ -10,8 +11,10 @@ import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUs
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase.UpdatePasswordCommand;
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase.UpdatePasswordResponse;
 import com.motionbridge.motionbridge.users.application.port.UserDeleteAccountUseCase;
+import com.motionbridge.motionbridge.users.web.mapper.LoginCommand;
 import com.motionbridge.motionbridge.users.web.mapper.RestSubscription;
 import com.motionbridge.motionbridge.users.web.mapper.RestUser;
+import io.jsonwebtoken.Jwts;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -23,10 +26,15 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,8 +42,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.crypto.SecretKey;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,6 +62,42 @@ public class UsersController {
     final ManipulateSubscriptionUseCase subscriptionService;
     final UserDeleteAccountUseCase deleteAccountUseCase;
     final UserSecurity userSecurity;
+    final AuthenticationManager authenticationManager;
+    final JwtConfig jwtConfig;
+    final SecretKey secretKey;
+
+    @Operation(summary = "USER zalogowany, tworzy nowe zamówienie po id usera i id produktu")
+    @ApiResponses(value = {
+            @ApiResponse(description = "Successfully logged in", responseCode = "200"),
+            @ApiResponse(description = "Failed to find user", responseCode = "401")
+    })
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody @Valid LoginCommand loginCommand) {
+        try {
+            Authentication authenticate = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginCommand.getEmail(), loginCommand.getPassword())
+            );
+
+            UserEntityDetails userEntityDetails = (UserEntityDetails) authenticate.getPrincipal();
+
+            String token = Jwts
+                    .builder()
+                    .setSubject(userEntityDetails.getUsername())
+                    .setIssuer("motionbridge")
+                    .claim("authorities", userEntityDetails.getAuthorities())
+                    .setIssuedAt(new Date())
+                    .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusDays(jwtConfig.getTokenExpirationAfterDays())))
+                    .signWith(secretKey)
+                    .compact();
+
+            return ResponseEntity.ok()
+                    .header(jwtConfig.getAuthorizationHeader(), jwtConfig.getTokenPrefix() + token)
+                    .build();
+
+        } catch (BadCredentialsException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @Operation(summary = "USER zalogowany, zmiana hasła")
