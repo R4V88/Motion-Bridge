@@ -1,8 +1,6 @@
 package com.motionbridge.motionbridge.users.application;
 
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
-import com.motionbridge.motionbridge.security.user.UserEntityDetails;
-import com.motionbridge.motionbridge.security.user.UserSecurity;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.users.application.port.ConfirmationTokenUseCase;
 import com.motionbridge.motionbridge.users.application.port.UserDeleteAccountUseCase;
@@ -23,26 +21,23 @@ public class UserDeleteAccountService implements UserDeleteAccountUseCase {
     final ManipulateSubscriptionUseCase subscriptionUseCase;
     final ManipulateOrderUseCase orderUseCase;
     final ConfirmationTokenUseCase confirmationTokenUseCase;
-    final UserSecurity userSecurity;
 
     @Transactional
     @Override
-    public void deleteUserById(UserEntityDetails user) {
-        if (userSecurity.isOwnerOrAdmin(user.getUsername(), user)) {
-            long id;
-            if (repository.findByEmailIgnoreCase(user.getUsername()).isPresent()) {
-                id = repository.findByEmailIgnoreCase(user.getUsername()).get().getId();
-            } else {
-                throw new RuntimeException("User with login " + user.getUsername() + " does not exist!");
-            }
-            log.warn("Executing removing user with id: {}", id);
-            subscriptionUseCase.deleteAllByUserId(id);
-            orderUseCase.deleteAllOrdersByUserId(id);
-            confirmationTokenUseCase.deleteTokenByUserId(id);
-            repository.deleteById(id);
-            if (repository.findUserById(id).isEmpty()) {
-                log.info("User with id: " + id + " successfully removed");
-            }
+    public void deleteUserByUserEmail(String userEmail) {
+        long id;
+        if (repository.findByEmailIgnoreCase(userEmail).isPresent()) {
+            id = repository.findByEmailIgnoreCase(userEmail).get().getId();
+        } else {
+            throw new RuntimeException("User with login " + userEmail + " does not exist!");
+        }
+        log.warn("Executing removing user with id: {}", id);
+        subscriptionUseCase.deleteAllByUserId(id);
+        orderUseCase.deleteAllOrdersByUserId(id);
+        confirmationTokenUseCase.deleteTokenByUserId(id);
+        repository.deleteById(id);
+        if (repository.findUserById(id).isEmpty()) {
+            log.info("User with id: " + id + " successfully removed");
         }
     }
 }

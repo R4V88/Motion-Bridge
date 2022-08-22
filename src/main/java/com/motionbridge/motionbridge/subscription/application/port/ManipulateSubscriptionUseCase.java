@@ -1,7 +1,6 @@
 package com.motionbridge.motionbridge.subscription.application.port;
 
 import com.motionbridge.motionbridge.order.entity.Order;
-import com.motionbridge.motionbridge.security.user.UserEntityDetails;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AllArgsConstructor;
@@ -27,7 +26,7 @@ public interface ManipulateSubscriptionUseCase {
 
     void deleteAllByUserId(Long id);
 
-    AutoRenewResponse autoRenew(Long id, UserEntityDetails user);
+    AutoRenewResponse autoRenew(Long id, String userEmail);
 
     @Value
     @AllArgsConstructor

@@ -2,6 +2,7 @@ package com.motionbridge.motionbridge.users.web;
 
 import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCase;
 import com.motionbridge.motionbridge.order.web.mapper.RestRichOrder;
+import com.motionbridge.motionbridge.security.jwt.CurrentlyLoggedUserProvider;
 import com.motionbridge.motionbridge.security.jwt.JwtConfig;
 import com.motionbridge.motionbridge.security.user.UserEntityDetails;
 import com.motionbridge.motionbridge.security.user.UserSecurity;
@@ -25,12 +26,11 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,6 +63,7 @@ public class UsersController {
     final UserDeleteAccountUseCase deleteAccountUseCase;
     final UserSecurity userSecurity;
     final AuthenticationManager authenticationManager;
+    final CurrentlyLoggedUserProvider currentlyLoggedUserProvider;
     final JwtConfig jwtConfig;
     final SecretKey secretKey;
 
@@ -99,7 +100,7 @@ public class UsersController {
         }
     }
 
-    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @Operation(summary = "USER zalogowany, zmiana hasła")
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "200"),
@@ -107,15 +108,16 @@ public class UsersController {
     })
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/changePassword")
-    public void changePassword(@Valid @RequestBody RestUserCommand command, @AuthenticationPrincipal UserEntityDetails user) {
-        UpdatePasswordResponse response = userService.updatePassword(command.toUpdatePasswordCommand(), user);
+    public void changePassword(@Valid @RequestBody RestUserCommand command) {
+        final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
+        UpdatePasswordResponse response = userService.updatePassword(command.toUpdatePasswordCommand(), currentLoggedUsername);
         if (!response.isSuccess()) {
             String message = String.join(", ", response.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
         }
     }
 
-    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @Operation(summary = "USER zalogowany, pobranie danych użytkownika - email, name, ActiveAccount, AcceptedNewsletter")
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "200"),
@@ -123,35 +125,39 @@ public class UsersController {
     })
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    public RestUser getDetails(@AuthenticationPrincipal UserEntityDetails user) {
-        return userService.getUserByEmail(user)
+    public RestUser getDetails() {
+        final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
+        return userService.getUserByEmail(currentLoggedUsername)
                 .map(RestUser::toCreateRestUser)
                 .orElseThrow(() -> new RuntimeException("User does not exist"));
     }
 
-    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @Operation(summary = "USER zalogowany, usunięcie konta")
     @ApiResponse(description = "When successfully deleted account", responseCode = "202")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping()
-    public void deleteAccount(@AuthenticationPrincipal UserEntityDetails user) {
-        deleteAccountUseCase.deleteUserById(user);
+    public void deleteAccount() {
+        final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
+        deleteAccountUseCase.deleteUserByUserEmail(currentLoggedUsername);
     }
 
-    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @Operation(summary = "USER zalogowany, pobranie wszystkich orderów użytkowników")
     @GetMapping("/orders")
-    public RestRichOrder getAllOrders(@AuthenticationPrincipal UserEntityDetails user) {
-        return orderService.getAllOrdersWithSubscriptions(user);
+    public RestRichOrder getAllOrders() {
+        final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
+        return orderService.getAllOrdersWithSubscriptions(currentLoggedUsername);
     }
 
-    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @Operation(summary = "USER zalogowany, wszystkie subskrypcje po id usera")
     @GetMapping("/subscriptions")
-    public ResponseEntity<List<RestSubscription>> getSubscriptions(@AuthenticationPrincipal UserEntityDetails user) {
+    public ResponseEntity<List<RestSubscription>> getSubscriptions() {
+        final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
         long id;
-        if (userService.findByUserEmailIgnoreCase(user.getUsername()).isPresent()) {
-            id = userService.findByUserEmailIgnoreCase(user.getUsername()).get().getId();
+        if (userService.findByUserEmailIgnoreCase(currentLoggedUsername).isPresent()) {
+            id = userService.findByUserEmailIgnoreCase(currentLoggedUsername).get().getId();
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -159,7 +165,7 @@ public class UsersController {
         List<RestSubscription> subscriptions = subscriptionService
                 .findAllByUserId(id)
                 .stream()
-                .filter(subscription -> userSecurity.isOwnerOrAdmin(subscription.getUser().getEmail(), user))
+                .filter(subscription -> subscription.getUser().getEmail().equals(currentLoggedUsername))
                 .map(RestSubscription::toRestSubscription)
                 .collect(Collectors.toList());
         if (subscriptions.size() != 0) {
@@ -168,7 +174,7 @@ public class UsersController {
             return ResponseEntity.notFound().build();
     }
 
-    @Secured({"ROLE_ADMIN"})
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "ADMIN, zmiana statusu uzytkownika po id z unBlocked / Blocked i na odwrót")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "When successfully blocked account"),

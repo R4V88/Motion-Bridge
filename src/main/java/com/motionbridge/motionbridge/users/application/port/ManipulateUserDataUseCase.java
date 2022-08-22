@@ -13,11 +13,11 @@ import static java.util.Collections.emptyList;
 
 public interface ManipulateUserDataUseCase {
 
-    UpdatePasswordResponse updatePassword(UpdatePasswordCommand command, UserEntityDetails user);
+    UpdatePasswordResponse updatePassword(UpdatePasswordCommand command, String user);
 
     Optional<UserEntity> getUserById(Long id);
 
-    Optional<UserEntity> getUserByEmail(UserEntityDetails userEntityDetails);
+    Optional<UserEntity> getUserByEmail(String userEmail);
 
     UserEntity retrieveOrderByUserId(Long id, UserEntityDetails user);
 

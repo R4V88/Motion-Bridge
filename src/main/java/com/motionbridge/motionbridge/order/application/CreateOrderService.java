@@ -56,11 +56,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         UserEntity userById = userService.getCurrentUserById(userId);
         ProductOrder productOrder = productService.checkIfProductExistInOrderThenGet(productId);
         Order order = getOrderElseCreate(userById, orderStatus);
-//        if (userSecurity.isOwnerOrAdmin(userById.getEmail(), user)) {
-//            checkIfEqualSubscriptionAlreadyExistElseCreate(userById, order, productOrder);
-//        } else {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-//        }
+        checkIfEqualSubscriptionAlreadyExistElseCreate(userById, order, productOrder);
     }
 
     void checkIfEqualSubscriptionAlreadyExistElseCreate(UserEntity user, Order order, ProductOrder productOrder) {

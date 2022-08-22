@@ -1,7 +1,5 @@
 package com.motionbridge.motionbridge.subscription.application;
 
-import com.motionbridge.motionbridge.security.user.UserEntityDetails;
-import com.motionbridge.motionbridge.security.user.UserSecurity;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.subscription.db.SubscriptionRepository;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
@@ -23,7 +21,6 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ManipulateSubscriptionService implements ManipulateSubscriptionUseCase {
     final SubscriptionRepository repository;
-    final UserSecurity userSecurity;
 
     @Override
     public List<Subscription> findAllByUserId(Long id) {
@@ -64,9 +61,9 @@ public class ManipulateSubscriptionService implements ManipulateSubscriptionUseC
 
     @Transactional
     @Override
-    public AutoRenewResponse autoRenew(Long id, UserEntityDetails user) {
+    public AutoRenewResponse autoRenew(Long id, String userEmail) {
         return repository.findById(id)
-                .filter(sub -> userSecurity.isOwnerOrAdmin(sub.getUser().getEmail(), user))
+                .filter(sub -> sub.getUser().getEmail().equals(userEmail))
                 .map(product -> {
                     switchActualStatus(id);
                     return AutoRenewResponse.SUCCESS;
