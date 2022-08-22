@@ -8,6 +8,7 @@ import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCa
 import com.motionbridge.motionbridge.order.application.port.RemoveDiscountUseCase;
 import com.motionbridge.motionbridge.order.application.port.RemoveSubscriptionFromOrderUseCase;
 import com.motionbridge.motionbridge.order.web.mapper.RestOrder;
+import com.motionbridge.motionbridge.security.jwt.CurrentlyLoggedUserProvider;
 import com.motionbridge.motionbridge.security.user.UserEntityDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,6 +20,7 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,8 +48,9 @@ public class OrderController {
     final ApplyDiscountUseCase applyDiscountService;
     final RemoveDiscountUseCase removeDiscountUseCase;
     final RemoveSubscriptionFromOrderUseCase removeSubscriptionFromOrderUseCase;
+    final CurrentlyLoggedUserProvider currentlyLoggedUserProvider;
 
-    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @Operation(summary = "USER zalogowany, tworzy nowe zamówienie po id usera i id produktu")
     @ApiResponses(value = {
             @ApiResponse(description = "Created new Order", responseCode = "201"),
@@ -55,8 +58,9 @@ public class OrderController {
     })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/create")
-    public void createOrder(@Valid @RequestBody RestOrderCommand restOrderCommand, @AuthenticationPrincipal UserEntityDetails user) {
-        createOrderService.placeOrder(restOrderCommand.toPlaceOrderCommand(), user);
+    public void createOrder(@Valid @RequestBody RestOrderCommand restOrderCommand) {
+        final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
+        createOrderService.placeOrder(restOrderCommand.toPlaceOrderCommand(), currentLoggedUsername);
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})

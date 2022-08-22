@@ -2,7 +2,6 @@ package com.motionbridge.motionbridge.order.application.port;
 
 import com.motionbridge.motionbridge.commons.Either;
 import com.motionbridge.motionbridge.order.entity.Order;
-import com.motionbridge.motionbridge.security.user.UserEntityDetails;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.Value;
 
@@ -10,7 +9,7 @@ import java.math.BigDecimal;
 
 public interface CreateOrderUseCase {
 
-    void placeOrder(PlaceOrderCommand command, UserEntityDetails user);
+    void placeOrder(PlaceOrderCommand command, String currentlyLoggedUserEmail);
 
     Order saveOrder(CreateOrderCommand command);
 

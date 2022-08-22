@@ -22,7 +22,7 @@ public class MotionbridgeUserDetailsService implements UserDetailsService {
         }
         return userDataManipulationUseCase
                 .findByUserEmailIgnoreCase(email)
-                .map(x -> new UserEntityDetails(x))
-                .orElseThrow(() -> new UsernameNotFoundException(email));
+                .map(UserEntityDetails::new)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("Email %s not found", email)));
     }
 }
