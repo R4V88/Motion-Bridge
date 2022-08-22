@@ -9,7 +9,6 @@ import com.motionbridge.motionbridge.order.application.port.RemoveDiscountUseCas
 import com.motionbridge.motionbridge.order.application.port.RemoveSubscriptionFromOrderUseCase;
 import com.motionbridge.motionbridge.order.web.mapper.RestOrder;
 import com.motionbridge.motionbridge.security.jwt.CurrentlyLoggedUserProvider;
-import com.motionbridge.motionbridge.security.user.UserEntityDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
