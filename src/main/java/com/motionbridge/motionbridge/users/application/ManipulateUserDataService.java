@@ -32,15 +32,15 @@ public class ManipulateUserDataService implements ManipulateUserDataUseCase {
 
     @Transactional
     @Override
-    public UpdatePasswordResponse updatePassword(UpdatePasswordCommand command, UserEntityDetails user) {
-        return repository.findByEmailIgnoreCase(user.getUsername())
-                .filter(userByEmail -> userSecurity.isOwnerOrAdmin(userByEmail.getEmail(), user))
+    public UpdatePasswordResponse updatePassword(UpdatePasswordCommand command, String userEmail) {
+        return repository.findByEmailIgnoreCase(userEmail)
+                .filter(userByEmail -> userByEmail.getEmail().equals(userEmail))
                 .map(userByEmail -> {
                     updateActualPassword(command, userByEmail);
                     log.warn("Password for user with id: {} has been changed", userByEmail.getId());
                     return UpdatePasswordResponse.SUCCESS;
                 })
-                .orElseGet(() -> new UpdatePasswordResponse(false, Collections.singletonList("New password for user with name " + user.getUsername() + " is same as old")));
+                .orElseGet(() -> new UpdatePasswordResponse(false, Collections.singletonList("New password for user with name " + userEmail + " is same as old")));
     }
 
     private void updateActualPassword(UpdatePasswordCommand command, UserEntity user) {
@@ -61,16 +61,15 @@ public class ManipulateUserDataService implements ManipulateUserDataUseCase {
         }
     }
 
-    public Optional<UserEntity> getUserByEmail(UserEntityDetails userEntityDetails) {
-        Optional<UserEntity> userByEmail = repository.findByEmailIgnoreCase(userEntityDetails.getUsername());
+    public Optional<UserEntity> getUserByEmail(String userEmail) {
+        Optional<UserEntity> userByEmail = repository.findByEmailIgnoreCase(userEmail);
         UserEntity userEntity;
-        if (userByEmail.isPresent() && userSecurity.isOwnerOrAdmin(userByEmail.get().getEmail(), userEntityDetails)) {
+        if (userByEmail.isPresent()) {
             userEntity = userByEmail.get();
             return Optional.of(userEntity);
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
-//        return null;
     }
 
     @Override

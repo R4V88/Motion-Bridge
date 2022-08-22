@@ -27,7 +27,7 @@ public interface ManipulateSubscriptionUseCase {
 
     void deleteAllByUserId(Long id);
 
-    AutoRenewResponse autoRenew(Long id, UserEntityDetails user);
+    AutoRenewResponse autoRenew(Long id, String userEmail);
 
     @Value
     @AllArgsConstructor
