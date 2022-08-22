@@ -55,7 +55,7 @@ public class DiscountController {
             @ApiResponse(description = "Invalid arguments", responseCode = "400")
     })
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/add")
+    @PostMapping()
     public ResponseEntity<?> addNewDiscount(@Valid @RequestBody RestDiscountCommand command) {
         CreateDiscountCommand createDiscountCommand = command.toCreateCommand();
         return discountService.addNewDiscount(createDiscountCommand)

@@ -54,7 +54,7 @@ public class ProductController {
             @ApiResponse(description = "OK", responseCode = "200"),
             @ApiResponse(description = "Invalid arguments", responseCode = "400")
     })
-    @PostMapping("/add")
+    @PostMapping()
     public ResponseEntity<Object> addNewProduct(@Valid @RequestBody RestProductCommand command) {
         return productService.addProduct(command.toCreateProductCommand())
                 .handle(

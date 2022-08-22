@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,7 +38,7 @@ public class UserRegistrationController {
 
     @Operation(summary = "ALL, Rejestracja użytkownika")
     @ApiResponses(value = {
-            @ApiResponse(description = "OK", responseCode = "202"),
+            @ApiResponse(description = "Account created, please check your mailbox to activate token", responseCode = "200"),
             @ApiResponse(description = "Invalid arguments", responseCode = "400")
     })
     @PostMapping()
@@ -45,12 +46,13 @@ public class UserRegistrationController {
         return userRegisterationUseCase
                 .register(command.name, command.email, command.password, command.acceptedTerms, command.acceptedNewsletter)
                 .handle(
-                        entity -> ResponseEntity.accepted().build(),
+                        entity -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("""
+                                {\n"message" : "Account created, please check your mailbox to activate token"\n}"""),
                         error -> ResponseEntity.badRequest().body(error)
                 );
     }
 
-    @Operation(summary = "ALL, Token confirmation ***Tego endpointu nigdzie nie podpinacie, link aktywacyjny leciu w majlu razem z tym endpointem***")
+    @Operation(summary = "Token confirmation")
     @ApiResponse(description = "OK", responseCode = "200")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/confirm")

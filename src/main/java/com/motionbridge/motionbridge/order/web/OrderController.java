@@ -54,7 +54,7 @@ public class OrderController {
             @ApiResponse(description = "Invalid arguments", responseCode = "400")
     })
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/create")
+    @PostMapping()
     public void createOrder(@Valid @RequestBody RestOrderCommand restOrderCommand) {
         final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
         createOrderService.placeOrder(restOrderCommand.toPlaceOrderCommand(), currentLoggedUsername);
