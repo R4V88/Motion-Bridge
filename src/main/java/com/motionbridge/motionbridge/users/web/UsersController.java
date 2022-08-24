@@ -5,13 +5,13 @@ import com.motionbridge.motionbridge.order.web.mapper.RestRichOrder;
 import com.motionbridge.motionbridge.security.jwt.CurrentlyLoggedUserProvider;
 import com.motionbridge.motionbridge.security.jwt.JwtConfig;
 import com.motionbridge.motionbridge.security.user.UserEntityDetails;
-import com.motionbridge.motionbridge.security.user.UserSecurity;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase;
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase.SwitchResponse;
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase.UpdatePasswordCommand;
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase.UpdatePasswordResponse;
 import com.motionbridge.motionbridge.users.application.port.UserDeleteAccountUseCase;
+import com.motionbridge.motionbridge.users.entity.UserEntity;
 import com.motionbridge.motionbridge.users.web.mapper.LoginCommand;
 import com.motionbridge.motionbridge.users.web.mapper.RestSubscription;
 import com.motionbridge.motionbridge.users.web.mapper.RestUser;
@@ -47,7 +47,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -61,7 +64,6 @@ public class UsersController {
     final ManipulateOrderUseCase orderService;
     final ManipulateSubscriptionUseCase subscriptionService;
     final UserDeleteAccountUseCase deleteAccountUseCase;
-    final UserSecurity userSecurity;
     final AuthenticationManager authenticationManager;
     final CurrentlyLoggedUserProvider currentlyLoggedUserProvider;
     final JwtConfig jwtConfig;
@@ -81,11 +83,18 @@ public class UsersController {
 
             UserEntityDetails userEntityDetails = (UserEntityDetails) authenticate.getPrincipal();
 
+            final Optional<UserEntity> byUserEmailIgnoreCase = userService.findByUserEmailIgnoreCase(userEntityDetails.getUsername());
+
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("acceptedNewsletter", byUserEmailIgnoreCase.get().getAcceptedNewsletter());
+            claims.put("username", byUserEmailIgnoreCase.get().getLogin());
+            claims.put("authorities", userEntityDetails.getAuthorities());
+
             String token = Jwts
                     .builder()
                     .setSubject(userEntityDetails.getUsername())
                     .setIssuer("motionbridge")
-                    .claim("authorities", userEntityDetails.getAuthorities())
+                    .addClaims(claims)
                     .setIssuedAt(new Date())
                     .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusDays(jwtConfig.getTokenExpirationAfterDays())))
                     .signWith(secretKey)
