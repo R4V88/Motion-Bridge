@@ -3,6 +3,7 @@ package com.motionbridge.motionbridge.security.config;
 import lombok.NonNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -17,7 +18,8 @@ public class CorsConfig {
                 registry.addMapping("/**")
                         .allowedOrigins("*")
                         .allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH")
-                        .allowedHeaders("*");
+                        .allowedHeaders("*")
+                        .exposedHeaders(HttpHeaders.AUTHORIZATION);
 //                        .allowedOrigins("https://next-motionbridge.herokuapp.com", "http://localhost:3000");
             }
         };
