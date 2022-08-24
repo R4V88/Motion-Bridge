@@ -82,7 +82,7 @@ public class UserRegisterationService implements UserRegisterationUseCase {
         return "confirmed";
     }
 
-    public void enableUser(String email) {
+    private void enableUser(String email) {
         repository.enableAppUser(email);
     }
 
