@@ -38,7 +38,7 @@ public class PaymentController {
             @ApiResponse(description = "Invalid arguments", responseCode = "400")
     })
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping("/stripe/pay{orderId}")
+    @PostMapping("/stripe/pay")
     public ResponseEntity<RestPaidOrderResponse> completeOrder(@RequestBody RequestOrderId orderId) {
         final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
         final RestPaidOrderResponse restPaidOrderResponse = paymentUseCase.pay(orderId.getOrderId(), currentLoggedUsername);
