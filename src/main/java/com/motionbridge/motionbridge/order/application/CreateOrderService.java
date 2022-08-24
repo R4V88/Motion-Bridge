@@ -5,6 +5,7 @@ import com.motionbridge.motionbridge.order.application.port.ManipulateDiscountUs
 import com.motionbridge.motionbridge.order.db.OrderRepository;
 import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.order.entity.OrderStatus;
+import com.motionbridge.motionbridge.order.web.mapper.RestOrderId;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.ProductOrder;
 import com.motionbridge.motionbridge.security.user.UserSecurity;
@@ -43,7 +44,7 @@ public class CreateOrderService implements CreateOrderUseCase {
 
     @Override
     @Transactional
-    public void placeOrder(PlaceOrderCommand command, String currentlyLoggedUserEmail) {
+    public RestOrderId placeOrder(PlaceOrderCommand command, String currentlyLoggedUserEmail) {
         final OrderStatus orderStatus = OrderStatus.NEW;
         final Long productId = command.getProductId();
         final Long userId;
@@ -55,8 +56,10 @@ public class CreateOrderService implements CreateOrderUseCase {
 
         UserEntity userById = userService.getCurrentUserById(userId);
         ProductOrder productOrder = productService.checkIfProductExistInOrderThenGet(productId);
-        Order order = getOrderElseCreate(userById, orderStatus);
-        checkIfEqualSubscriptionAlreadyExistElseCreate(userById, order, productOrder);
+        Optional<Order> order = Optional.ofNullable(getOrderElseCreate(userById, orderStatus));
+        checkIfEqualSubscriptionAlreadyExistElseCreate(userById, order.get(), productOrder);
+
+        return new RestOrderId(order.get().getId());
     }
 
     void checkIfEqualSubscriptionAlreadyExistElseCreate(UserEntity user, Order order, ProductOrder productOrder) {

@@ -15,7 +15,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -56,6 +55,8 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
                         "/api/register",
                         "/api/products/active")
                 .permitAll()
+                .antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/register/confirm*")
+                .permitAll()
                 .and()
                 .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfig, userDetailsService), JwtEmailAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
@@ -64,13 +65,6 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
 
         http.exceptionHandling().authenticationEntryPoint(http401UnathorizedEntryPoint);
     }
-
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring()
-                .antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/register/confirm*");
-    }
-
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {

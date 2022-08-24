@@ -67,7 +67,7 @@ public class UsersController {
     final JwtConfig jwtConfig;
     final SecretKey secretKey;
 
-    @Operation(summary = "USER zalogowany, tworzy nowe zamówienie po id usera i id produktu")
+    @Operation(summary = "Logowanie")
     @ApiResponses(value = {
             @ApiResponse(description = "Successfully logged in", responseCode = "200"),
             @ApiResponse(description = "Failed to find user", responseCode = "401")
