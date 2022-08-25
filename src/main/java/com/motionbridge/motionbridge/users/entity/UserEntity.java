@@ -2,11 +2,12 @@ package com.motionbridge.motionbridge.users.entity;
 
 import com.motionbridge.motionbridge.jpa.BaseEntity;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -26,11 +27,11 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@EqualsAndHashCode(of = "uuid")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
+@OnDelete(action = OnDeleteAction.CASCADE)
 public class UserEntity extends BaseEntity {
 
     @CreatedDate
@@ -39,7 +40,17 @@ public class UserEntity extends BaseEntity {
     @LastModifiedDate
     LocalDateTime modifiedAt;
 
-    String username;
+    String login;
+
+    Boolean isBlocked = false;
+
+    Boolean isVerified = false;
+
+    Boolean acceptedTerms;
+
+    Boolean acceptedNewsletter;
+
+    String email;
 
     String password;
 
@@ -51,9 +62,12 @@ public class UserEntity extends BaseEntity {
     @ElementCollection(fetch = FetchType.EAGER)
     Set<String> roles = new HashSet<>();
 
-    public UserEntity(String username, String password) {
-        this.username = username;
+    public UserEntity(String login, String email, String password, Boolean acceptedTerms, Boolean acceptedNewsletter) {
+        this.login = login;
+        this.email = email;
         this.password = password;
+        this.acceptedTerms = acceptedTerms;
+        this.acceptedNewsletter = acceptedNewsletter;
         this.roles = Set.of("ROLE_USER");
     }
 }
