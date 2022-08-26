@@ -46,6 +46,11 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable();
+
+        http.sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
         http.authorizeRequests()
                 .antMatchers("/api/users/login",
                         "/api/register",
@@ -60,8 +65,6 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
                 .authorizeRequests()
                 .anyRequest()
                 .authenticated();
-        http.csrf().disable();
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.requestCache().disable();
         http.exceptionHandling().authenticationEntryPoint(http401UnathorizedEntryPoint);
     }
