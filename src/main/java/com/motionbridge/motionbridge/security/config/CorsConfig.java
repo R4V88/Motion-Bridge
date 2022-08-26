@@ -28,10 +28,10 @@ public class CorsConfig {
 //                        .allowedOrigins("https://next-motionbridge.herokuapp.com", "http://localhost:3000");
             }
 
-            @Override
-            public void addViewControllers(@NonNull ViewControllerRegistry registry) {
-                registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
-            }
+//            @Override
+//            public void addViewControllers(@NonNull ViewControllerRegistry registry) {
+//                registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
+//            }
 
 
         };
