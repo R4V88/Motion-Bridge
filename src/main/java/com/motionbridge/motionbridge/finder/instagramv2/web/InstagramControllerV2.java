@@ -1,15 +1,18 @@
-package com.motionbridge.motionbridge.Finder.instagramv2.web;
+package com.motionbridge.motionbridge.finder.instagramv2.web;
 
-import com.github.instagram4j.instagram4j.IGClient;
-import com.motionbridge.motionbridge.Finder.instagramv2.application.InstagramServiceV2;
+import com.motionbridge.motionbridge.finder.Instagram.model.Album;
+import com.motionbridge.motionbridge.finder.instagramv2.application.InstagramServiceV2;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -21,8 +24,9 @@ public class InstagramControllerV2 {
     @SneakyThrows
     @GetMapping("/{profile}")
     @ResponseStatus(HttpStatus.OK)
-    public void getContent(@PathVariable String profile) {
+    public ResponseEntity<Album> getContent(@PathVariable String profile) {
 //        List<Album>
-        instagramService.loginInsta(profile);
+        final Album album = instagramService.loginInsta(profile);
+        return ResponseEntity.ok(album);
     }
 }

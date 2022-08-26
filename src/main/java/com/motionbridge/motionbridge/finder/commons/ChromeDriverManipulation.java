@@ -1,6 +1,6 @@
-package com.motionbridge.motionbridge.Finder.commons;
+package com.motionbridge.motionbridge.finder.commons;
 
-import com.motionbridge.motionbridge.Finder.commons.port.ChromeDriverUseCase;
+import com.motionbridge.motionbridge.finder.commons.port.ChromeDriverUseCase;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;

@@ -1,9 +1,9 @@
-package com.motionbridge.motionbridge.Finder.Instagram.application;
+package com.motionbridge.motionbridge.finder.Instagram.application;
 
-import com.motionbridge.motionbridge.Finder.Instagram.application.port.InstagramUseCase;
-import com.motionbridge.motionbridge.Finder.Instagram.model.Album;
-import com.motionbridge.motionbridge.Finder.Instagram.model.Album.Photo;
-import com.motionbridge.motionbridge.Finder.commons.port.ChromeDriverUseCase;
+import com.motionbridge.motionbridge.finder.Instagram.application.port.InstagramUseCase;
+import com.motionbridge.motionbridge.finder.Instagram.model.Album;
+import com.motionbridge.motionbridge.finder.Instagram.model.Album.Photo;
+import com.motionbridge.motionbridge.finder.commons.port.ChromeDriverUseCase;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;

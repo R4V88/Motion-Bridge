@@ -1,7 +1,7 @@
-package com.motionbridge.motionbridge.Finder.Instagram.web;
+package com.motionbridge.motionbridge.finder.Instagram.web;
 
-import com.motionbridge.motionbridge.Finder.Instagram.application.port.InstagramUseCase;
-import com.motionbridge.motionbridge.Finder.Instagram.model.Album;
+import com.motionbridge.motionbridge.finder.Instagram.application.port.InstagramUseCase;
+import com.motionbridge.motionbridge.finder.Instagram.model.Album;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;

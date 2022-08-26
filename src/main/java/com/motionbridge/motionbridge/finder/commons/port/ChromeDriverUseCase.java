@@ -1,4 +1,4 @@
-package com.motionbridge.motionbridge.Finder.commons.port;
+package com.motionbridge.motionbridge.finder.commons.port;
 
 import org.openqa.selenium.WebDriver;
 
