@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -51,6 +52,8 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
                         "/api/products/active")
                 .permitAll()
                 .antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/register/confirm*")
+                .permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/**")
                 .permitAll()
                 .and()
                 .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfig, userDetailsService), JwtEmailAndPasswordAuthenticationFilter.class)
