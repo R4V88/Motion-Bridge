@@ -140,21 +140,6 @@
             <version>${guava.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-            <version>${selenium.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.bonigarcia</groupId>
-            <artifactId>webdrivermanager</artifactId>
-            <version>${webdriver.manager.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.igor-suhorukov</groupId>
-            <artifactId>instagramscraper</artifactId>
-            <version>${instagramscraper.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.github.instagram4j</groupId>
             <artifactId>instagram4j</artifactId>
             <version>2.0.7</version>
