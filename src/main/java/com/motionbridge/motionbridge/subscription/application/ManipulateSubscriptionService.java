@@ -44,6 +44,11 @@ public class ManipulateSubscriptionService implements ManipulateSubscriptionUseC
     }
 
     @Override
+    public List<Subscription> findAllByUserEmail(String email) {
+        return repository.findAllByUser_Email(email);
+    }
+
+    @Override
     public List<Subscription> findAllByUserIdAndOrderId(Long userId, Long orderId) {
         return repository.findSubscriptionsByUserIdAndOrderId(userId, orderId);
     }

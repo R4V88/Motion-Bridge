@@ -47,7 +47,9 @@ public class UserRegistrationController {
                 .register(command.name, command.email, command.password, command.acceptedTerms, command.acceptedNewsletter)
                 .handle(
                         entity -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("""
-                                {\n"message" : "Account created, please check your mailbox to activate token"\n}"""),
+                                {
+                                "message" : "Account created, please check your mailbox to activate token"
+                                }"""),
                         error -> ResponseEntity.badRequest().body(error)
                 );
     }
