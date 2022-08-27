@@ -9,5 +9,4 @@ public class MotionbridgeApplication {
     public static void main(String[] args) {
         SpringApplication.run(MotionbridgeApplication.class, args);
     }
-
 }
