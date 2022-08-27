@@ -28,4 +28,12 @@ public class Parameter extends BaseEntity {
     @JoinColumn(name = "product_id")
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     Product product;
+
+    public Parameter(String image, String subtitle, String title, String content, Product product) {
+        this.image = image;
+        this.subtitle = subtitle;
+        this.title = title;
+        this.content = content;
+        this.product = product;
+    }
 }

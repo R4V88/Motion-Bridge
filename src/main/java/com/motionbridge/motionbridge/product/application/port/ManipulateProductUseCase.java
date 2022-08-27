@@ -2,9 +2,6 @@ package com.motionbridge.motionbridge.product.application.port;
 
 import com.motionbridge.motionbridge.commons.Either;
 import com.motionbridge.motionbridge.product.entity.Product;
-import com.motionbridge.motionbridge.product.web.ProductController;
-import com.motionbridge.motionbridge.product.web.ProductController.RestProductCommand.Parameters;
-import com.motionbridge.motionbridge.product.web.ProductController.RestProductCommand.Presentation;
 import com.motionbridge.motionbridge.product.web.mapper.RestActiveProduct;
 import com.motionbridge.motionbridge.product.web.mapper.RestProduct;
 import lombok.AllArgsConstructor;
@@ -64,8 +61,27 @@ public interface ManipulateProductUseCase {
         String timePeriod;
         BigDecimal price;
         String background;
-        List<Presentation> presentations;
-        List<Parameters> parameters;
+        List<CreatePresentation> presentations;
+        List<CreateParameter> parameters;
+    }
+
+    @AllArgsConstructor
+    @Value
+    class CreateParameter {
+        String image;
+        String subtitle;
+        String title;
+        String content;
+        Product product;
+    }
+
+    @AllArgsConstructor
+    @Value
+    class CreatePresentation {
+        String title;
+        String content;
+        String preview;
+        Product product;
     }
 
     @Data

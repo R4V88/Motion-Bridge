@@ -2,6 +2,8 @@ package com.motionbridge.motionbridge.product.web;
 
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.CreateProductCommand;
+import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.CreateParameter;
+import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.CreatePresentation;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.SwitchStatusResponse;
 import com.motionbridge.motionbridge.product.web.mapper.RestActiveProduct;
 import com.motionbridge.motionbridge.product.web.mapper.RestProduct;
@@ -100,27 +102,11 @@ public class ProductController {
         @DecimalMin("0.00")
         BigDecimal price;
         String background;
-        List<Presentation> presentations;
-        List<Parameters> parameters;
+        List<CreatePresentation> presentations;
+        List<CreateParameter> parameters;
 
         CreateProductCommand toCreateProductCommand() {
             return new CreateProductCommand(animationQuantity, title, currency, timePeriod, price, background, presentations, parameters);
         }
-
-        @Data
-        public static class Parameters {
-            String image;
-            String subtitle;
-            String title;
-            String content;
-        }
-
-        @Data
-        public static class Presentation {
-            String title;
-            String content;
-            String preview;
-        }
     }
-
 }

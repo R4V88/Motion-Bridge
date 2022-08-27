@@ -1,7 +1,11 @@
 package com.motionbridge.motionbridge.product.application;
 
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase;
+import com.motionbridge.motionbridge.product.db.ParameterRepository;
+import com.motionbridge.motionbridge.product.db.PresentationRepository;
 import com.motionbridge.motionbridge.product.db.ProductRepository;
+import com.motionbridge.motionbridge.product.entity.Parameter;
+import com.motionbridge.motionbridge.product.entity.Presentation;
 import com.motionbridge.motionbridge.product.entity.Product;
 import com.motionbridge.motionbridge.product.web.mapper.RestActiveProduct;
 import com.motionbridge.motionbridge.product.web.mapper.RestProduct;
@@ -27,6 +31,8 @@ import java.util.stream.Collectors;
 public class ProductService implements ManipulateProductUseCase {
 
     final ProductRepository repository;
+    final ParameterRepository parameterRepository;
+    final PresentationRepository presentationRepository;
 
     @Override
     public List<RestActiveProduct> getActiveProducts() {
@@ -48,6 +54,28 @@ public class ProductService implements ManipulateProductUseCase {
                 command.getBackground()
         );
         Product saveProduct = repository.save(product);
+
+        if (command.getParameters().size() > 0) {
+            for (CreateParameter parameter : command.getParameters()) {
+                parameterRepository.save(new Parameter(parameter.getImage(),
+                        parameter.getSubtitle(),
+                        parameter.getTitle(),
+                        parameter.getContent(),
+                        saveProduct));
+            }
+        }
+
+        if (command.getPresentations().size() > 0) {
+            for (CreatePresentation presentation : command.getPresentations()) {
+                presentationRepository.save(
+                        new Presentation(
+                                presentation.getTitle(),
+                                presentation.getContent(),
+                                presentation.getPreview(),
+                                saveProduct
+                        ));
+            }
+        }
         return AddProductResponse.success(saveProduct.getId());
     }
 
