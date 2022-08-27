@@ -18,6 +18,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.motionbridge.motionbridge.product.web.mapper.RestActiveProduct.toRestActiveProduct;
+import static com.motionbridge.motionbridge.product.web.mapper.RestProduct.toRestProduct;
 
 @Service
 @Slf4j
@@ -44,24 +46,32 @@ public class ProductService implements ManipulateProductUseCase {
         List<RestActiveProduct> restActiveProducts = new ArrayList<>();
         final List<Product> allActiveProducts = repository.getAllActiveProducts();
         for (Product product : allActiveProducts) {
+            final Long id = product.getId();
 
-            final List<RestPresentation> restPresentations = presentationRepository
-                    .getAllPresentationsByProductId(product.getId())
-                    .stream()
-                    .map(RestPresentation::toRestPresentation)
-                    .collect(Collectors.toList());
-
-            final List<RestParameter> restParameters = parameterRepository
-                    .getAllParametersByProductId(product.getId())
-                    .stream()
-                    .map(RestParameter::toRestParameter)
-                    .collect(Collectors.toList());
+            final List<RestPresentation> restPresentations = getRestPresentations(id);
+            final List<RestParameter> restParameters = getRestParameters(id);
 
             restActiveProducts.add(toRestActiveProduct(product, restPresentations, restParameters));
         }
-
-
         return restActiveProducts;
+    }
+
+    @NotNull
+    private List<RestPresentation> getRestPresentations(Long productId) {
+        return presentationRepository
+                .getAllPresentationsByProductId(productId)
+                .stream()
+                .map(RestPresentation::toRestPresentation)
+                .collect(Collectors.toList());
+    }
+
+    @NotNull
+    private List<RestParameter> getRestParameters(Long productId) {
+        return parameterRepository
+                .getAllParametersByProductId(productId)
+                .stream()
+                .map(RestParameter::toRestParameter)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -107,11 +117,18 @@ public class ProductService implements ManipulateProductUseCase {
 
     @Override
     public List<RestProduct> getAllProducts() {
-        return repository
-                .findAll()
-                .stream()
-                .map(RestProduct::toRestProduct)
-                .collect(Collectors.toList());
+        List<RestProduct> restProducts = new ArrayList<>();
+        final List<Product> products = repository.findAll();
+        for(Product product: products) {
+            final Long id = product.getId();
+
+            final List<RestPresentation> restPresentations = getRestPresentations(id);
+            final List<RestParameter> restParameters = getRestParameters(id);
+
+            restProducts.add(toRestProduct(product, restPresentations, restParameters));
+        }
+
+        return restProducts;
     }
 
     @Transactional

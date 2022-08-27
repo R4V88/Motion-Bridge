@@ -5,6 +5,7 @@ import com.motionbridge.motionbridge.subscription.entity.ProductName;
 import lombok.Value;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Value
 public class RestProduct {
@@ -15,8 +16,11 @@ public class RestProduct {
     Integer animationQuantity;
     String timePeriod;
     Boolean isActive;
+    String background;
+    List<RestPresentation> presentations;
+    List<RestParameter> parameters;
 
-    public static RestProduct toRestProduct(Product product) {
+    public static RestProduct toRestProduct(Product product, List<RestPresentation> presentations, List<RestParameter> parameters) {
         return new RestProduct(
                 product.getId(),
                 product.getTitle(),
@@ -24,7 +28,10 @@ public class RestProduct {
                 product.getCurrency().toString(),
                 product.getAnimationQuantity(),
                 product.getTimePeriod().toString(),
-                product.getIsActive()
+                product.getIsActive(),
+                product.getBackground(),
+                presentations,
+                parameters
         );
     }
 }
