@@ -49,6 +49,26 @@ public class ManipulateUserDataService implements ManipulateUserDataUseCase {
         }
     }
 
+    @Transactional
+    @Override
+    public UpdateNameResponse updateName(UpdateNameCommand command, String userEmail) {
+        return repository.findByEmailIgnoreCase(userEmail)
+                .filter(userByEmail -> userByEmail.getEmail().equals(userEmail))
+                .map(userByEmail -> {
+                    updateActualName(command, userByEmail);
+                    log.warn("Name for user with id: {} has been changed", userByEmail.getId());
+                    return UpdateNameResponse.SUCCESS;
+                })
+                .orElseGet(() -> new UpdateNameResponse(false, Collections.singletonList("New password for user with name " + userEmail + " is same as old")));
+    }
+
+    private void updateActualName(UpdateNameCommand command, UserEntity user) {
+        if (!command.getName().equals(user.getLogin())) {
+            user.setLogin(command.getName());
+//            repository.save(user);
+        }
+    }
+
     @Override
     public UserEntity retrieveOrderByUserId(Long id, UserEntityDetails user) {
         Optional<UserEntity> userById = getUserById(id);

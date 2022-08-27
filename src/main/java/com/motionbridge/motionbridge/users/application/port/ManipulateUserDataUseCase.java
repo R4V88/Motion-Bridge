@@ -14,6 +14,7 @@ import static java.util.Collections.emptyList;
 public interface ManipulateUserDataUseCase {
 
     UpdatePasswordResponse updatePassword(UpdatePasswordCommand command, String user);
+    UpdateNameResponse updateName(UpdateNameCommand command, String user);
 
     Optional<UserEntity> getUserById(Long id);
 
@@ -32,6 +33,21 @@ public interface ManipulateUserDataUseCase {
     @AllArgsConstructor
     class UpdatePasswordCommand {
         String password;
+    }
+
+    @Value
+    @Builder
+    @AllArgsConstructor
+    class UpdateNameCommand {
+        String name;
+    }
+
+    @Value
+    class UpdateNameResponse {
+        public static UpdateNameResponse SUCCESS = new UpdateNameResponse(true, emptyList());
+
+        boolean success;
+        List<String> errors;
     }
 
     @Value

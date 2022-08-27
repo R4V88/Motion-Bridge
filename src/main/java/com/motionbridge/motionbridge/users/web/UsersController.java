@@ -8,6 +8,8 @@ import com.motionbridge.motionbridge.security.user.UserEntityDetails;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase;
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase.SwitchResponse;
+import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase.UpdateNameCommand;
+import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase.UpdateNameResponse;
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase.UpdatePasswordCommand;
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase.UpdatePasswordResponse;
 import com.motionbridge.motionbridge.users.application.port.UserDeleteAccountUseCase;
@@ -117,9 +119,26 @@ public class UsersController {
     })
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/changePassword")
-    public void changePassword(@Valid @RequestBody RestUserCommand command) {
+    public void changePassword(@Valid @RequestBody RestUserPasswordCommand command) {
         final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
         UpdatePasswordResponse response = userService.updatePassword(command.toUpdatePasswordCommand(), currentLoggedUsername);
+        if (!response.isSuccess()) {
+            String message = String.join(", ", response.getErrors());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @Operation(summary = "USER zalogowany, zmiana imienia")
+    @ApiResponses(value = {
+            @ApiResponse(description = "OK", responseCode = "200"),
+            @ApiResponse(description = "Invalid name", responseCode = "400")
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/changeName")
+    public void changeName(@Valid @RequestBody RestUserNameCommand command) {
+        final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
+        UpdateNameResponse response = userService.updateName(command.toUpdateNameCommand(), currentLoggedUsername);
         if (!response.isSuccess()) {
             String message = String.join(", ", response.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
@@ -200,7 +219,17 @@ public class UsersController {
     }
 
     @Data
-    private static class RestUserCommand {
+    private static class RestUserNameCommand {
+        @NotBlank(message = "Please provide valid new name")
+        private String name;
+
+        UpdateNameCommand toUpdateNameCommand() {
+            return new UpdateNameCommand(name);
+        }
+    }
+
+    @Data
+    private static class RestUserPasswordCommand {
         @NotBlank(message = "Please provide valid new password")
         private String password;
 
