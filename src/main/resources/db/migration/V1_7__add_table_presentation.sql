@@ -1,0 +1,2 @@
+create table presentation (id int8 not null, uuid varchar(255), version int8, content varchar(255), preview varchar(255), title varchar(255), product_id int8, primary key (id));
+alter table if exists presentation add constraint FK7diu8puys4gc3pusea4d9y1cj foreign key (product_id) references product;

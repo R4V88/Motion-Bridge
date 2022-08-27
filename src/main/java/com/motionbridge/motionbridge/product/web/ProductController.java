@@ -2,6 +2,8 @@ package com.motionbridge.motionbridge.product.web;
 
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.CreateProductCommand;
+import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.CreateParameter;
+import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.CreatePresentation;
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase.SwitchStatusResponse;
 import com.motionbridge.motionbridge.product.web.mapper.RestActiveProduct;
 import com.motionbridge.motionbridge.product.web.mapper.RestProduct;
@@ -91,7 +93,7 @@ public class ProductController {
         @NotNull(message = "Please provide valid product animation quantity")
         Integer animationQuantity;
         @NotBlank(message = "Please provide valid product name")
-        String name;
+        String title;
         @NotBlank(message = "Please provide valid currency")
         String currency;
         @NotNull(message = "Please provide valid product time period")
@@ -99,10 +101,12 @@ public class ProductController {
         @NotNull(message = "Please provide valid product price with format like 0.00")
         @DecimalMin("0.00")
         BigDecimal price;
+        String background;
+        List<CreatePresentation> presentations;
+        List<CreateParameter> parameters;
 
         CreateProductCommand toCreateProductCommand() {
-            return new CreateProductCommand(animationQuantity, name, currency, timePeriod, price);
+            return new CreateProductCommand(animationQuantity, title, currency, timePeriod, price, background, presentations, parameters);
         }
     }
-
 }
