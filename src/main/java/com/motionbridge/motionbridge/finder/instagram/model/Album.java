@@ -1,4 +1,4 @@
-package com.motionbridge.motionbridge.finder.Instagram.model;
+package com.motionbridge.motionbridge.finder.instagram.model;
 
 import lombok.Value;
 
@@ -8,7 +8,7 @@ import java.util.List;
 public class Album {
     List<Photo> photos;
 
-//    @Value
+    @Value
     public static class Photo {
         String photoUrl;
         int likes;

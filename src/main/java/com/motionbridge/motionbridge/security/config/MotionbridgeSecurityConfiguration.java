@@ -57,8 +57,6 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
                 .permitAll()
                 .antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/register/confirm*")
                 .permitAll()
-                .antMatchers("/api/instagram-v2/**")
-                .permitAll()
                 .and()
                 .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfig, userDetailsService), JwtEmailAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
