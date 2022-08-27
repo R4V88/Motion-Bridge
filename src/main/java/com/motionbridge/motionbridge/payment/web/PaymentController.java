@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @AllArgsConstructor
-@Tag(name = "/api/payments", description = "Payments")
+@Tag(name = "/api/payments", description = "Order payments")
 @RestController
 @RequestMapping("/api/payments")
 @FieldDefaults(level = AccessLevel.PRIVATE)

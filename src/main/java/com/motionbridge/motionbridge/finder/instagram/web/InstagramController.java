@@ -5,9 +5,12 @@ import com.motionbridge.motionbridge.finder.instagram.model.Album;
 import com.motionbridge.motionbridge.security.jwt.CurrentlyLoggedUserProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Value;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,11 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
+@Tag(name = "/api/finder", description = "Instagram integration")
 @RequestMapping("/api/finder")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class InstagramController {
 
-    private InstagramUseCase instagramService;
-    private CurrentlyLoggedUserProvider currentlyLoggedUserProvider;
+    final InstagramUseCase instagramService;
+    final CurrentlyLoggedUserProvider currentlyLoggedUserProvider;
 
     @SneakyThrows
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")

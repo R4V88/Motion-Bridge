@@ -15,12 +15,14 @@ import static com.motionbridge.motionbridge.users.web.mapper.RestSubscription.to
 @Value
 @Builder
 public class RestOrder {
+    Long id;
     OrderStatus status;
     BigDecimal currentPrice;
     List<RestSubscription> subscriptions;
 
     public static RestOrder toRestOrder(Order order, List<Subscription> subscriptions) {
         return RestOrder.builder()
+                .id(order.getId())
                 .currentPrice(order.getCurrentPrice())
                 .status(order.getStatus())
                 .subscriptions(toRestSubsciptionsList(subscriptions))

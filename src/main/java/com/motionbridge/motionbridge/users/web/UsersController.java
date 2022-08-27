@@ -160,7 +160,7 @@ public class UsersController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @Operation(summary = "USER zalogowany, wszystkie subskrypcje po id usera")
+    @Operation(summary = "USER zalogowany, pobranie wszystkich subskrypcji")
     @GetMapping("/subscriptions")
     public ResponseEntity<List<RestSubscription>> getSubscriptions() {
         final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
