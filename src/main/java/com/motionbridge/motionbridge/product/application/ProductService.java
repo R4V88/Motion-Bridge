@@ -40,11 +40,12 @@ public class ProductService implements ManipulateProductUseCase {
     @Transactional
     public AddProductResponse addProduct(CreateProductCommand command) {
         Product product = new Product(
-                ProductName.valueOf(command.getName().toUpperCase()),
+                ProductName.valueOf(command.getTitle().toUpperCase()),
                 command.getPrice(),
                 Currency.valueOf(command.getCurrency().toUpperCase()),
                 command.getAnimationQuantity(),
-                TimePeriod.valueOf(command.getTimePeriod().toUpperCase())
+                TimePeriod.valueOf(command.getTimePeriod().toUpperCase()),
+                command.getBackground()
         );
         Product saveProduct = repository.save(product);
         return AddProductResponse.success(saveProduct.getId());
@@ -89,7 +90,7 @@ public class ProductService implements ManipulateProductUseCase {
                     .price(temp.getPrice())
                     .currency(temp.getCurrency().toString())
                     .animationQuantity(temp.getAnimationQuantity())
-                    .name(String.valueOf(temp.getName()).toUpperCase())
+                    .name(String.valueOf(temp.getTitle()).toUpperCase())
                     .timePeriod(String.valueOf(temp.getTimePeriod()).toUpperCase())
                     .isActive(temp.getIsActive())
                     .build();

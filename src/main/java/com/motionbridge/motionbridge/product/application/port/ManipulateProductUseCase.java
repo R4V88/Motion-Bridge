@@ -2,6 +2,9 @@ package com.motionbridge.motionbridge.product.application.port;
 
 import com.motionbridge.motionbridge.commons.Either;
 import com.motionbridge.motionbridge.product.entity.Product;
+import com.motionbridge.motionbridge.product.web.ProductController;
+import com.motionbridge.motionbridge.product.web.ProductController.RestProductCommand.Parameters;
+import com.motionbridge.motionbridge.product.web.ProductController.RestProductCommand.Presentation;
 import com.motionbridge.motionbridge.product.web.mapper.RestActiveProduct;
 import com.motionbridge.motionbridge.product.web.mapper.RestProduct;
 import lombok.AllArgsConstructor;
@@ -56,10 +59,13 @@ public interface ManipulateProductUseCase {
     @AllArgsConstructor
     class CreateProductCommand {
         Integer animationQuantity;
-        String name;
+        String title;
         String currency;
         String timePeriod;
         BigDecimal price;
+        String background;
+        List<Presentation> presentations;
+        List<Parameters> parameters;
     }
 
     @Data

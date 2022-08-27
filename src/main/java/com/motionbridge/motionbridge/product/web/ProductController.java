@@ -91,7 +91,7 @@ public class ProductController {
         @NotNull(message = "Please provide valid product animation quantity")
         Integer animationQuantity;
         @NotBlank(message = "Please provide valid product name")
-        String name;
+        String title;
         @NotBlank(message = "Please provide valid currency")
         String currency;
         @NotNull(message = "Please provide valid product time period")
@@ -99,9 +99,27 @@ public class ProductController {
         @NotNull(message = "Please provide valid product price with format like 0.00")
         @DecimalMin("0.00")
         BigDecimal price;
+        String background;
+        List<Presentation> presentations;
+        List<Parameters> parameters;
 
         CreateProductCommand toCreateProductCommand() {
-            return new CreateProductCommand(animationQuantity, name, currency, timePeriod, price);
+            return new CreateProductCommand(animationQuantity, title, currency, timePeriod, price, background, presentations, parameters);
+        }
+
+        @Data
+        public static class Parameters {
+            String image;
+            String subtitle;
+            String title;
+            String content;
+        }
+
+        @Data
+        public static class Presentation {
+            String title;
+            String content;
+            String preview;
         }
     }
 

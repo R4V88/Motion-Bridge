@@ -17,7 +17,7 @@ public class RestActiveProduct {
     public static RestActiveProduct toRestActiveProduct(Product product) {
         return new RestActiveProduct(
                 product.getId(),
-                product.getName().toString(),
+                product.getTitle().toString(),
                 product.getPrice(),
                 product.getCurrency().toString().toLowerCase(),
                 product.getAnimationQuantity(),

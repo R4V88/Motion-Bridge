@@ -19,7 +19,7 @@ public class RestProduct {
     public static RestProduct toRestProduct(Product product) {
         return new RestProduct(
                 product.getId(),
-                product.getName(),
+                product.getTitle(),
                 product.getPrice(),
                 product.getCurrency().toString(),
                 product.getAnimationQuantity(),
