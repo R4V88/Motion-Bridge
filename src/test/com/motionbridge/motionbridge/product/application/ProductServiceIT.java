@@ -5,7 +5,6 @@ import com.motionbridge.motionbridge.product.db.ProductRepository;
 import com.motionbridge.motionbridge.product.entity.Product;
 import com.motionbridge.motionbridge.product.web.mapper.RestActiveProduct;
 import com.motionbridge.motionbridge.product.web.mapper.RestProduct;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -16,8 +15,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -33,17 +31,21 @@ public class ProductServiceIT {
     @Test
     void shouldReturnActiveProducts() {
         //GIVEN
-        ManipulateProductUseCase.CreateProductCommand firstProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("120.00"));
-        ManipulateProductUseCase.CreateProductCommand secondProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "MONTH", new BigDecimal("90.00"));
-        ManipulateProductUseCase.CreateProductCommand thirdProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("150.00"));
-        ManipulateProductUseCase.CreateProductCommand fourthProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "MONTH", new BigDecimal("100.00"));
+        ManipulateProductUseCase.CreateProductCommand firstProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("120.00"),
+                "black", List.of(), List.of());
+        ManipulateProductUseCase.CreateProductCommand secondProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "MONTH", new BigDecimal("90.00"),
+                "black", List.of(), List.of());
+        ManipulateProductUseCase.CreateProductCommand thirdProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("150.00"),
+                "black", List.of(), List.of());
+        ManipulateProductUseCase.CreateProductCommand fourthProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "MONTH", new BigDecimal("100.00"),
+                "black", List.of(), List.of());
         final ManipulateProductUseCase.AddProductResponse firstProductResponse = productUseCase.addProduct(firstProductCommand);
         final ManipulateProductUseCase.AddProductResponse secondProductResponse = productUseCase.addProduct(secondProductCommand);
         productUseCase.addProduct(thirdProductCommand);
         productUseCase.addProduct(fourthProductCommand);
 
-        final Long firstId = firstProductResponse.getRight();
-        final Long secondId = secondProductResponse.getRight();
+        final Long firstId = firstProductResponse.getRight().getProductId();
+        final Long secondId = secondProductResponse.getRight().getProductId();
 
         productUseCase.switchStatus(firstId);
         productUseCase.switchStatus(secondId);
@@ -58,10 +60,14 @@ public class ProductServiceIT {
     @Test
     void shouldReturnAllProducts() {
         //GIVEN
-        ManipulateProductUseCase.CreateProductCommand firstProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("120.00"));
-        ManipulateProductUseCase.CreateProductCommand secondProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "MONTH", new BigDecimal("90.00"));
-        ManipulateProductUseCase.CreateProductCommand thirdProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("150.00"));
-        ManipulateProductUseCase.CreateProductCommand fourthProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "MONTH", new BigDecimal("100.00"));
+        ManipulateProductUseCase.CreateProductCommand firstProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("120.00"),
+                "black", List.of(), List.of());
+        ManipulateProductUseCase.CreateProductCommand secondProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "MONTH", new BigDecimal("90.00"),
+                "black", List.of(), List.of());
+        ManipulateProductUseCase.CreateProductCommand thirdProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("150.00"),
+                "black", List.of(), List.of());
+        ManipulateProductUseCase.CreateProductCommand fourthProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "MONTH", new BigDecimal("100.00"),
+                "black", List.of(), List.of());
         productUseCase.addProduct(firstProductCommand);
         productUseCase.addProduct(secondProductCommand);
         productUseCase.addProduct(thirdProductCommand);
@@ -76,15 +82,16 @@ public class ProductServiceIT {
     @Test
     void shouldCheckIfProductExistInOrderThenReturn(){
         //GIVEN
-        ManipulateProductUseCase.CreateProductCommand firstProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("120.00"));
+        ManipulateProductUseCase.CreateProductCommand firstProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("120.00"),
+                "black", List.of(), List.of());
         final ManipulateProductUseCase.AddProductResponse addProductResponse = productUseCase.addProduct(firstProductCommand);
-        final Long productId = addProductResponse.getRight();
+        final Long productId = addProductResponse.getRight().getProductId();
 
         //WHEN
         final ManipulateProductUseCase.ProductOrder productOrder = productUseCase.checkIfProductExistInOrderThenGet(productId);
 
         //THEN
-        assertEquals(firstProductCommand.getName().toUpperCase(), productOrder.getName());
+        assertEquals(firstProductCommand.getTitle().toUpperCase(), productOrder.getName());
         assertEquals(firstProductCommand.getCurrency().toUpperCase(), productOrder.getCurrency());
         assertEquals(firstProductCommand.getAnimationQuantity(), productOrder.getAnimationQuantity());
         assertEquals(firstProductCommand.getPrice(), productOrder.getPrice());
@@ -94,9 +101,10 @@ public class ProductServiceIT {
     @Test
     void shouldSwitchProductStatus() {
         //GIVEN
-        ManipulateProductUseCase.CreateProductCommand firstProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("120.00"));
+        ManipulateProductUseCase.CreateProductCommand firstProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("120.00"),
+                "black", List.of(), List.of());
         final ManipulateProductUseCase.AddProductResponse addProductResponse = productUseCase.addProduct(firstProductCommand);
-        final Long productId = addProductResponse.getRight();
+        final Long productId = addProductResponse.getRight().getProductId();
         final Optional<Product> productById = productUseCase.getProductById(productId);
         final Boolean isActiveBefore = productById.get().getIsActive();
 
@@ -109,4 +117,5 @@ public class ProductServiceIT {
 
         assertNotEquals(isActiveBefore, isActiveAfter);
     }
+
 }

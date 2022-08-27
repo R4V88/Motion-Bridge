@@ -1,7 +1,6 @@
 package com.motionbridge.motionbridge.product.application;
 
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -9,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -24,7 +24,8 @@ class ProductServiceTest {
     void shouldReturnSuccesOnProductAdd() {
         //GIVEN
         ManipulateProductUseCase.CreateProductCommand productCommand
-                = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("120.0"));
+                = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("120.0"),
+                "black", List.of(), List.of());
 
         //WHEN
         final ManipulateProductUseCase.AddProductResponse addProductResponse = productUseCase.addProduct(productCommand);
