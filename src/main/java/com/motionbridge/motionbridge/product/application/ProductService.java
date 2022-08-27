@@ -8,6 +8,8 @@ import com.motionbridge.motionbridge.product.entity.Parameter;
 import com.motionbridge.motionbridge.product.entity.Presentation;
 import com.motionbridge.motionbridge.product.entity.Product;
 import com.motionbridge.motionbridge.product.web.mapper.RestActiveProduct;
+import com.motionbridge.motionbridge.product.web.mapper.RestParameter;
+import com.motionbridge.motionbridge.product.web.mapper.RestPresentation;
 import com.motionbridge.motionbridge.product.web.mapper.RestProduct;
 import com.motionbridge.motionbridge.subscription.entity.Currency;
 import com.motionbridge.motionbridge.subscription.entity.ProductName;
@@ -19,10 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.motionbridge.motionbridge.product.web.mapper.RestActiveProduct.toRestActiveProduct;
 
 @Service
 @Slf4j
@@ -36,10 +41,27 @@ public class ProductService implements ManipulateProductUseCase {
 
     @Override
     public List<RestActiveProduct> getActiveProducts() {
-        return repository.getAllActiveProducts()
-                .stream()
-                .map(RestActiveProduct::toRestActiveProduct)
-                .collect(Collectors.toList());
+        List<RestActiveProduct> restActiveProducts = new ArrayList<>();
+        final List<Product> allActiveProducts = repository.getAllActiveProducts();
+        for (Product product : allActiveProducts) {
+
+            final List<RestPresentation> restPresentations = presentationRepository
+                    .getAllPresentationsByProductId(product.getId())
+                    .stream()
+                    .map(RestPresentation::toRestPresentation)
+                    .collect(Collectors.toList());
+
+            final List<RestParameter> restParameters = parameterRepository
+                    .getAllParametersByProductId(product.getId())
+                    .stream()
+                    .map(RestParameter::toRestParameter)
+                    .collect(Collectors.toList());
+
+            restActiveProducts.add(toRestActiveProduct(product, restPresentations, restParameters));
+        }
+
+
+        return restActiveProducts;
     }
 
     @Override
@@ -54,29 +76,33 @@ public class ProductService implements ManipulateProductUseCase {
                 command.getBackground()
         );
         Product saveProduct = repository.save(product);
-
+        List<Long> presentations = new ArrayList<>();
+        List<Long> parameters = new ArrayList<>();
         if (command.getParameters().size() > 0) {
             for (CreateParameter parameter : command.getParameters()) {
-                parameterRepository.save(new Parameter(parameter.getImage(),
+                final Parameter save = parameterRepository.save(new Parameter(parameter.getImage(),
                         parameter.getSubtitle(),
                         parameter.getTitle(),
                         parameter.getContent(),
                         saveProduct));
+                parameters.add(save.getId());
             }
         }
 
         if (command.getPresentations().size() > 0) {
             for (CreatePresentation presentation : command.getPresentations()) {
-                presentationRepository.save(
+                final Presentation save = presentationRepository.save(
                         new Presentation(
                                 presentation.getTitle(),
                                 presentation.getContent(),
                                 presentation.getPreview(),
                                 saveProduct
                         ));
+                presentations.add(save.getId());
             }
         }
-        return AddProductResponse.success(saveProduct.getId());
+
+        return AddProductResponse.success(new CreateProductResponse(saveProduct.getId(), parameters, presentations));
     }
 
     @Override

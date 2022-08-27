@@ -29,13 +29,13 @@ public interface ManipulateProductUseCase {
 
     ProductOrder checkIfProductExistInOrderThenGet(Long productId);
 
-    class AddProductResponse extends Either<String, Long> {
-        public AddProductResponse(boolean success, String left, Long right) {
+    class AddProductResponse extends Either<String, CreateProductResponse> {
+        public AddProductResponse(boolean success, String left, CreateProductResponse right) {
             super(success, left, right);
         }
 
-        public static AddProductResponse success(Long orderId) {
-            return new AddProductResponse(true, null, orderId);
+        public static AddProductResponse success(CreateProductResponse createProductResponse) {
+            return new AddProductResponse(true, null, createProductResponse);
         }
 
         public static AddProductResponse failure(String error) {
@@ -49,6 +49,14 @@ public interface ManipulateProductUseCase {
 
         boolean success;
         List<String> errors;
+    }
+
+    @Value
+    @AllArgsConstructor
+    class CreateProductResponse{
+        Long productId;
+        List<Long> parameters;
+        List<Long> presentations;
     }
 
     @Builder
