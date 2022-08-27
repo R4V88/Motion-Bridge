@@ -17,6 +17,7 @@ import com.motionbridge.motionbridge.users.entity.UserEntity;
 import com.motionbridge.motionbridge.users.web.mapper.LoginCommand;
 import com.motionbridge.motionbridge.users.web.mapper.RestSubscription;
 import com.motionbridge.motionbridge.users.web.mapper.RestUser;
+import com.motionbridge.motionbridge.users.web.mapper.RichRestUser;
 import io.jsonwebtoken.Jwts;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -158,6 +159,19 @@ public class UsersController {
         return userService.getUserByEmail(currentLoggedUsername)
                 .map(RestUser::toCreateRestUser)
                 .orElseThrow(() -> new RuntimeException("User does not exist"));
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "ADMIN, pobranie danych wszystkich użytkowników")
+    @ApiResponses(value = {
+            @ApiResponse(description = "OK", responseCode = "200"),
+    })
+    @GetMapping("/getUsers")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<List<RichRestUser>> getUsersDetailsFilter() {
+        final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
+        final List<RichRestUser> allUsers = userService.getAllUsers(currentLoggedUsername);
+        return ResponseEntity.ok(allUsers);
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")

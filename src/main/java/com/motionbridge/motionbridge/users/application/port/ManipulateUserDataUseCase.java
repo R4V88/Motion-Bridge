@@ -2,9 +2,12 @@ package com.motionbridge.motionbridge.users.application.port;
 
 import com.motionbridge.motionbridge.security.user.UserEntityDetails;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
+import com.motionbridge.motionbridge.users.web.mapper.RestPaginatedRichUser;
+import com.motionbridge.motionbridge.users.web.mapper.RichRestUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +17,7 @@ import static java.util.Collections.emptyList;
 public interface ManipulateUserDataUseCase {
 
     UpdatePasswordResponse updatePassword(UpdatePasswordCommand command, String user);
+
     UpdateNameResponse updateName(UpdateNameCommand command, String user);
 
     Optional<UserEntity> getUserById(Long id);
@@ -27,6 +31,8 @@ public interface ManipulateUserDataUseCase {
     Optional<UserEntity> findByUserEmailIgnoreCase(String email);
 
     SwitchResponse switchBlockStatus(Long id);
+
+    List<RichRestUser> getAllUsers(String currentlyLoggedUser);
 
     @Value
     @Builder

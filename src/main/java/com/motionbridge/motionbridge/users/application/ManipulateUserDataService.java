@@ -5,6 +5,7 @@ import com.motionbridge.motionbridge.security.user.UserSecurity;
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase;
 import com.motionbridge.motionbridge.users.db.UserEntityRepository;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
+import com.motionbridge.motionbridge.users.web.mapper.RichRestUser;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -16,8 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @AllArgsConstructor
@@ -65,7 +68,6 @@ public class ManipulateUserDataService implements ManipulateUserDataUseCase {
     private void updateActualName(UpdateNameCommand command, UserEntity user) {
         if (!command.getName().equals(user.getLogin())) {
             user.setLogin(command.getName());
-//            repository.save(user);
         }
     }
 
@@ -131,6 +133,18 @@ public class ManipulateUserDataService implements ManipulateUserDataUseCase {
                     return SwitchResponse.SUCCESS;
                 })
                 .orElseGet(() -> new SwitchResponse(false, Collections.singletonList("Could not change status")));
+    }
+
+    @Override
+    public List<RichRestUser> getAllUsers(String currentlyLoggedUser) {
+        final Optional<UserEntity> byEmailIgnoreCase = repository.findByEmailIgnoreCase(currentlyLoggedUser);
+        if (!byEmailIgnoreCase.get().getRoles().contains("ROLE_ADMIN")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You should not be here, go somewhere else...");
+        }
+        return repository
+                .findAll()
+                .stream().map(RichRestUser::toCreateRichRestUser)
+                .collect(Collectors.toList());
     }
 
     private void switchBlockedStatus(Long id) {
