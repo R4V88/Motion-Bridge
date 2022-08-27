@@ -18,6 +18,8 @@ public interface ManipulateSubscriptionUseCase {
 
     List<Subscription> findAllByOrderId(Long orderId);
 
+    List<Subscription> findAllByUserEmail(String email);
+
     void save(CreateSubscriptionCommand command);
 
     void saveSubscription(Subscription subscription);
