@@ -62,11 +62,14 @@ public class UserRegistrationController {
 
     @Operation(summary = "Token confirmation")
     @ApiResponse(description = "OK", responseCode = "200")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.FOUND)
     @GetMapping("/confirm")
     public ResponseEntity<?> confirm(@RequestParam("token") String token) {
         final String mesage = userRegisterationUseCase.confirmToken(token);
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("http://34.118.9.226:3000/sign-in")).body(mesage);
+        if(!mesage.equals("confirmed")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).location(URI.create("http://34.118.9.226:3000/sign-in?message=1")).build();
+        }
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("http://34.118.9.226:3000/sign-in?message=0")).build();
     }
 
     @Data
