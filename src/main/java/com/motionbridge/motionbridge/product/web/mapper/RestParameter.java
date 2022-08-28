@@ -10,6 +10,7 @@ public class RestParameter {
     String image;
     String subtitle;
     String title;
+    String classes;
 
     public static RestParameter toRestParameter(Parameter parameter) {
         return new RestParameter(
@@ -17,7 +18,8 @@ public class RestParameter {
                 parameter.getContent(),
                 parameter.getImage(),
                 parameter.getSubtitle(),
-                parameter.getTitle()
+                parameter.getTitle(),
+                parameter.getClasses()
         );
     }
 }

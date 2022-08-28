@@ -10,7 +10,8 @@ import java.util.List;
 @Value
 public class RestProduct {
     Long id;
-    ProductName name;
+    ProductName type;
+    String title;
     BigDecimal price;
     String currency;
     Integer animationQuantity;
@@ -24,6 +25,7 @@ public class RestProduct {
         return new RestProduct(
                 product.getId(),
                 product.getType(),
+                product.getTitle(),
                 product.getPrice(),
                 product.getCurrency().toString(),
                 product.getAnimationQuantity(),

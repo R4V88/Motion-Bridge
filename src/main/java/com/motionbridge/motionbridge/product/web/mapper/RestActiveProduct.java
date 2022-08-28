@@ -1,6 +1,7 @@
 package com.motionbridge.motionbridge.product.web.mapper;
 
 import com.motionbridge.motionbridge.product.entity.Product;
+import com.motionbridge.motionbridge.subscription.entity.ProductName;
 import lombok.Value;
 
 import java.math.BigDecimal;
@@ -9,7 +10,8 @@ import java.util.List;
 @Value
 public class RestActiveProduct {
     Long id;
-    String name;
+    String title;
+    ProductName type;
     BigDecimal price;
     String currency;
     Integer animationQuantity;
@@ -22,6 +24,7 @@ public class RestActiveProduct {
         return new RestActiveProduct(
                 product.getId(),
                 product.getType().toString(),
+                product.getType(),
                 product.getPrice(),
                 product.getCurrency().toString().toLowerCase(),
                 product.getAnimationQuantity(),
