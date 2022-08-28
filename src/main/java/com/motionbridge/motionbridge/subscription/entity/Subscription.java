@@ -32,9 +32,8 @@ public class Subscription extends BaseEntity {
 
     Boolean isActive = false;
 
-    //TODO obsługa dat na podstawie startDate (data opłacenia)
     LocalDateTime startDate = now();
-    //TODO jak wyżej
+
     LocalDateTime endDate = now();
 
     BigDecimal price = new BigDecimal("00.00");
