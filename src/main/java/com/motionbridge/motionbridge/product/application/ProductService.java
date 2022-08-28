@@ -78,7 +78,8 @@ public class ProductService implements ManipulateProductUseCase {
     @Transactional
     public AddProductResponse addProduct(CreateProductCommand command) {
         Product product = new Product(
-                ProductName.valueOf(command.getTitle().toUpperCase()),
+                ProductName.valueOf(command.getType().toUpperCase()),
+                command.getTitle(),
                 command.getPrice(),
                 Currency.valueOf(command.getCurrency().toUpperCase()),
                 command.getAnimationQuantity(),
@@ -90,11 +91,14 @@ public class ProductService implements ManipulateProductUseCase {
         List<Long> parameters = new ArrayList<>();
         if (command.getParameters().size() > 0) {
             for (CreateParameter parameter : command.getParameters()) {
-                final Parameter save = parameterRepository.save(new Parameter(parameter.getImage(),
+                final Parameter save = parameterRepository.save(new Parameter(
+                        parameter.getImage(),
                         parameter.getSubtitle(),
                         parameter.getTitle(),
                         parameter.getContent(),
-                        saveProduct));
+                        parameter.getClasses(),
+                        saveProduct)
+                );
                 parameters.add(save.getId());
             }
         }
@@ -106,6 +110,7 @@ public class ProductService implements ManipulateProductUseCase {
                                 presentation.getTitle(),
                                 presentation.getContent(),
                                 presentation.getPreview(),
+                                presentation.getClasses(),
                                 saveProduct
                         ));
                 presentations.add(save.getId());
@@ -119,7 +124,7 @@ public class ProductService implements ManipulateProductUseCase {
     public List<RestProduct> getAllProducts() {
         List<RestProduct> restProducts = new ArrayList<>();
         final List<Product> products = repository.findAll();
-        for(Product product: products) {
+        for (Product product : products) {
             final Long id = product.getId();
 
             final List<RestPresentation> restPresentations = getRestPresentations(id);
@@ -161,7 +166,7 @@ public class ProductService implements ManipulateProductUseCase {
                     .price(temp.getPrice())
                     .currency(temp.getCurrency().toString())
                     .animationQuantity(temp.getAnimationQuantity())
-                    .name(String.valueOf(temp.getTitle()).toUpperCase())
+                    .name(String.valueOf(temp.getType()).toUpperCase())
                     .timePeriod(String.valueOf(temp.getTimePeriod()).toUpperCase())
                     .isActive(temp.getIsActive())
                     .build();

@@ -24,7 +24,7 @@ class ProductServiceTest {
     void shouldReturnSuccesOnProductAdd() {
         //GIVEN
         ManipulateProductUseCase.CreateProductCommand productCommand
-                = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("120.0"),
+                = new ManipulateProductUseCase.CreateProductCommand("INSTAGRAM", "instagram", "usd", "MONTH",30, new BigDecimal("100.00"),
                 "black", List.of(), List.of());
 
         //WHEN

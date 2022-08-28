@@ -1,0 +1,1 @@
+alter table if exists parameter add column classes varchar(255);

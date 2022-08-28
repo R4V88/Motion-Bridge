@@ -9,13 +9,15 @@ public class RestPresentation {
     String content;
     String preview;
     String title;
+    String classes;
 
     public static RestPresentation toRestPresentation(Presentation presentation) {
         return new RestPresentation(
                 presentation.getId(),
                 presentation.getContent(),
                 presentation.getPreview(),
-                presentation.getTitle()
+                presentation.getTitle(),
+                presentation.getClasses()
         );
     }
 }

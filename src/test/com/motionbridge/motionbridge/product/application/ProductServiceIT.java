@@ -31,13 +31,13 @@ public class ProductServiceIT {
     @Test
     void shouldReturnActiveProducts() {
         //GIVEN
-        ManipulateProductUseCase.CreateProductCommand firstProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("120.00"),
+        ManipulateProductUseCase.CreateProductCommand firstProductCommand = new ManipulateProductUseCase.CreateProductCommand("INSTAGRAM", "instagram", "usd", "YEAR", 20, new BigDecimal("120.00"),
                 "black", List.of(), List.of());
-        ManipulateProductUseCase.CreateProductCommand secondProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "MONTH", new BigDecimal("90.00"),
+        ManipulateProductUseCase.CreateProductCommand secondProductCommand = new ManipulateProductUseCase.CreateProductCommand("INSTAGRAM",  "instagram", "usd", "MONTH", 30, new BigDecimal("90.00"),
                 "black", List.of(), List.of());
-        ManipulateProductUseCase.CreateProductCommand thirdProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("150.00"),
+        ManipulateProductUseCase.CreateProductCommand thirdProductCommand = new ManipulateProductUseCase.CreateProductCommand("INSTAGRAM", "instagram", "usd", "YEAR",30, new BigDecimal("150.00"),
                 "black", List.of(), List.of());
-        ManipulateProductUseCase.CreateProductCommand fourthProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "MONTH", new BigDecimal("100.00"),
+        ManipulateProductUseCase.CreateProductCommand fourthProductCommand = new ManipulateProductUseCase.CreateProductCommand("INSTAGRAM", "instagram", "usd", "MONTH",30, new BigDecimal("100.00"),
                 "black", List.of(), List.of());
         final ManipulateProductUseCase.AddProductResponse firstProductResponse = productUseCase.addProduct(firstProductCommand);
         final ManipulateProductUseCase.AddProductResponse secondProductResponse = productUseCase.addProduct(secondProductCommand);
@@ -60,13 +60,13 @@ public class ProductServiceIT {
     @Test
     void shouldReturnAllProducts() {
         //GIVEN
-        ManipulateProductUseCase.CreateProductCommand firstProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("120.00"),
+        ManipulateProductUseCase.CreateProductCommand firstProductCommand = new ManipulateProductUseCase.CreateProductCommand("INSTAGRAM", "instagram", "usd", "YEAR", 20, new BigDecimal("120.00"),
                 "black", List.of(), List.of());
-        ManipulateProductUseCase.CreateProductCommand secondProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "MONTH", new BigDecimal("90.00"),
+        ManipulateProductUseCase.CreateProductCommand secondProductCommand = new ManipulateProductUseCase.CreateProductCommand("INSTAGRAM",  "instagram", "usd", "MONTH", 30, new BigDecimal("90.00"),
                 "black", List.of(), List.of());
-        ManipulateProductUseCase.CreateProductCommand thirdProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("150.00"),
+        ManipulateProductUseCase.CreateProductCommand thirdProductCommand = new ManipulateProductUseCase.CreateProductCommand("INSTAGRAM", "instagram", "usd", "YEAR",30, new BigDecimal("150.00"),
                 "black", List.of(), List.of());
-        ManipulateProductUseCase.CreateProductCommand fourthProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "MONTH", new BigDecimal("100.00"),
+        ManipulateProductUseCase.CreateProductCommand fourthProductCommand = new ManipulateProductUseCase.CreateProductCommand("INSTAGRAM", "instagram", "usd", "MONTH",30, new BigDecimal("100.00"),
                 "black", List.of(), List.of());
         productUseCase.addProduct(firstProductCommand);
         productUseCase.addProduct(secondProductCommand);
@@ -82,7 +82,7 @@ public class ProductServiceIT {
     @Test
     void shouldCheckIfProductExistInOrderThenReturn(){
         //GIVEN
-        ManipulateProductUseCase.CreateProductCommand firstProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("120.00"),
+        ManipulateProductUseCase.CreateProductCommand firstProductCommand = new ManipulateProductUseCase.CreateProductCommand("INSTAGRAM", "instagram", "usd", "YEAR", 20, new BigDecimal("120.00"),
                 "black", List.of(), List.of());
         final ManipulateProductUseCase.AddProductResponse addProductResponse = productUseCase.addProduct(firstProductCommand);
         final Long productId = addProductResponse.getRight().getProductId();
@@ -101,7 +101,7 @@ public class ProductServiceIT {
     @Test
     void shouldSwitchProductStatus() {
         //GIVEN
-        ManipulateProductUseCase.CreateProductCommand firstProductCommand = new ManipulateProductUseCase.CreateProductCommand(20, "instagram", "usd", "YEAR", new BigDecimal("120.00"),
+        ManipulateProductUseCase.CreateProductCommand firstProductCommand = new ManipulateProductUseCase.CreateProductCommand("INSTAGRAM", "instagram", "usd", "YEAR", 20, new BigDecimal("120.00"),
                 "black", List.of(), List.of());
         final ManipulateProductUseCase.AddProductResponse addProductResponse = productUseCase.addProduct(firstProductCommand);
         final Long productId = addProductResponse.getRight().getProductId();
