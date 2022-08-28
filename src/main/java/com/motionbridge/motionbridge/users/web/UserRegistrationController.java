@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +20,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @RestController
 @AllArgsConstructor
@@ -58,8 +64,9 @@ public class UserRegistrationController {
     @ApiResponse(description = "OK", responseCode = "200")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/confirm")
-    public String confirm(@RequestParam("token") String token) {
-        return userRegisterationUseCase.confirmToken(token);
+    public ResponseEntity<?> confirm(@RequestParam("token") String token) throws URISyntaxException {
+        final String mesage = userRegisterationUseCase.confirmToken(token);
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("http://34.118.9.226:3000/sign-in")).body(mesage);
     }
 
     @Data
