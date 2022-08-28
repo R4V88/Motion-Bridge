@@ -64,7 +64,7 @@ public class UserRegistrationController {
     @ApiResponse(description = "OK", responseCode = "200")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/confirm")
-    public ResponseEntity<?> confirm(@RequestParam("token") String token) throws URISyntaxException {
+    public ResponseEntity<?> confirm(@RequestParam("token") String token) {
         final String mesage = userRegisterationUseCase.confirmToken(token);
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("http://34.118.9.226:3000/sign-in")).body(mesage);
     }

@@ -80,7 +80,6 @@ public interface ManipulateProductUseCase {
         String subtitle;
         String title;
         String content;
-        Product product;
     }
 
     @AllArgsConstructor
@@ -89,7 +88,6 @@ public interface ManipulateProductUseCase {
         String title;
         String content;
         String preview;
-        Product product;
     }
 
     @Data
