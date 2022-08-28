@@ -7,12 +7,15 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -104,5 +107,25 @@ public class ManipulateSubscriptionService implements ManipulateSubscriptionUseC
     @Override
     public void saveSubscription(Subscription subscription) {
         repository.save(subscription);
+    }
+
+    @Transactional
+    @Override
+    public void decrementAnimationsQuantity(Long id, String currentLoggedUsername) {
+        final Subscription subscription = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Subsription with id: " + id + "does not exist"));
+        if(!subscription.getIsActive()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Subsription with id: " + id + "is not active");
+        }
+        if(subscription.getUser().getEmail().equals(currentLoggedUsername)) {
+
+            subscription.setAnimationsLimitCounter(subscription.getAnimationsLimitCounter() + 1);
+
+            if(subscription.getAnimationsLimitCounter() == subscription.getAnimationsLimit()) {
+                subscription.setIsActive(false);
+                throw new ResponseStatusException(HttpStatus.OK, "You have reached the animation generation limit");
+            }
+        }
+
     }
 }

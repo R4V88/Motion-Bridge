@@ -30,6 +30,8 @@ public interface ManipulateSubscriptionUseCase {
 
     AutoRenewResponse autoRenew(Long id, String userEmail);
 
+    void decrementAnimationsQuantity(Long id, String currentLoggedUsername);
+
     @Value
     @AllArgsConstructor
     class CreateSubscriptionCommand {

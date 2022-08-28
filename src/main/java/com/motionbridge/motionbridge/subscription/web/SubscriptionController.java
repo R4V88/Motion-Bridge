@@ -31,4 +31,14 @@ public class SubscriptionController {
         final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
         manipulateSubscriptionUseCase.autoRenew(id, currentLoggedUsername);
     }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @Operation(summary = "USER zalogowany, wygenerowanie animacji")
+    @ApiResponse(description = "OK", responseCode = "200")
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("{id}/generate")
+    public void generate(@PathVariable Long id) {
+        final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
+        manipulateSubscriptionUseCase.decrementAnimationsQuantity(id, currentLoggedUsername);
+    }
 }
