@@ -1,6 +1,7 @@
 package com.motionbridge.motionbridge.users.db;
 
 import com.motionbridge.motionbridge.users.entity.UserEntity;
+import com.motionbridge.motionbridge.users.web.mapper.RichRestUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

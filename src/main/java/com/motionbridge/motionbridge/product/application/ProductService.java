@@ -1,9 +1,15 @@
 package com.motionbridge.motionbridge.product.application;
 
 import com.motionbridge.motionbridge.product.application.port.ManipulateProductUseCase;
+import com.motionbridge.motionbridge.product.db.ParameterRepository;
+import com.motionbridge.motionbridge.product.db.PresentationRepository;
 import com.motionbridge.motionbridge.product.db.ProductRepository;
+import com.motionbridge.motionbridge.product.entity.Parameter;
+import com.motionbridge.motionbridge.product.entity.Presentation;
 import com.motionbridge.motionbridge.product.entity.Product;
 import com.motionbridge.motionbridge.product.web.mapper.RestActiveProduct;
+import com.motionbridge.motionbridge.product.web.mapper.RestParameter;
+import com.motionbridge.motionbridge.product.web.mapper.RestPresentation;
 import com.motionbridge.motionbridge.product.web.mapper.RestProduct;
 import com.motionbridge.motionbridge.subscription.entity.Currency;
 import com.motionbridge.motionbridge.subscription.entity.ProductName;
@@ -12,13 +18,18 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.motionbridge.motionbridge.product.web.mapper.RestActiveProduct.toRestActiveProduct;
+import static com.motionbridge.motionbridge.product.web.mapper.RestProduct.toRestProduct;
 
 @Service
 @Slf4j
@@ -27,12 +38,39 @@ import java.util.stream.Collectors;
 public class ProductService implements ManipulateProductUseCase {
 
     final ProductRepository repository;
+    final ParameterRepository parameterRepository;
+    final PresentationRepository presentationRepository;
 
     @Override
     public List<RestActiveProduct> getActiveProducts() {
-        return repository.getAllActiveProducts()
+        List<RestActiveProduct> restActiveProducts = new ArrayList<>();
+        final List<Product> allActiveProducts = repository.getAllActiveProducts();
+        for (Product product : allActiveProducts) {
+            final Long id = product.getId();
+
+            final List<RestPresentation> restPresentations = getRestPresentations(id);
+            final List<RestParameter> restParameters = getRestParameters(id);
+
+            restActiveProducts.add(toRestActiveProduct(product, restPresentations, restParameters));
+        }
+        return restActiveProducts;
+    }
+
+    @NotNull
+    private List<RestPresentation> getRestPresentations(Long productId) {
+        return presentationRepository
+                .getAllPresentationsByProductId(productId)
                 .stream()
-                .map(RestActiveProduct::toRestActiveProduct)
+                .map(RestPresentation::toRestPresentation)
+                .collect(Collectors.toList());
+    }
+
+    @NotNull
+    private List<RestParameter> getRestParameters(Long productId) {
+        return parameterRepository
+                .getAllParametersByProductId(productId)
+                .stream()
+                .map(RestParameter::toRestParameter)
                 .collect(Collectors.toList());
     }
 
@@ -40,23 +78,62 @@ public class ProductService implements ManipulateProductUseCase {
     @Transactional
     public AddProductResponse addProduct(CreateProductCommand command) {
         Product product = new Product(
-                ProductName.valueOf(command.getName().toUpperCase()),
+                ProductName.valueOf(command.getType().toUpperCase()),
+                command.getTitle(),
                 command.getPrice(),
                 Currency.valueOf(command.getCurrency().toUpperCase()),
                 command.getAnimationQuantity(),
-                TimePeriod.valueOf(command.getTimePeriod().toUpperCase())
+                TimePeriod.valueOf(command.getTimePeriod().toUpperCase()),
+                command.getBackground()
         );
         Product saveProduct = repository.save(product);
-        return AddProductResponse.success(saveProduct.getId());
+        List<Long> presentations = new ArrayList<>();
+        List<Long> parameters = new ArrayList<>();
+        if (command.getParameters().size() > 0) {
+            for (CreateParameter parameter : command.getParameters()) {
+                final Parameter save = parameterRepository.save(new Parameter(
+                        parameter.getImage(),
+                        parameter.getSubtitle(),
+                        parameter.getTitle(),
+                        parameter.getContent(),
+                        parameter.getClasses(),
+                        saveProduct)
+                );
+                parameters.add(save.getId());
+            }
+        }
+
+        if (command.getPresentations().size() > 0) {
+            for (CreatePresentation presentation : command.getPresentations()) {
+                final Presentation save = presentationRepository.save(
+                        new Presentation(
+                                presentation.getTitle(),
+                                presentation.getContent(),
+                                presentation.getPreview(),
+                                presentation.getClasses(),
+                                saveProduct
+                        ));
+                presentations.add(save.getId());
+            }
+        }
+
+        return AddProductResponse.success(new CreateProductResponse(saveProduct.getId(), parameters, presentations));
     }
 
     @Override
     public List<RestProduct> getAllProducts() {
-        return repository
-                .findAll()
-                .stream()
-                .map(RestProduct::toRestProduct)
-                .collect(Collectors.toList());
+        List<RestProduct> restProducts = new ArrayList<>();
+        final List<Product> products = repository.findAll();
+        for (Product product : products) {
+            final Long id = product.getId();
+
+            final List<RestPresentation> restPresentations = getRestPresentations(id);
+            final List<RestParameter> restParameters = getRestParameters(id);
+
+            restProducts.add(toRestProduct(product, restPresentations, restParameters));
+        }
+
+        return restProducts;
     }
 
     @Transactional
@@ -89,7 +166,7 @@ public class ProductService implements ManipulateProductUseCase {
                     .price(temp.getPrice())
                     .currency(temp.getCurrency().toString())
                     .animationQuantity(temp.getAnimationQuantity())
-                    .name(String.valueOf(temp.getName()).toUpperCase())
+                    .name(String.valueOf(temp.getType()).toUpperCase())
                     .timePeriod(String.valueOf(temp.getTimePeriod()).toUpperCase())
                     .isActive(temp.getIsActive())
                     .build();

@@ -6,10 +6,10 @@ import com.motionbridge.motionbridge.order.entity.Order;
 import com.motionbridge.motionbridge.order.entity.OrderStatus;
 import com.motionbridge.motionbridge.order.web.mapper.RestOrder;
 import com.motionbridge.motionbridge.order.web.mapper.RestRichOrder;
-import com.motionbridge.motionbridge.security.user.UserEntityDetails;
 import com.motionbridge.motionbridge.security.user.UserSecurity;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
+import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -32,6 +32,7 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
     final OrderRepository orderRepository;
     final ManipulateSubscriptionUseCase subscriptionService;
     final UserSecurity userSecurity;
+    final ManipulateUserDataUseCase userService;
 
 
     @Transactional
@@ -47,16 +48,16 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
     }
 
     @Override
-    public RestRichOrder getAllOrdersWithSubscriptions(Long userId, UserEntityDetails user) {
+    public RestRichOrder getAllOrdersWithSubscriptions(String userEmail) {
         return RestRichOrder.builder()
-                .restOrders(toRestOrdersList(userId, user))
+                .restOrders(toRestOrdersList(userEmail))
                 .build();
     }
 
-    private List<RestOrder> toRestOrdersList(Long userId, UserEntityDetails user) {
+    private List<RestOrder> toRestOrdersList(String userEmail) {
         List<RestOrder> restOrders = new ArrayList<>(Collections.emptyList());
-        for (Order order : getAllOrdersByUserId(userId)) {
-            restOrders.add(getRestOrderByOrderId(order.getId(), user));
+        for (Order order : getAllOrdersByUserId(userEmail)) {
+            restOrders.add(getRestOrderByOrderId(order.getId(), userEmail));
         }
         return restOrders;
     }
@@ -98,17 +99,23 @@ public class ManipulateOrderService implements ManipulateOrderUseCase {
     }
 
     @Override
-    public RestOrder getRestOrderByOrderId(Long orderId, UserEntityDetails user) {
+    public RestOrder getRestOrderByOrderId(Long orderId, String userEmail) {
         List<Subscription> subscriptions = subscriptionService.findAllByOrderId(orderId);
         Order order = orderRepository.findById(orderId).get();
-        if (userSecurity.isOwnerOrAdmin(order.getUser().getEmail(), user)) {
+        if (order.getUser().getEmail().equals(userEmail)) {
             return toRestOrder(order, subscriptions);
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
     }
 
-    private List<Order> getAllOrdersByUserId(Long userId) {
+    private List<Order> getAllOrdersByUserId(String userEmail) {
+        long userId;
+        if (userService.findByUserEmailIgnoreCase(userEmail).isPresent()) {
+            userId = userService.findByUserEmailIgnoreCase(userEmail).get().getId();
+        } else {
+            throw new RuntimeException("No user found with login: " + userEmail);
+        }
         return orderRepository.findAllByUserId(userId);
     }
 }

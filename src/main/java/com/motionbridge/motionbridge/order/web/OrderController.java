@@ -8,7 +8,8 @@ import com.motionbridge.motionbridge.order.application.port.ManipulateOrderUseCa
 import com.motionbridge.motionbridge.order.application.port.RemoveDiscountUseCase;
 import com.motionbridge.motionbridge.order.application.port.RemoveSubscriptionFromOrderUseCase;
 import com.motionbridge.motionbridge.order.web.mapper.RestOrder;
-import com.motionbridge.motionbridge.security.user.UserEntityDetails;
+import com.motionbridge.motionbridge.order.web.mapper.RestOrderId;
+import com.motionbridge.motionbridge.security.jwt.CurrentlyLoggedUserProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -18,8 +19,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,69 +47,79 @@ public class OrderController {
     final ApplyDiscountUseCase applyDiscountService;
     final RemoveDiscountUseCase removeDiscountUseCase;
     final RemoveSubscriptionFromOrderUseCase removeSubscriptionFromOrderUseCase;
+    final CurrentlyLoggedUserProvider currentlyLoggedUserProvider;
 
-    @Secured({"ROLE_ADMIN", "ROLE_USER"})
-    @Operation(summary = "USER zalogowany, tworzy nowe zamówienie po id usera i id produktu")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @Operation(summary = "USER zalogowany, tworzy nowe zamówienie dla wybranego id produktu")
     @ApiResponses(value = {
             @ApiResponse(description = "Created new Order", responseCode = "201"),
             @ApiResponse(description = "Invalid arguments", responseCode = "400")
     })
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/create")
-    public void createOrder(@Valid @RequestBody RestOrderCommand restOrderCommand, @AuthenticationPrincipal UserEntityDetails user) {
-        createOrderService.placeOrder(restOrderCommand.toPlaceOrderCommand(), user);
+    @PostMapping()
+    public ResponseEntity<RestOrderId> createOrder(@Valid @RequestBody RestOrderCommand restOrderCommand) {
+        final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
+        final RestOrderId orderId = createOrderService.placeOrder(restOrderCommand.toPlaceOrderCommand(), currentLoggedUsername);
+
+        if (orderId.getOrderId() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderId);
+
     }
 
-    @Secured({"ROLE_ADMIN", "ROLE_USER"})
-    @Operation(summary = "USER zalogowany, dodaje discount")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @Operation(summary = "USER zalogowany, dodaje discount do zamowienia")
     @ApiResponse(description = "Successfully added a discount", responseCode = "200")
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/discount")
-    public void applyDiscount(@Valid @RequestBody RestApplyDiscountCommand restApplyDiscountCommand, @AuthenticationPrincipal UserEntityDetails user) {
+    public void applyDiscount(@Valid @RequestBody RestApplyDiscountCommand restApplyDiscountCommand) {
         if (restApplyDiscountCommand.code.equalsIgnoreCase("TEAPOT")) {
             throw new ResponseStatusException(HttpStatus.I_AM_A_TEAPOT, "Sorry can't help you, I'm a teapot");
         }
-        applyDiscountService.applyDiscount(restApplyDiscountCommand.toPlaceDiscountCommand(), user);
+        final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
+        applyDiscountService.applyDiscount(restApplyDiscountCommand.toPlaceDiscountCommand(), currentLoggedUsername);
     }
 
-    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @Operation(summary = "USER zalogowany , wyszukuje wybrany order po jego id z subskrypcjami")
     @ApiResponse(description = "When order successfully found", responseCode = "200")
     @GetMapping("/{orderId}")
     @ResponseStatus(HttpStatus.OK)
-    public RestOrder getOrderById(@NotNull @PathVariable Long orderId, @AuthenticationPrincipal UserEntityDetails user) {
+    public RestOrder getOrderById(@NotNull @PathVariable Long orderId) {
+        final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
         return manipulateOrderService
-                .getRestOrderByOrderId(orderId, user);
+                .getRestOrderByOrderId(orderId, currentLoggedUsername);
     }
 
-    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @Operation(summary = "USER zalogowany, usuwa wybrana subskrypcje po Id pod wybranym order id")
     @ApiResponse(description = "When subscription Successfully deleted", responseCode = "204")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{orderId}/subscription/{subscriptionId}")
-    public void deleteSubscription(@NotNull @PathVariable Long orderId, @NotNull @PathVariable Long subscriptionId, @AuthenticationPrincipal UserEntityDetails user) {
-        removeSubscriptionFromOrderUseCase.deleteSubscriptionInOrderByIdAndSubscriptionId(orderId, subscriptionId, user);
+    public void deleteSubscription(@NotNull @PathVariable Long orderId, @NotNull @PathVariable Long subscriptionId) {
+        final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
+        removeSubscriptionFromOrderUseCase.deleteSubscriptionInOrderByIdAndSubscriptionId(orderId, subscriptionId, currentLoggedUsername);
     }
 
-    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @Operation(summary = "USER zalogowany, usuwa discount z ordera")
     @ApiResponse(description = "When subscription Successfully deleted", responseCode = "204")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{orderId}/removeDiscount")
-    public void removeDiscount(@NotNull @PathVariable Long orderId, @AuthenticationPrincipal UserEntityDetails user) {
-        removeDiscountUseCase.removeDiscountFromOrderByOrderId(orderId, user);
+    public void removeDiscount(@NotNull @PathVariable Long orderId) {
+        final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
+        removeDiscountUseCase.removeDiscountFromOrderByOrderId(orderId, currentLoggedUsername);
     }
 
     @Data
     @FieldDefaults(level = AccessLevel.PRIVATE)
     static class RestOrderCommand {
         @NotNull
-        Long userId;
-        @NotNull
         Long productId;
 
         PlaceOrderCommand toPlaceOrderCommand() {
-            return new PlaceOrderCommand(userId, productId);
+            return new PlaceOrderCommand(productId);
         }
     }
 
@@ -117,11 +128,11 @@ public class OrderController {
     static class RestApplyDiscountCommand {
         @NotBlank(message = "Please provide valid code")
         String code;
-        @NotNull
-        Long userId;
 
         PlaceDiscountCommand toPlaceDiscountCommand() {
-            return new PlaceDiscountCommand(code, userId);
+            return new PlaceDiscountCommand(code);
         }
     }
+
+
 }

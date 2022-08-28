@@ -1,0 +1,2 @@
+create table parameter (id int8 not null, uuid varchar(255), version int8, content varchar(255), image varchar(255), subtitle varchar(255), title varchar(255), product_id int8, primary key (id));
+alter table if exists parameter add constraint FKhdr5rjc1ywtx51nau3lgqotw1 foreign key (product_id) references product;

@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,11 +26,12 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.net.URI;
 
 @RestController
 @AllArgsConstructor
 @Tag(name = "/api/registration", description = "Users registration")
-@RequestMapping("/api/registration")
+@RequestMapping("/api/register")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserRegistrationController {
 
@@ -37,7 +39,7 @@ public class UserRegistrationController {
 
     @Operation(summary = "ALL, Rejestracja użytkownika")
     @ApiResponses(value = {
-            @ApiResponse(description = "OK", responseCode = "202"),
+            @ApiResponse(description = "Account created, please check your mailbox to activate token", responseCode = "200"),
             @ApiResponse(description = "Invalid arguments", responseCode = "400")
     })
     @PostMapping()
@@ -45,19 +47,25 @@ public class UserRegistrationController {
         return userRegisterationUseCase
                 .register(command.name, command.email, command.password, command.acceptedTerms, command.acceptedNewsletter)
                 .handle(
-                        entity -> ResponseEntity.accepted().build(),
+                        entity -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("""
+                                {
+                                "message" : "Account created, please check your mailbox to activate token"
+                                }"""),
                         error -> ResponseEntity.badRequest().body(error)
                 );
     }
 
-    @Operation(summary = "ALL, Token confirmation ***Tego endpointu nigdzie nie podpinacie, link aktywacyjny leciu w majlu razem z tym endpointem***")
+    @Operation(summary = "Token confirmation")
     @ApiResponse(description = "OK", responseCode = "200")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.FOUND)
     @GetMapping("/confirm")
-    public void confirm(@RequestParam("token") String token) {
-        userRegisterationUseCase.confirmToken(token);
+    public ResponseEntity<?> confirm(@RequestParam("token") String token) {
+        final String mesage = userRegisterationUseCase.confirmToken(token);
+        if(!mesage.equals("confirmed")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).location(URI.create("http://34.118.9.226:3000/sign-in?message=1")).build();
+        }
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("http://34.118.9.226:3000/sign-in?message=0")).build();
     }
-
 
     @Data
     static class RegisterCommand {

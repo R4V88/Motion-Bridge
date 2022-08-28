@@ -5,17 +5,22 @@ import com.motionbridge.motionbridge.security.user.UserSecurity;
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase;
 import com.motionbridge.motionbridge.users.db.UserEntityRepository;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
+import com.motionbridge.motionbridge.users.web.mapper.RichRestUser;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @AllArgsConstructor
@@ -30,20 +35,39 @@ public class ManipulateUserDataService implements ManipulateUserDataUseCase {
 
     @Transactional
     @Override
-    public UpdatePasswordResponse updatePassword(UpdatePasswordCommand command, UserEntityDetails user) {
-        return repository.findUserById(command.getId())
-                .filter(userById -> userSecurity.isOwnerOrAdmin(userById.getEmail(), user))
-                .map(userById -> {
-                    updateActualPassword(command, userById);
-                    log.warn("Password for user with id: {} has been changed", command.getId());
+    public UpdatePasswordResponse updatePassword(UpdatePasswordCommand command, String userEmail) {
+        return repository.findByEmailIgnoreCase(userEmail)
+                .filter(userByEmail -> userByEmail.getEmail().equals(userEmail))
+                .map(userByEmail -> {
+                    updateActualPassword(command, userByEmail);
+                    log.warn("Password for user with id: {} has been changed", userByEmail.getId());
                     return UpdatePasswordResponse.SUCCESS;
                 })
-                .orElseGet(() -> new UpdatePasswordResponse(false, Collections.singletonList("New password for user with id: " + command.getId() + " is same as old")));
+                .orElseGet(() -> new UpdatePasswordResponse(false, Collections.singletonList("New password for user with name " + userEmail + " is same as old")));
     }
 
     private void updateActualPassword(UpdatePasswordCommand command, UserEntity user) {
         if (!command.getPassword().equals(user.getPassword())) {
             user.setPassword(encoder.encode(command.getPassword()));
+        }
+    }
+
+    @Transactional
+    @Override
+    public UpdateNameResponse updateName(UpdateNameCommand command, String userEmail) {
+        return repository.findByEmailIgnoreCase(userEmail)
+                .filter(userByEmail -> userByEmail.getEmail().equals(userEmail))
+                .map(userByEmail -> {
+                    updateActualName(command, userByEmail);
+                    log.warn("Name for user with id: {} has been changed", userByEmail.getId());
+                    return UpdateNameResponse.SUCCESS;
+                })
+                .orElseGet(() -> new UpdateNameResponse(false, Collections.singletonList("New password for user with name " + userEmail + " is same as old")));
+    }
+
+    private void updateActualName(UpdateNameCommand command, UserEntity user) {
+        if (!command.getName().equals(user.getLogin())) {
+            user.setLogin(command.getName());
         }
     }
 
@@ -56,6 +80,17 @@ public class ManipulateUserDataService implements ManipulateUserDataUseCase {
             return userEntity;
         } else {
             throw new NoSuchElementException("User with id: " + id + "does not exist");
+        }
+    }
+
+    public Optional<UserEntity> getUserByEmail(String userEmail) {
+        Optional<UserEntity> userByEmail = repository.findByEmailIgnoreCase(userEmail);
+        UserEntity userEntity;
+        if (userByEmail.isPresent()) {
+            userEntity = userByEmail.get();
+            return Optional.of(userEntity);
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -98,6 +133,18 @@ public class ManipulateUserDataService implements ManipulateUserDataUseCase {
                     return SwitchResponse.SUCCESS;
                 })
                 .orElseGet(() -> new SwitchResponse(false, Collections.singletonList("Could not change status")));
+    }
+
+    @Override
+    public List<RichRestUser> getAllUsers(String currentlyLoggedUser) {
+        final Optional<UserEntity> byEmailIgnoreCase = repository.findByEmailIgnoreCase(currentlyLoggedUser);
+        if (!byEmailIgnoreCase.get().getRoles().contains("ROLE_ADMIN")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You should not be here, go somewhere else...");
+        }
+        return repository
+                .findAll()
+                .stream().map(RichRestUser::toCreateRichRestUser)
+                .collect(Collectors.toList());
     }
 
     private void switchBlockedStatus(Long id) {

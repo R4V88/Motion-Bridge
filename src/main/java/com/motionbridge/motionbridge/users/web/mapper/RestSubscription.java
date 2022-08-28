@@ -13,6 +13,7 @@ import java.util.List;
 @Value
 @Builder
 public class RestSubscription {
+    Long id;
     Boolean isActive;
     BigDecimal currentPrice;
     LocalDateTime endDate;
@@ -22,6 +23,7 @@ public class RestSubscription {
 
     public static RestSubscription toRestSubscription(Subscription subscription) {
         return RestSubscription.builder()
+                .id(subscription.getId())
                 .isActive(subscription.getIsActive())
                 .currentPrice(subscription.getCurrentPrice())
                 .endDate(subscription.getEndDate())

@@ -29,7 +29,9 @@ import java.time.LocalDateTime;
 public class Product extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
-    ProductName name;
+    ProductName type;
+
+    String title;
 
     BigDecimal price;
 
@@ -49,11 +51,15 @@ public class Product extends BaseEntity {
     @Enumerated(EnumType.STRING)
     TimePeriod timePeriod;
 
-    public Product(ProductName name, BigDecimal price, Currency currency, Integer animationQuantity, TimePeriod timePeriod) {
-        this.name = name;
+    String background;
+
+    public Product(ProductName type, String title, BigDecimal price, Currency currency, Integer animationQuantity, TimePeriod timePeriod, String background) {
+        this.type = type;
+        this.title = title;
         this.price = price;
         this.currency = currency;
         this.animationQuantity = animationQuantity;
         this.timePeriod = timePeriod;
+        this.background = background;
     }
 }

@@ -52,7 +52,7 @@ public class UserRegisterationService implements UserRegisterationUseCase {
         );
         confirmationTokenUseCase.saveConfirmationToken(confirmationToken);
 
-        String link = "https://motionbridge-generator.herokuapp.com/api/users/registration/confirm?token=" + token;
+        String link = "https://motionbridge-generator.herokuapp.com/api/register/confirm?token=" + token;
 
         sender.send(entity.getEmail(), buildEmail(entity.getLogin(), link));
         log.info("Email has been sent to: " + entity.getEmail());
@@ -60,7 +60,7 @@ public class UserRegisterationService implements UserRegisterationUseCase {
     }
 
     @Override
-    public void confirmToken(String token) {
+    public String confirmToken(String token) {
         ConfirmationToken confirmationToken = confirmationTokenUseCase
                 .getToken(token)
                 .orElseThrow(() ->
@@ -79,9 +79,10 @@ public class UserRegisterationService implements UserRegisterationUseCase {
         confirmationTokenUseCase.setConfirmedAt(token);
         enableUser(
                 confirmationToken.getUserEntity().getEmail());
+        return "confirmed";
     }
 
-    public void enableUser(String email) {
+    private void enableUser(String email) {
         repository.enableAppUser(email);
     }
 

@@ -1,33 +1,44 @@
 package com.motionbridge.motionbridge.security.config;
 
-import com.motionbridge.motionbridge.security.login.JsonUsernameAuthenticationFilter;
+import com.motionbridge.motionbridge.security.jwt.Http401UnathorizedEntryPoint;
+import com.motionbridge.motionbridge.security.jwt.JwtConfig;
+import com.motionbridge.motionbridge.security.jwt.JwtEmailAndPasswordAuthenticationFilter;
+import com.motionbridge.motionbridge.security.jwt.JwtTokenVerifier;
 import com.motionbridge.motionbridge.security.user.MotionbridgeUserDetailsService;
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase;
-import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.crypto.SecretKey;
+
+@RequiredArgsConstructor
 @Configuration
-@AllArgsConstructor
-@EnableGlobalMethodSecurity(securedEnabled = true)
-@EnableConfigurationProperties(AdminConfig.class)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableWebSecurity
+@EnableConfigurationProperties({AdminConfig.class, JwtConfig.class})
 public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+    private final MotionbridgeUserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
     private final ManipulateUserDataUseCase userDataManipulationUseCase;
+    private final Http401UnathorizedEntryPoint http401UnathorizedEntryPoint;
     private final AdminConfig config;
+    private final SecretKey secretKey;
+    private final JwtConfig jwtConfig;
 
     @Bean
     User systemUser() {
@@ -36,41 +47,46 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .csrf()
-                .disable();
 
-        http
+        http.authorizeRequests()
+                .antMatchers("/api/users/login",
+                        "/api/register",
+                        "/api/register/confirm*",
+                        "/api/products/active")
+                .permitAll()
+                .antMatchers("/swagger-ui/**", "/v3/api-docs/**")
+                .permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/**")
+                .permitAll()
+                .and()
+                .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfig, userDetailsService), JwtEmailAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .mvcMatchers(HttpMethod.GET, "/api/products/active").permitAll()
-                .mvcMatchers(HttpMethod.POST, "/login", "/api/registration").permitAll()
-//                .mvcMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
-                .and()
-                .httpBasic()
-                .and()
-                .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-    }
-
-    @SneakyThrows
-    private JsonUsernameAuthenticationFilter authenticationFilter() {
-        JsonUsernameAuthenticationFilter filter = new JsonUsernameAuthenticationFilter();
-        filter.setAuthenticationManager(super.authenticationManager());
-        return filter;
+                .anyRequest()
+                .authenticated();
+        http.csrf().disable();
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.requestCache().disable();
+        http.exceptionHandling().authenticationEntryPoint(http401UnathorizedEntryPoint);
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) {
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authenticationProvider());
 
     }
 
     @Bean
-    AuthenticationProvider authenticationProvider() {
+    public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         MotionbridgeUserDetailsService detailsService = new MotionbridgeUserDetailsService(userDataManipulationUseCase, config);
         provider.setUserDetailsService(detailsService);
         provider.setPasswordEncoder(passwordEncoder);
         return provider;
+    }
+
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 }
