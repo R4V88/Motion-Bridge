@@ -23,7 +23,7 @@ public class RestProduct {
     public static RestProduct toRestProduct(Product product, List<RestPresentation> presentations, List<RestParameter> parameters) {
         return new RestProduct(
                 product.getId(),
-                product.getTitle(),
+                product.getType(),
                 product.getPrice(),
                 product.getCurrency().toString(),
                 product.getAnimationQuantity(),

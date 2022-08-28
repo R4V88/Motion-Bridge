@@ -63,10 +63,11 @@ public interface ManipulateProductUseCase {
     @Value
     @AllArgsConstructor
     class CreateProductCommand {
-        Integer animationQuantity;
+        String type;
         String title;
         String currency;
         String timePeriod;
+        Integer animationQuantity;
         BigDecimal price;
         String background;
         List<CreatePresentation> presentations;
@@ -80,6 +81,7 @@ public interface ManipulateProductUseCase {
         String subtitle;
         String title;
         String content;
+        String classes;
     }
 
     @AllArgsConstructor
@@ -88,6 +90,7 @@ public interface ManipulateProductUseCase {
         String title;
         String content;
         String preview;
+        String classes;
     }
 
     @Data

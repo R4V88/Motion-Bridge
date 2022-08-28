@@ -21,7 +21,7 @@ public class RestActiveProduct {
     public static RestActiveProduct toRestActiveProduct(Product product, List<RestPresentation> presentations, List<RestParameter> parameters) {
         return new RestActiveProduct(
                 product.getId(),
-                product.getTitle().toString(),
+                product.getType().toString(),
                 product.getPrice(),
                 product.getCurrency().toString().toLowerCase(),
                 product.getAnimationQuantity(),

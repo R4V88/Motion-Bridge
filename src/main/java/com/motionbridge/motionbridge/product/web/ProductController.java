@@ -90,14 +90,16 @@ public class ProductController {
 
     @Data
     public static class RestProductCommand {
-        @NotNull(message = "Please provide valid product animation quantity")
-        Integer animationQuantity;
+        @NotBlank(message = "Please provide valid product type")
+        String type;
         @NotBlank(message = "Please provide valid product name")
         String title;
         @NotBlank(message = "Please provide valid currency")
         String currency;
         @NotNull(message = "Please provide valid product time period")
         String timePeriod;
+        @NotNull(message = "Please provide valid product animation quantity")
+        Integer animationQuantity;
         @NotNull(message = "Please provide valid product price with format like 0.00")
         @DecimalMin("0.00")
         BigDecimal price;
@@ -106,7 +108,7 @@ public class ProductController {
         List<CreateParameter> parameters;
 
         CreateProductCommand toCreateProductCommand() {
-            return new CreateProductCommand(animationQuantity, title, currency, timePeriod, price, background, presentations, parameters);
+            return new CreateProductCommand(type, title, currency, timePeriod, animationQuantity, price, background, presentations, parameters);
         }
     }
 }

@@ -24,14 +24,16 @@ public class Presentation extends BaseEntity {
     String title;
     String content;
     String preview;
+    String classes;
     @JoinColumn(name = "product_id")
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     Product product;
 
-    public Presentation(String title, String content, String preview, Product product) {
+    public Presentation(String title, String content, String preview, String classes, Product product) {
         this.title = title;
         this.content = content;
         this.preview = preview;
+        this.classes = classes;
         this.product = product;
     }
 }
