@@ -16,6 +16,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -46,17 +47,14 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable();
-
-        http.sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authorizeRequests()
                 .antMatchers("/api/users/login",
                         "/api/register",
+                        "/api/register/confirm*",
                         "/api/products/active")
                 .permitAll()
-                .antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/register/confirm*")
+                .antMatchers("/swagger-ui/**", "/v3/api-docs/**")
                 .permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**")
                 .permitAll()
@@ -65,6 +63,8 @@ public class MotionbridgeSecurityConfiguration extends WebSecurityConfigurerAdap
                 .authorizeRequests()
                 .anyRequest()
                 .authenticated();
+        http.csrf().disable();
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.requestCache().disable();
         http.exceptionHandling().authenticationEntryPoint(http401UnathorizedEntryPoint);
     }

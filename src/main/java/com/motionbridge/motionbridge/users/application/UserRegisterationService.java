@@ -52,7 +52,7 @@ public class UserRegisterationService implements UserRegisterationUseCase {
         );
         confirmationTokenUseCase.saveConfirmationToken(confirmationToken);
 
-        String link = "https://motionbridge-generator.herokuapp.com/api/registration/confirm?token=" + token;
+        String link = "https://motionbridge-generator.herokuapp.com/api/register/confirm?token=" + token;
 
         sender.send(entity.getEmail(), buildEmail(entity.getLogin(), link));
         log.info("Email has been sent to: " + entity.getEmail());
