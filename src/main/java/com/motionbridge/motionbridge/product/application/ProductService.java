@@ -177,6 +177,11 @@ public class ProductService implements ManipulateProductUseCase {
         return productOrder;
     }
 
+    @Override
+    public void deleteProduct(Long id) {
+        repository.deleteById(id);
+    }
+
     private void switchActualStatus(Long id) {
         repository.getById(id).setIsActive(repository.getById(id).getIsActive() != null && !repository.getById(id).getIsActive());
     }
