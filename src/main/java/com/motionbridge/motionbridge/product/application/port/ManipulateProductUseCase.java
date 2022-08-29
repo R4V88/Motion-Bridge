@@ -29,6 +29,8 @@ public interface ManipulateProductUseCase {
 
     ProductOrder checkIfProductExistInOrderThenGet(Long productId);
 
+    void deleteProduct(Long id);
+
     class AddProductResponse extends Either<String, CreateProductResponse> {
         public AddProductResponse(boolean success, String left, CreateProductResponse right) {
             super(success, left, right);

@@ -147,12 +147,12 @@ public class UsersController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @Operation(summary = "USER zalogowany, pobranie danych użytkownika - email, name, ActiveAccount, AcceptedNewsletter")
+    @Operation(summary = "USER zalogowany, pobranie danych aktualnie zalogowanego użytkownika - email, name, ActiveAccount, AcceptedNewsletter")
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "200"),
             @ApiResponse(description = "User not found", responseCode = "404")
     })
-    @GetMapping()
+    @GetMapping("/details")
     @ResponseStatus(HttpStatus.OK)
     public RestUser getDetails() {
         final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
@@ -166,11 +166,27 @@ public class UsersController {
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "200"),
     })
-    @GetMapping("/getUsers")
+    @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<List<RichRestUser>> getUsersDetailsFilter() {
         final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
         final List<RichRestUser> allUsers = userService.getAllUsers(currentLoggedUsername);
+        return ResponseEntity.ok(allUsers);
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "ADMIN, pobranie danych użytkownika po id")
+    @ApiResponses(value = {
+            @ApiResponse(description = "OK", responseCode = "200"),
+    })
+    @GetMapping("/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<RichRestUser> getUser(Long userId) {
+        final RichRestUser allUsers = userService.getUserById(userId)
+                .map(RichRestUser::toCreateRichRestUser)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "User with given id: " + userId + "does not exist"));
+
         return ResponseEntity.ok(allUsers);
     }
 
@@ -223,9 +239,9 @@ public class UsersController {
             @ApiResponse(responseCode = "400", description = "When blocking was a failure")
     })
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/{id}/block")
-    public void blockUserById(@PathVariable Long id) {
-        SwitchResponse switchResponse = userService.switchBlockStatus(id);
+    @PutMapping("/{userId}/block")
+    public void blockUserById(@PathVariable Long userId) {
+        SwitchResponse switchResponse = userService.switchBlockStatus(userId);
         if (!switchResponse.isSuccess()) {
             String message = String.join(", ", switchResponse.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);

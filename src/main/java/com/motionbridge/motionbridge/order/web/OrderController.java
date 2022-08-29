@@ -96,7 +96,7 @@ public class OrderController {
     @Operation(summary = "USER zalogowany, usuwa wybrana subskrypcje po Id pod wybranym order id")
     @ApiResponse(description = "When subscription Successfully deleted", responseCode = "204")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/{orderId}/subscription/{subscriptionId}")
+    @DeleteMapping("/{orderId}/subscriptions/{subscriptionId}")
     public void deleteSubscription(@NotNull @PathVariable Long orderId, @NotNull @PathVariable Long subscriptionId) {
         final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
         removeSubscriptionFromOrderUseCase.deleteSubscriptionInOrderByIdAndSubscriptionId(orderId, subscriptionId, currentLoggedUsername);
