@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -33,7 +33,7 @@ public class InstagramController {
     @SneakyThrows
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @Operation(summary = "USER zalogowany, pobranie zdjec z instagrama")
-    @GetMapping("/instagram")
+    @PostMapping("/instagram")
     @ApiResponse(description = "OK", responseCode = "200")
     @ApiResponse(description = "BadRequest, when Subscription is not Active", responseCode = "404")
     @ApiResponse(description = "BadRequest, when given wrong subscription id", responseCode = "404")
