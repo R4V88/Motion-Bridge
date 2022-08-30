@@ -41,7 +41,6 @@ public class InstagramService implements InstagramUseCase {
     @Override
     @SneakyThrows
     public Album getList(RequestAlbumCommand requestAlbumCommand, String username) {
-
         Subscription subscription = manipulateSubscriptionUseCase.findAllByUserEmail(username)
                 .stream()
                 .filter(sub -> sub.getId() == requestAlbumCommand.getSubscriptionId())
@@ -53,6 +52,10 @@ public class InstagramService implements InstagramUseCase {
 
         if (subscription.getIsActive()) {
             List<Photo> imgs = new ArrayList<>();
+            String profileUsername = "";
+            boolean profileIsPrivate = false;
+            String profileFullName = "";
+            boolean profilesVerified = false;
             IGClient client = getIgClient();
 
             CompletableFuture<UserAction> action = client.actions().users().findByUsername(requestAlbumCommand.getProfile());
@@ -64,6 +67,10 @@ public class InstagramService implements InstagramUseCase {
                     System.out.println(action.get().getUser());
                     profile = action.get().getUser();
                     Long userId = profile.getPk();
+                    profileUsername = profile.getUsername();
+                    profileIsPrivate = profile.is_private();
+                    profileFullName = profile.getFull_name();
+                    profilesVerified = profile.is_verified();
                     URL profilePictureUrl = new URL(profile.getProfile_pic_url());
                     if (profilePictureUrl.toString().length() > 0) {
                         imgs.add(new Photo(profilePictureUrl.toString()));
@@ -108,7 +115,7 @@ public class InstagramService implements InstagramUseCase {
             } catch (InterruptedException | IOException i) {
                 i.printStackTrace();
             }
-            return new Album(imgs);
+            return new Album(profileUsername, profileFullName, profileIsPrivate, profilesVerified, imgs);
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Your subscription is not Active");
         }

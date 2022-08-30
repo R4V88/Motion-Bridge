@@ -6,6 +6,11 @@ import java.util.List;
 
 @Value
 public class Album {
+    String username;
+    String fullname;
+    boolean isPrivate;
+    boolean isActive;
+
     List<Photo> photos;
 
     @Value
