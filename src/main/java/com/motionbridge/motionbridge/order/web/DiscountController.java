@@ -71,9 +71,9 @@ public class DiscountController {
             @ApiResponse(description = "OK", responseCode = "200"),
             @ApiResponse(description = "Status change failed", responseCode = "400")
     })
-    @PutMapping("/{id}")
-    public SwitchStatusResponse switchStatus(@PathVariable Long id) {
-        SwitchStatusResponse switchStatusResponse = discountService.switchStatus(id);
+    @PutMapping("/{discountId}")
+    public SwitchStatusResponse switchStatus(@PathVariable Long discountId) {
+        SwitchStatusResponse switchStatusResponse = discountService.switchStatus(discountId);
         if (!switchStatusResponse.isSuccess()) {
             String message = String.join(", ", switchStatusResponse.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
@@ -84,10 +84,10 @@ public class DiscountController {
     @Secured({"ROLE_ADMIN"})
     @Operation(summary = "ADMIN, usunięcie discounta z bazy po id")
     @ApiResponse(description = "When successfully deleted discount", responseCode = "202")
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{discountId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteDiscount(@PathVariable Long id) {
-        discountService.deleteDiscountById(id);
+    public void deleteDiscount(@PathVariable Long discountId) {
+        discountService.deleteDiscountById(discountId);
     }
 
     @Data

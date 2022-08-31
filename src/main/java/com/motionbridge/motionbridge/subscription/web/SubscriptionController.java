@@ -26,19 +26,19 @@ public class SubscriptionController {
     @Operation(summary = "USER zalogowany, zmiana statusu odnawiania subskrypcji")
     @ApiResponse(description = "OK", responseCode = "200")
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("{id}")
-    public void changeAutoRenewStatus(@PathVariable Long id) {
+    @PutMapping("{subscriptionId}")
+    public void changeAutoRenewStatus(@PathVariable Long subscriptionId) {
         final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
-        manipulateSubscriptionUseCase.autoRenew(id, currentLoggedUsername);
+        manipulateSubscriptionUseCase.autoRenew(subscriptionId, currentLoggedUsername);
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @Operation(summary = "USER zalogowany, wygenerowanie animacji")
     @ApiResponse(description = "OK", responseCode = "200")
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("{id}/generate")
-    public void generate(@PathVariable Long id) {
+    @PutMapping("{subscriptionId}/generate")
+    public void generate(@PathVariable Long subscriptionId) {
         final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
-        manipulateSubscriptionUseCase.decrementAnimationsQuantity(id, currentLoggedUsername);
+        manipulateSubscriptionUseCase.decrementAnimationsQuantity(subscriptionId, currentLoggedUsername);
     }
 }

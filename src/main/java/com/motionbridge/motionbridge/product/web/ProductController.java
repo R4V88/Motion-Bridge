@@ -18,6 +18,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -79,13 +80,24 @@ public class ProductController {
             @ApiResponse(description = "Status change failed", responseCode = "400")
     })
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("{id}")
-    public void switchStatus(@PathVariable Long id) {
-        SwitchStatusResponse response = productService.switchStatus(id);
+    @PutMapping("/{productId}")
+    public void switchStatus(@PathVariable Long productId) {
+        SwitchStatusResponse response = productService.switchStatus(productId);
         if (!response.isSuccess()) {
             String message = String.join(", ", response.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
         }
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "ADMIN, usunięcie produktu")
+    @ApiResponses(value = {
+            @ApiResponse(description = "NO_CONTENT", responseCode = "202"),
+    })
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{productId}")
+    public void deleteProduct(@PathVariable Long productId) {
+        productService.deleteProduct(productId);
     }
 
     @Data
