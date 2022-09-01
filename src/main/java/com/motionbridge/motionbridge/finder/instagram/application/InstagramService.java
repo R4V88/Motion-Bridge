@@ -123,30 +123,16 @@ public class InstagramService implements InstagramUseCase {
 
     private IGClient getIgClient() throws IGLoginException {
 //        String login2 = "effectivemotion.application@gmail.com";
-        String login2 = "motionplus.application@gmail.com";
-//        String password2 = "qweqweqwe";
-        String password2 = "QweQweQwe-22";
-        return IGClient.builder()
-                .username(login2)
-                .password(password2)
-                .login();
-    }
+        //        String password2 = "qweqweqwe";
 
-    private IGClient getFirstClient() throws IGLoginException {
-        String login2 = "motionplus.application@gmail.com";
-        String password2 = "qweqweqwe";
-        return IGClient.builder()
-                .username(login2)
-                .password(password2)
-                .login();
-    }
+//        String login2 = "motionplus.application@gmail.com";
+//        String password2 = "QweQweQwe-22";
 
-    private IGClient getSecondClient() throws IGLoginException {
-        String login2 = "effectivemotion.application@gmail.com";
-        String password2 = "qweqweqwe";
+        String login3 = "elii.trayvon@eledeen.org";
+        String password3 = "QweQweQwe-22";
         return IGClient.builder()
-                .username(login2)
-                .password(password2)
+                .username(login3)
+                .password(password3)
                 .login();
     }
 }
