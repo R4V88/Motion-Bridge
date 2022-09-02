@@ -32,7 +32,7 @@ public class PaymentController {
 
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @Operation(summary = "USER zalogowany, opłacenie zamówienia")
+    @Operation(summary = "Logged USER/ADMIN, payment for the order")
     @ApiResponses(value = {
             @ApiResponse(description = "Order paid", responseCode = "200"),
             @ApiResponse(description = "Invalid arguments", responseCode = "400")

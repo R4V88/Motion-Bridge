@@ -50,7 +50,7 @@ public class OrderController {
     final CurrentlyLoggedUserProvider currentlyLoggedUserProvider;
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @Operation(summary = "USER zalogowany, tworzy nowe zamówienie dla wybranego id produktu")
+    @Operation(summary = "Logged USER/ADMIN, creates new order with given product id")
     @ApiResponses(value = {
             @ApiResponse(description = "Created new Order", responseCode = "201"),
             @ApiResponse(description = "Invalid arguments", responseCode = "400")
@@ -69,7 +69,7 @@ public class OrderController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @Operation(summary = "USER zalogowany, dodaje discount do zamowienia")
+    @Operation(summary = "Logged USER/ADMIN, adds discount to the order")
     @ApiResponse(description = "Successfully added a discount", responseCode = "200")
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/discount")
@@ -82,7 +82,7 @@ public class OrderController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @Operation(summary = "USER zalogowany , wyszukuje wybrany order po jego id z subskrypcjami")
+    @Operation(summary = "Logged USER/ADMIN, returns the order with subscriptions by given order id")
     @ApiResponse(description = "When order successfully found", responseCode = "200")
     @GetMapping("/{orderId}")
     @ResponseStatus(HttpStatus.OK)
@@ -93,7 +93,7 @@ public class OrderController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @Operation(summary = "USER zalogowany, usuwa wybrana subskrypcje po Id pod wybranym order id")
+    @Operation(summary = "Logged USER/ADMIN, removes selected subscription from the order")
     @ApiResponse(description = "When subscription Successfully deleted", responseCode = "204")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{orderId}/subscriptions/{subscriptionId}")
@@ -103,7 +103,7 @@ public class OrderController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @Operation(summary = "USER zalogowany, usuwa discount z ordera")
+    @Operation(summary = "Logged USER/ADMIN, removes discount from the order")
     @ApiResponse(description = "When subscription Successfully deleted", responseCode = "204")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{orderId}/removeDiscount")

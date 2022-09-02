@@ -23,7 +23,7 @@ public class SubscriptionController {
     final CurrentlyLoggedUserProvider currentlyLoggedUserProvider;
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @Operation(summary = "USER zalogowany, zmiana statusu odnawiania subskrypcji")
+    @Operation(summary = "Logged USER/ADMIN, changes subscription renewal status true/false")
     @ApiResponse(description = "OK", responseCode = "200")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("{subscriptionId}")
@@ -33,7 +33,7 @@ public class SubscriptionController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @Operation(summary = "USER zalogowany, wygenerowanie animacji")
+    @Operation(summary = "Logged USER/ADMIN, generates animation")
     @ApiResponse(description = "OK", responseCode = "200")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("{subscriptionId}/generate")

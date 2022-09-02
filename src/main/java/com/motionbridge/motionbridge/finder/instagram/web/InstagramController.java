@@ -32,7 +32,7 @@ public class InstagramController {
 
     @SneakyThrows
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @Operation(summary = "USER zalogowany, pobranie zdjec z instagrama")
+    @Operation(summary = "Logged USER/ADMIN, returns photo album from Instagram")
     @PostMapping("/instagram")
     @ApiResponse(description = "OK", responseCode = "200")
     @ApiResponse(description = "BadRequest, when Subscription is not Active", responseCode = "404")

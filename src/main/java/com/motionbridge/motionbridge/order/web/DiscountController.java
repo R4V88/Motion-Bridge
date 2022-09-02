@@ -42,14 +42,14 @@ public class DiscountController {
     final ManipulateDiscountUseCase discountService;
 
     @Secured({"ROLE_ADMIN"})
-    @Operation(summary = "ADMIN, wyszukuje wszystkie dostepne znizki")
+    @Operation(summary = "Logged ADMIN, returns all discounts")
     @GetMapping
     public List<RestDiscount> getAllDiscounts() {
         return discountService.getAllDiscounts();
     }
 
     @Secured({"ROLE_ADMIN"})
-    @Operation(summary = "ADMIN, dodawanie nowego discounta")
+    @Operation(summary = "Logged ADMIN, adds new discount")
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "201"),
             @ApiResponse(description = "Invalid arguments", responseCode = "400")
@@ -66,7 +66,7 @@ public class DiscountController {
     }
 
     @Secured({"ROLE_ADMIN"})
-    @Operation(summary = "ADMIN, zmiana statusu nowego discounta po id z inActive / Active i na odwrót")
+    @Operation(summary = "Logged ADMIN, changes the discount status to active or inactive")
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "200"),
             @ApiResponse(description = "Status change failed", responseCode = "400")
@@ -82,7 +82,7 @@ public class DiscountController {
     }
 
     @Secured({"ROLE_ADMIN"})
-    @Operation(summary = "ADMIN, usunięcie discounta z bazy po id")
+    @Operation(summary = "Logged ADMIN, removes the discount by id")
     @ApiResponse(description = "When successfully deleted discount", responseCode = "202")
     @DeleteMapping("/{discountId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
