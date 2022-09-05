@@ -1,5 +1,6 @@
 package com.motionbridge.motionbridge.users.web.mapper;
 
+import com.motionbridge.motionbridge.subscription.entity.Currency;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
 import lombok.Builder;
 import lombok.Value;
@@ -20,6 +21,9 @@ public class RestSubscription {
     String type;
     Integer animationsLimit;
     String timePeriod;
+    Long productId;
+    String title;
+    Currency currency;
 
     public static RestSubscription toRestSubscription(Subscription subscription) {
         return RestSubscription.builder()
@@ -30,6 +34,9 @@ public class RestSubscription {
                 .type(subscription.getType())
                 .animationsLimit(subscription.getAnimationsLimit())
                 .timePeriod(subscription.getTimePeriod())
+                .productId(subscription.getProductId())
+                .title(subscription.getTitle())
+                .currency(subscription.getCurrency())
                 .build();
     }
 

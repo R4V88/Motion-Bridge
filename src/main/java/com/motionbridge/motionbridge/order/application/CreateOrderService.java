@@ -11,6 +11,7 @@ import com.motionbridge.motionbridge.product.application.port.ManipulateProductU
 import com.motionbridge.motionbridge.security.user.UserSecurity;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase.CreateSubscriptionCommand;
+import com.motionbridge.motionbridge.subscription.entity.Currency;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
@@ -101,6 +102,8 @@ public class CreateOrderService implements CreateOrderUseCase {
                     .user(user)
                     .order(order)
                     .productId(productOrder.getId())
+                    .currency(Currency.valueOf(productOrder.getCurrency()))
+                    .title(productOrder.getName())
                     .build()
                     .toCreateSubscriptionCommand();
 
@@ -176,11 +179,13 @@ public class CreateOrderService implements CreateOrderUseCase {
         String type;
         String timePeriod;
         UserEntity user;
+        Currency currency;
+        String title;
         Order order;
         Long productId;
 
         CreateSubscriptionCommand toCreateSubscriptionCommand() {
-            return new CreateSubscriptionCommand(price, currentPrice, animationsLimit, type, timePeriod, user, order, productId);
+            return new CreateSubscriptionCommand(price, currentPrice, animationsLimit, type, timePeriod, user, currency, title, order, productId);
         }
     }
 

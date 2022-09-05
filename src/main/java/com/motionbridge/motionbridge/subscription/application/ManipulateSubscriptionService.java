@@ -2,6 +2,7 @@ package com.motionbridge.motionbridge.subscription.application;
 
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.subscription.db.SubscriptionRepository;
+import com.motionbridge.motionbridge.subscription.entity.Currency;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -98,6 +99,8 @@ public class ManipulateSubscriptionService implements ManipulateSubscriptionUseC
                 command.getType(),
                 command.getTimePeriod(),
                 command.getProductId(),
+                Currency.valueOf(String.valueOf(command.getCurrency())),
+                command.getTitle(),
                 command.getUser(),
                 command.getOrder()
         );
