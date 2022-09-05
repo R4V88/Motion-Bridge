@@ -26,6 +26,7 @@ public class RestSubscription {
     Long productId;
     String title;
     Currency currency;
+    Boolean autoRenew;
 
     public static RestSubscription toRestSubscription(Subscription subscription) {
         return RestSubscription.builder()
@@ -41,6 +42,7 @@ public class RestSubscription {
                 .productId(subscription.getProductId())
                 .title(subscription.getTitle())
                 .currency(subscription.getCurrency())
+                .autoRenew(subscription.getAutoRenew())
                 .build();
     }
 
