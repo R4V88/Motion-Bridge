@@ -16,7 +16,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -114,21 +113,16 @@ public class ManipulateSubscriptionService implements ManipulateSubscriptionUseC
 
     @Transactional
     @Override
-    public void decrementAnimationsQuantity(Long id, String currentLoggedUsername) {
+    public void incrementAnimationsQuantity(Long id, String currentLoggedUsername) {
         final Subscription subscription = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Subsription with id: " + id + "does not exist"));
-        if(!subscription.getIsActive()) {
+        if (!subscription.getIsActive()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Subsription with id: " + id + "is not active");
-        }
-        if(subscription.getUser().getEmail().equals(currentLoggedUsername)) {
-
+        } else if (subscription.getAnimationsLimitCounter() == subscription.getAnimationsLimit()) {
+            subscription.setIsActive(false);
+            throw new ResponseStatusException(HttpStatus.OK, "You have reached the animation generation limit");
+        } else if (subscription.getUser().getEmail().equals(currentLoggedUsername)) {
             subscription.setAnimationsLimitCounter(subscription.getAnimationsLimitCounter() + 1);
-
-            if(subscription.getAnimationsLimitCounter() == subscription.getAnimationsLimit()) {
-                subscription.setIsActive(false);
-                throw new ResponseStatusException(HttpStatus.OK, "You have reached the animation generation limit");
-            }
         }
-
     }
 }

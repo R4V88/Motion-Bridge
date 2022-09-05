@@ -17,9 +17,11 @@ public class RestSubscription {
     Long id;
     Boolean isActive;
     BigDecimal currentPrice;
+    LocalDateTime startDate;
     LocalDateTime endDate;
     String type;
     Integer animationsLimit;
+    Integer animationsCounter;
     String timePeriod;
     Long productId;
     String title;
@@ -30,9 +32,11 @@ public class RestSubscription {
                 .id(subscription.getId())
                 .isActive(subscription.getIsActive())
                 .currentPrice(subscription.getCurrentPrice())
+                .startDate(subscription.getStartDate())
                 .endDate(subscription.getEndDate())
                 .type(subscription.getType())
                 .animationsLimit(subscription.getAnimationsLimit())
+                .animationsCounter(subscription.getAnimationsLimitCounter())
                 .timePeriod(subscription.getTimePeriod())
                 .productId(subscription.getProductId())
                 .title(subscription.getTitle())

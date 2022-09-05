@@ -31,7 +31,7 @@ public interface ManipulateSubscriptionUseCase {
 
     AutoRenewResponse autoRenew(Long id, String userEmail);
 
-    void decrementAnimationsQuantity(Long id, String currentLoggedUsername);
+    void incrementAnimationsQuantity(Long id, String currentLoggedUsername);
 
     @Value
     @AllArgsConstructor
