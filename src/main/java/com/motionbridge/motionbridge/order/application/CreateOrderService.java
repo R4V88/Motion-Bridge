@@ -73,7 +73,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         AtomicInteger counter = new AtomicInteger();
 
         for (SubscriptionOrder subscriptionOrder : tempSubscriptionsList) {
-            if (subscriptionOrder.getType().equals(productOrder.getName().toUpperCase())
+            if (subscriptionOrder.getType().equals(productOrder.getType().toUpperCase())
                     &&
                     subscriptionOrder.getTimePeriod().equals(productOrder.getTimePeriod().toUpperCase())) {
 
@@ -97,13 +97,13 @@ public class CreateOrderService implements CreateOrderUseCase {
                     .price(productOrder.getPrice())
                     .currentPrice(productOrder.getPrice())
                     .animationsLimit(productOrder.getAnimationQuantity())
-                    .type(productOrder.getName())
+                    .type(productOrder.getType())
                     .timePeriod(productOrder.getTimePeriod())
                     .user(user)
                     .order(order)
                     .productId(productOrder.getId())
                     .currency(Currency.valueOf(productOrder.getCurrency()))
-                    .title(productOrder.getName())
+                    .title(productOrder.getTitle())
                     .build()
                     .toCreateSubscriptionCommand();
 
