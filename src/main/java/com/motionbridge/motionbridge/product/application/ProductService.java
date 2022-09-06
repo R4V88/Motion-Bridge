@@ -166,7 +166,8 @@ public class ProductService implements ManipulateProductUseCase {
                     .price(temp.getPrice())
                     .currency(temp.getCurrency().toString())
                     .animationQuantity(temp.getAnimationQuantity())
-                    .name(String.valueOf(temp.getType()).toUpperCase())
+                    .type(String.valueOf(temp.getType()).toUpperCase())
+                    .title(temp.getTitle())
                     .timePeriod(String.valueOf(temp.getTimePeriod()).toUpperCase())
                     .isActive(temp.getIsActive())
                     .build();

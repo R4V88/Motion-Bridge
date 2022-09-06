@@ -72,7 +72,7 @@ public class UsersController {
     final JwtConfig jwtConfig;
     final SecretKey secretKey;
 
-    @Operation(summary = "Logowanie")
+    @Operation(summary = "Login")
     @ApiResponses(value = {
             @ApiResponse(description = "Successfully logged in", responseCode = "200"),
             @ApiResponse(description = "Failed to find user", responseCode = "401")
@@ -113,7 +113,7 @@ public class UsersController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @Operation(summary = "USER zalogowany, zmiana hasła")
+    @Operation(summary = "Logged USER/ADMIN, password change")
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "200"),
             @ApiResponse(description = "Invalid password", responseCode = "400")
@@ -130,7 +130,7 @@ public class UsersController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @Operation(summary = "USER zalogowany, zmiana imienia")
+    @Operation(summary = "Logged USER/ADMIN, name change")
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "200"),
             @ApiResponse(description = "Invalid name", responseCode = "400")
@@ -147,7 +147,7 @@ public class UsersController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @Operation(summary = "USER zalogowany, pobranie danych aktualnie zalogowanego użytkownika - email, name, ActiveAccount, AcceptedNewsletter")
+    @Operation(summary = "Logged USER/ADMIN, returns details of the currently logged user")
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "200"),
             @ApiResponse(description = "User not found", responseCode = "404")
@@ -162,7 +162,7 @@ public class UsersController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @Operation(summary = "ADMIN, pobranie danych wszystkich użytkowników")
+    @Operation(summary = "Logged ADMIN, returns details of each users")
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "200"),
     })
@@ -175,7 +175,7 @@ public class UsersController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @Operation(summary = "ADMIN, pobranie danych użytkownika po id")
+    @Operation(summary = "Logged ADMIN, returns details of user by given id")
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "200"),
     })
@@ -191,7 +191,7 @@ public class UsersController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @Operation(summary = "USER zalogowany, usunięcie konta")
+    @Operation(summary = "Logged USER/ADMIN, removes the account")
     @ApiResponse(description = "When successfully deleted account", responseCode = "202")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping()
@@ -201,7 +201,7 @@ public class UsersController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @Operation(summary = "USER zalogowany, pobranie wszystkich orderów użytkowników")
+    @Operation(summary = "Logged USER/ADMIN, returns details of all orders of user")
     @GetMapping("/orders")
     public RestRichOrder getAllOrders() {
         final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
@@ -209,7 +209,7 @@ public class UsersController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-    @Operation(summary = "USER zalogowany, pobranie wszystkich subskrypcji")
+    @Operation(summary = "Logged USER/ADMIN, returns details of all subscriptions of user")
     @GetMapping("/subscriptions")
     public ResponseEntity<List<RestSubscription>> getSubscriptions() {
         final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
@@ -233,7 +233,7 @@ public class UsersController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @Operation(summary = "ADMIN, zmiana statusu uzytkownika po id z unBlocked / Blocked i na odwrót")
+    @Operation(summary = "Logged ADMIN, changes the user status to blocked or unBlocked")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "When successfully blocked account"),
             @ApiResponse(responseCode = "400", description = "When blocking was a failure")

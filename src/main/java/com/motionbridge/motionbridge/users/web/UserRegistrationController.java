@@ -37,7 +37,7 @@ public class UserRegistrationController {
 
     final UserRegisterationUseCase userRegisterationUseCase;
 
-    @Operation(summary = "ALL, Rejestracja użytkownika")
+    @Operation(summary = "Registration of a new user")
     @ApiResponses(value = {
             @ApiResponse(description = "Account created, please check your mailbox to activate token", responseCode = "200"),
             @ApiResponse(description = "Invalid arguments", responseCode = "400")

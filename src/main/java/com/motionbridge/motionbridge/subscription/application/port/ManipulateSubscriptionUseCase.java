@@ -1,6 +1,7 @@
 package com.motionbridge.motionbridge.subscription.application.port;
 
 import com.motionbridge.motionbridge.order.entity.Order;
+import com.motionbridge.motionbridge.subscription.entity.Currency;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
 import lombok.AllArgsConstructor;
@@ -30,7 +31,7 @@ public interface ManipulateSubscriptionUseCase {
 
     AutoRenewResponse autoRenew(Long id, String userEmail);
 
-    void decrementAnimationsQuantity(Long id, String currentLoggedUsername);
+    void incrementAnimationsQuantity(Long id, String currentLoggedUsername);
 
     @Value
     @AllArgsConstructor
@@ -41,6 +42,8 @@ public interface ManipulateSubscriptionUseCase {
         String type;
         String timePeriod;
         UserEntity user;
+        Currency currency;
+        String title;
         Order order;
         Long productId;
     }

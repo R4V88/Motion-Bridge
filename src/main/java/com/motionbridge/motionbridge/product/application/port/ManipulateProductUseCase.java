@@ -102,7 +102,8 @@ public interface ManipulateProductUseCase {
     class ProductOrder {
         Long id;
         Integer animationQuantity;
-        String name;
+        String type;
+        String title;
         String currency;
         String timePeriod;
         BigDecimal price;

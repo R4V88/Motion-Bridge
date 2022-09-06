@@ -45,14 +45,14 @@ public class ProductController {
 
     final ManipulateProductUseCase productService;
 
-    @Operation(summary = "ALL, wszystkie AKTYWNE produkty")
+    @Operation(summary = "returns all active products")
     @GetMapping("/active")
     public List<RestActiveProduct> getActiveProducts() {
         return productService.getActiveProducts();
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @Operation(summary = "ADMIN, dodanie nowego produktu")
+    @Operation(summary = "Logged ADMIN, adds new product")
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "200"),
             @ApiResponse(description = "Invalid arguments", responseCode = "400")
@@ -67,14 +67,14 @@ public class ProductController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @Operation(summary = "ADMIN, pobranie wszystkich produktow AKTYWNYCH i NIEAKTYWNYCH")
+    @Operation(summary = "Logged ADMIN, returns all products")
     @GetMapping()
     public List<RestProduct> getAllProducts() {
         return productService.getAllProducts();
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @Operation(summary = "ADMIN, zmiana statusu produktu z inActive na Active i na odwrót")
+    @Operation(summary = "Logged ADMIN, changes the product status to active or inactive")
     @ApiResponses(value = {
             @ApiResponse(description = "OK", responseCode = "200"),
             @ApiResponse(description = "Status change failed", responseCode = "400")
@@ -90,7 +90,7 @@ public class ProductController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @Operation(summary = "ADMIN, usunięcie produktu")
+    @Operation(summary = "Logged ADMIN, removes the product")
     @ApiResponses(value = {
             @ApiResponse(description = "NO_CONTENT", responseCode = "202"),
     })
