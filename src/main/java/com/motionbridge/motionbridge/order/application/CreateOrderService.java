@@ -11,6 +11,7 @@ import com.motionbridge.motionbridge.product.application.port.ManipulateProductU
 import com.motionbridge.motionbridge.security.user.UserSecurity;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase;
 import com.motionbridge.motionbridge.subscription.application.port.ManipulateSubscriptionUseCase.CreateSubscriptionCommand;
+import com.motionbridge.motionbridge.subscription.entity.Currency;
 import com.motionbridge.motionbridge.subscription.entity.Subscription;
 import com.motionbridge.motionbridge.users.application.port.ManipulateUserDataUseCase;
 import com.motionbridge.motionbridge.users.entity.UserEntity;
@@ -72,7 +73,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         AtomicInteger counter = new AtomicInteger();
 
         for (SubscriptionOrder subscriptionOrder : tempSubscriptionsList) {
-            if (subscriptionOrder.getType().equals(productOrder.getName().toUpperCase())
+            if (subscriptionOrder.getType().equals(productOrder.getType().toUpperCase())
                     &&
                     subscriptionOrder.getTimePeriod().equals(productOrder.getTimePeriod().toUpperCase())) {
 
@@ -96,11 +97,13 @@ public class CreateOrderService implements CreateOrderUseCase {
                     .price(productOrder.getPrice())
                     .currentPrice(productOrder.getPrice())
                     .animationsLimit(productOrder.getAnimationQuantity())
-                    .type(productOrder.getName())
+                    .type(productOrder.getType())
                     .timePeriod(productOrder.getTimePeriod())
                     .user(user)
                     .order(order)
                     .productId(productOrder.getId())
+                    .currency(Currency.valueOf(productOrder.getCurrency()))
+                    .title(productOrder.getTitle())
                     .build()
                     .toCreateSubscriptionCommand();
 
@@ -176,11 +179,13 @@ public class CreateOrderService implements CreateOrderUseCase {
         String type;
         String timePeriod;
         UserEntity user;
+        Currency currency;
+        String title;
         Order order;
         Long productId;
 
         CreateSubscriptionCommand toCreateSubscriptionCommand() {
-            return new CreateSubscriptionCommand(price, currentPrice, animationsLimit, type, timePeriod, user, order, productId);
+            return new CreateSubscriptionCommand(price, currentPrice, animationsLimit, type, timePeriod, user, currency, title, order, productId);
         }
     }
 

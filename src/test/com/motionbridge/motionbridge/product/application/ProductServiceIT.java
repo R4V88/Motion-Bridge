@@ -91,7 +91,7 @@ public class ProductServiceIT {
         final ManipulateProductUseCase.ProductOrder productOrder = productUseCase.checkIfProductExistInOrderThenGet(productId);
 
         //THEN
-        assertEquals(firstProductCommand.getTitle().toUpperCase(), productOrder.getName());
+        assertEquals(firstProductCommand.getTitle().toUpperCase(), productOrder.getTitle());
         assertEquals(firstProductCommand.getCurrency().toUpperCase(), productOrder.getCurrency());
         assertEquals(firstProductCommand.getAnimationQuantity(), productOrder.getAnimationQuantity());
         assertEquals(firstProductCommand.getPrice(), productOrder.getPrice());

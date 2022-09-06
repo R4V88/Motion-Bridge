@@ -39,6 +39,6 @@ public class SubscriptionController {
     @PutMapping("{subscriptionId}/generate")
     public void generate(@PathVariable Long subscriptionId) {
         final String currentLoggedUsername = currentlyLoggedUserProvider.getCurrentLoggedUsername();
-        manipulateSubscriptionUseCase.decrementAnimationsQuantity(subscriptionId, currentLoggedUsername);
+        manipulateSubscriptionUseCase.incrementAnimationsQuantity(subscriptionId, currentLoggedUsername);
     }
 }

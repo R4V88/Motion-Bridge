@@ -23,7 +23,7 @@ public class RestActiveProduct {
     public static RestActiveProduct toRestActiveProduct(Product product, List<RestPresentation> presentations, List<RestParameter> parameters) {
         return new RestActiveProduct(
                 product.getId(),
-                product.getType().toString(),
+                product.getTitle(),
                 product.getType(),
                 product.getPrice(),
                 product.getCurrency().toString().toLowerCase(),

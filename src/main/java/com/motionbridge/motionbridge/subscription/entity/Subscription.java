@@ -15,6 +15,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.math.BigDecimal;
@@ -52,6 +54,11 @@ public class Subscription extends BaseEntity {
 
     Boolean autoRenew = true;
 
+    String title;
+
+    @Enumerated(EnumType.STRING)
+    Currency currency;
+
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     UserEntity user;
 
@@ -71,6 +78,8 @@ public class Subscription extends BaseEntity {
                         String type,
                         String timePeriod,
                         Long productId,
+                        Currency currency,
+                        String title,
                         UserEntity user,
                         Order order) {
         this.price = price;
@@ -79,6 +88,8 @@ public class Subscription extends BaseEntity {
         this.type = type;
         this.timePeriod = timePeriod;
         this.productId = productId;
+        this.currency = currency;
+        this.title = title;
         this.user = user;
         this.order = order;
     }
